@@ -1,11 +1,15 @@
-import React from "react";
-import Login from "./view/Login";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Join from "view/Join";
+import Login from "view/Login";
 
 function App() {
   return (
-    <>
-      <Login />
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/join" element={<Join />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
