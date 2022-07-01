@@ -21,7 +21,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-const auth = getAuth();
-const db = getFirestore(app);
+const auth = getAuth(); // https://firebase.google.com/docs/auth/web/start
+const db = getFirestore(app); // https://firebase.google.com/docs/firestore/quickstart?hl=ko
 
 export { app, analytics, auth, db };
