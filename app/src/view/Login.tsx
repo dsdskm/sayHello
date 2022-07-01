@@ -1,11 +1,11 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
 import { signInWithEmailAndPassword, signOut, User } from "firebase/auth";
 import { useState } from "react";
 import { TextField } from "@material-ui/core";
-import { addLoginData, addLoginFailtData, addLogoutData } from "../api/FirebaseApi";
 import { auth } from "config/FirebaseConfig";
-import { MARGIN_DEFAULT } from "common/Constant";
+import { MARGIN_DEFAULT, ROUTE_JOIN } from "common/Constant";
 
 const LABEL_LOG_IN = "로그인";
 const LABEL_LOG_OUT = "로그아웃";
@@ -18,6 +18,7 @@ const ID_PASSWORD = "password";
 const Login = () => {
   const [user, setUser] = useState<User>();
 
+  const navigate = useNavigate();
   const WRAPPER_STYLE: React.CSSProperties | undefined = {
     width: "100%",
     height: "100vh",
@@ -37,11 +38,9 @@ const Login = () => {
         const user = userCredential.user;
         if (user) {
           setUser(user);
-          addLoginData();
         }
       })
       .catch((error) => {
-        addLoginFailtData();
         console.log(`error ${error}`);
         alert(MESSAGE_LOGIN_FAILED);
       });
@@ -50,16 +49,26 @@ const Login = () => {
   const onLogOutClick = () => {
     signOut(auth).then(() => {
       setUser(undefined);
-      addLogoutData();
       alert(MESSAGE_LOGOUT);
     });
   };
 
-  const onJoinClick = () => {};
+  const onJoinClick = () => {
+    navigate(ROUTE_JOIN);
+  };
 
   return (
     <>
       <div style={WRAPPER_STYLE}>
+        <img
+          src={process.env.PUBLIC_URL + "/images/app_icon.png"}
+          alt="logo"
+          style={{
+            margin: MARGIN_DEFAULT,
+            width: "250px",
+            height: "75px",
+          }}
+        />
         <TextField
           style={{ margin: MARGIN_DEFAULT }}
           id={ID_EMAIL}
