@@ -1,0 +1,2 @@
+const MARGIN_DEFAULT = 10;
+export { MARGIN_DEFAULT };
