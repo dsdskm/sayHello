@@ -32,7 +32,6 @@ const Login = () => {
   const [password, setPassword] = useState<string>("");
 
   const onLoginClick = () => {
-    console.log(`onLoginClick email=${email} password=${password}`);
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
