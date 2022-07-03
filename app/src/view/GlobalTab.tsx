@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
-import { Button } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import {
   getLogoImageComponent,
-  LOGO_IMAGE_COMPONENT,
+  MESSAGE_LOGOUT,
   ROUTE_ACCOUNT,
   ROUTE_DASHBOARD,
   ROUTE_JOIN,
@@ -11,20 +11,35 @@ import {
   ROUTE_MEMBER,
   ROUTE_NOTICE,
 } from "common/Constant";
-import { onAuthStateChanged, User } from "firebase/auth";
+import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { auth } from "config/FirebaseConfig";
 import { useNavigate } from "react-router-dom";
+import DataHook from "api/DataHook";
+import Label, { LABEL_SIZE_ERROR, LABEL_SIZE_SMALL } from "component/Labels";
+import CustomLabel from "component/Labels";
+import { sign } from "crypto";
 
 const ID_JOIN = "join";
 const ID_DASHBOARD = "dashboard";
 const ID_MEMBER = "member";
 const ID_NOTICE = "notice";
 const ID_ACCOUNT = "account";
+const SELECTED_TAB_COLOR = "#D9EDFF";
+const DEFAULT_TAB_COLOR = "#FFFFFF";
 const GlobalTab = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User>();
   const url = window.location.href;
-  console.log(`url ${url}`);
+
+  const { account } = DataHook();
+  const [tabColor, setTabColor] = useState([
+    DEFAULT_TAB_COLOR,
+    DEFAULT_TAB_COLOR,
+    DEFAULT_TAB_COLOR,
+    DEFAULT_TAB_COLOR,
+    DEFAULT_TAB_COLOR,
+  ]);
+
   const onClick = (e: any) => {
     const id = e.target.id;
     switch (id) {
@@ -53,33 +68,81 @@ const GlobalTab = () => {
         setUser(user);
       }
     });
+
+    checkTabFocus();
   }, []);
+
+  const checkTabFocus = () => {
+    for (let i = 0; i < tabColor.length; i++) {
+      tabColor[i] = DEFAULT_TAB_COLOR;
+    }
+    if (url.includes(ROUTE_DASHBOARD)) {
+      tabColor[0] = SELECTED_TAB_COLOR;
+    } else if (url.includes(ROUTE_MEMBER)) {
+      tabColor[1] = SELECTED_TAB_COLOR;
+    } else if (url.includes(ROUTE_NOTICE)) {
+      tabColor[2] = SELECTED_TAB_COLOR;
+    } else if (url.includes(ROUTE_ACCOUNT)) {
+      tabColor[3] = SELECTED_TAB_COLOR;
+    } else if (url.includes(ROUTE_JOIN)) {
+      tabColor[4] = SELECTED_TAB_COLOR;
+    }
+  };
 
   const goPage = (path: string): void => {
     navigate(path);
   };
 
+  const onLogoutClick = () => {
+    signOut(auth).then(() => {
+      setUser(undefined);
+      alert(MESSAGE_LOGOUT);
+      goPage(ROUTE_LOGIN);
+    });
+  };
   return (
     <>
-      <Box sx={{ p: 2, display: "grid", gridTemplateColumns: "repeat(7, 1fr)" }}>
+      <Box sx={{ p: 2, display: "grid", gridTemplateColumns: "repeat(6, 1fr)", height: 150 }}>
         {getLogoImageComponent(ROUTE_LOGIN, goPage)}
         {user ? (
           <>
-            <Button id={ID_DASHBOARD} onClick={onClick}>
+            <Button id={ID_DASHBOARD} onClick={onClick} sx={{ height: 100, backgroundColor: tabColor[0] }}>
               대시보드
             </Button>
-            <Button id={ID_MEMBER} onClick={onClick}>
+            <Button id={ID_MEMBER} onClick={onClick} sx={{ height: 100, backgroundColor: tabColor[1] }}>
               회원관리
             </Button>
-            <Button id={ID_NOTICE} onClick={onClick}>
+            <Button id={ID_NOTICE} onClick={onClick} sx={{ height: 100, backgroundColor: tabColor[2] }}>
               공지사항
             </Button>
-            <Button id={ID_ACCOUNT} onClick={onClick}>
+            <Button id={ID_ACCOUNT} onClick={onClick} sx={{ height: 100, backgroundColor: tabColor[3] }}>
               계정관리
             </Button>
+            {account && (
+              <Box sx={{ mr: 5, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", height: 100, width: 300 }}>
+                <Box sx={{ p: 1, display: "grid", gridTemplateColumns: "repeat(1, 1fr)", height: 100 }}>
+                  <img width="80" height="80" src={account.image}></img>
+                </Box>
+
+                <Box sx={{ p: 1, display: "grid", gridTemplateColumns: "repeat(1, 2fr)", height: 100 }}>
+                  <Typography sx={{ height: 20, width: 100 }} variant="subtitle2">
+                    {account.name}
+                  </Typography>
+                  <Typography sx={{ height: 20, width: 100 }} variant="subtitle2">
+                    {account.email}
+                  </Typography>
+                </Box>
+                <Box sx={{ p: 1, display: "grid", gridTemplateColumns: "repeat(1, 2fr)", height: 100 }}>
+                  <Button sx={{ height: 20, width: 100 }}>수정</Button>
+                  <Button sx={{ height: 20, width: 100 }} onClick={onLogoutClick}>
+                    로그아웃
+                  </Button>
+                </Box>
+              </Box>
+            )}
           </>
         ) : (
-          <Button id={ID_JOIN} onClick={onClick}>
+          <Button id={ID_JOIN} onClick={onClick} sx={{ height: 100, backgroundColor: tabColor[4] }}>
             회원가입
           </Button>
         )}

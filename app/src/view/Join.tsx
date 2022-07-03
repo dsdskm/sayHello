@@ -11,7 +11,7 @@ import { LocalFile } from "interface/LocalFile";
 import { styled } from "@material-ui/styles";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import Label, { LABEL_SIZE_ERROR, LABEL_SIZE_SMALL } from "component/Labels";
+import CustomLabel, { LABEL_SIZE_ERROR, LABEL_SIZE_SMALL } from "component/Labels";
 import GlobalTab from "./GlobalTab";
 const IMAGE_SIZE_WIDTH = 400;
 const IMAGE_SIZE_HEIGHT = 400;
@@ -237,9 +237,9 @@ const Join = () => {
   const getCommonField = (label: string, id: string, width: number, value: string) => {
     return (
       <FieldWrapper>
-        <Label label={label} size={LABEL_SIZE_SMALL} />
+        <CustomLabel label={label} size={LABEL_SIZE_SMALL} />
         <TextField sx={{ width: width }} id={id} type="text" value={value} onChange={onChange} />
-        {account?.name ? <></> : <Label label={MSG_ERR_EMPTY} size={LABEL_SIZE_ERROR} />}
+        {account?.name ? <></> : <CustomLabel label={MSG_ERR_EMPTY} size={LABEL_SIZE_ERROR} />}
       </FieldWrapper>
     );
   };
@@ -247,7 +247,7 @@ const Join = () => {
   const getImageField = () => {
     return (
       <FieldWrapper>
-        <Label label={LABEL_IMAGE} size={LABEL_SIZE_SMALL} />
+        <CustomLabel label={LABEL_IMAGE} size={LABEL_SIZE_SMALL} />
         <input ref={fileRef} type="file" accept="image/" onChange={onImageChange} />
         {localFile.path ? (
           <>
@@ -267,7 +267,7 @@ const Join = () => {
   const getEmailField = () => {
     return (
       <FieldWrapper>
-        <Label label={LABEL_EMAIL} size={LABEL_SIZE_SMALL} />
+        <CustomLabel label={LABEL_EMAIL} size={LABEL_SIZE_SMALL} />
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
           <TextField
             sx={{ width: DEFAULT_FIELD_WIDTH, marginRight: 1 }}
@@ -281,9 +281,9 @@ const Join = () => {
           </Button>
         </div>
         {account?.email ? (
-          <Label label={valid?.email} size={LABEL_SIZE_ERROR} />
+          <CustomLabel label={valid?.email} size={LABEL_SIZE_ERROR} />
         ) : (
-          <Label label={MSG_ERR_EMPTY} size={LABEL_SIZE_ERROR} />
+          <CustomLabel label={MSG_ERR_EMPTY} size={LABEL_SIZE_ERROR} />
         )}
       </FieldWrapper>
     );
@@ -291,7 +291,7 @@ const Join = () => {
   const getPasswordField = (label: string, id: string, width: number, value: string) => {
     return (
       <FieldWrapper>
-        <Label label={label} size={LABEL_SIZE_SMALL} />
+        <CustomLabel label={label} size={LABEL_SIZE_SMALL} />
         <TextField sx={{ width: width }} id={id} type="password" value={value} onChange={onChange} />
       </FieldWrapper>
     );
@@ -300,7 +300,7 @@ const Join = () => {
   const getAgeField = () => {
     return (
       <FieldWrapper>
-        <Label label={LABEL_AGE} size={LABEL_SIZE_SMALL} />
+        <CustomLabel label={LABEL_AGE} size={LABEL_SIZE_SMALL} />
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DesktopDatePicker
             label={LABEL_AGE}

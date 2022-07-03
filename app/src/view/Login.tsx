@@ -1,27 +1,25 @@
 import React, { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
-import { signInWithEmailAndPassword, signOut, User } from "firebase/auth";
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut, User } from "firebase/auth";
 import { useState } from "react";
 import { TextField } from "@material-ui/core";
 import { auth } from "config/FirebaseConfig";
 import {
   getLogoImageComponent,
-  LOGO_IMAGE,
-  LOGO_IMAGE_COMPONENT,
-  LOGO_IMAGE_HEIGHT,
-  LOGO_IMAGE_WIDTH,
   MARGIN_DEFAULT,
+  MESSAGE_LOGOUT,
   ROUTE_DASHBOARD,
   ROUTE_JOIN,
   ROUTE_LOGIN,
 } from "common/Constant";
+import { Box } from "@mui/system";
+import { CircularProgress } from "@material-ui/core";
 
 const LABEL_LOG_IN = "로그인";
 const LABEL_LOG_OUT = "로그아웃";
 const LABEL_JOIN = "계정생성";
-const MESSAGE_LOGIN_FAILED = "로그인 실패";
-const MESSAGE_LOGOUT = "로그아웃 성공";
+const MESSAGE_LOGIN_FAILED = "로그인 실패하였습니다.";
 const ID_EMAIL = "email";
 const ID_PASSWORD = "password";
 
@@ -29,6 +27,8 @@ const Login = () => {
   const [user, setUser] = useState<User>();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [updating, setUpdating] = useState(false);
+
   const navigate = useNavigate();
   const WRAPPER_STYLE: React.CSSProperties | undefined = {
     width: "100%",
@@ -43,25 +43,27 @@ const Login = () => {
     navigate(path);
   };
 
-  const checkLogin = useCallback(() => {
-    if (user) {
-      goPage(ROUTE_DASHBOARD);
-    }
-  }, [goPage, user]);
   useEffect(() => {
-    checkLogin();
-  }, [checkLogin, user]);
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        goPage(ROUTE_DASHBOARD);
+      }
+    });
+  }, []);
 
   const onLoginClick = () => {
+    setUpdating(true);
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
         if (user) {
           setUser(user);
+          setUpdating(false);
         }
       })
       .catch((error) => {
         console.log(`error ${error}`);
+        setUpdating(false);
         alert(MESSAGE_LOGIN_FAILED);
       });
   };
@@ -70,12 +72,21 @@ const Login = () => {
     signOut(auth).then(() => {
       setUser(undefined);
       alert(MESSAGE_LOGOUT);
+      goPage(ROUTE_LOGIN);
     });
   };
 
   const onJoinClick = () => {
     goPage(ROUTE_JOIN);
   };
+
+  if (updating) {
+    return (
+      <Box sx={{ width: "100wh", height: "100vh" }} display="flex" justifyContent="center" alignItems="center">
+        <CircularProgress />
+      </Box>
+    );
+  }
   return (
     <>
       <div style={WRAPPER_STYLE}>
