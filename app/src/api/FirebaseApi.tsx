@@ -4,7 +4,6 @@ import { collection, doc, getDocs, query, setDoc, where } from "firebase/firesto
 import { Account } from "interface/Account";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { LocalFile } from "interface/LocalFile";
-import { AccountTree } from "@material-ui/icons";
 
 const COLLECTION_ACCOUNT = "account";
 

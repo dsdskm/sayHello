@@ -1,7 +1,6 @@
-import { Button, CircularProgress, Grid, inputAdornmentClasses, TextField } from "@mui/material";
-import Paper from "@mui/material/Paper";
+import { Button, CircularProgress, TextField } from "@mui/material";
+import { Paper } from "@mui/material";
 import { Box, Container } from "@mui/system";
-import { Typography } from "@material-ui/core";
 import { ROUTE_LOGIN } from "common/Constant";
 import { ChangeEvent, useState } from "react";
 import { addAccount, emailExistCheck } from "api/FirebaseApi";
@@ -12,6 +11,8 @@ import { LocalFile } from "interface/LocalFile";
 import { styled } from "@material-ui/styles";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import Label, { LABEL_SIZE_ERROR, LABEL_SIZE_SMALL } from "component/Labels";
+import GlobalTab from "./GlobalTab";
 const IMAGE_SIZE_WIDTH = 400;
 const IMAGE_SIZE_HEIGHT = 400;
 
@@ -64,8 +65,6 @@ const FieldWrapper = styled(Paper)({
   minWidth: 500,
   textAlign: "center",
 });
-
-const PAPER_STYLE = {};
 
 const Join = () => {
   const navigate = useNavigate();
@@ -211,7 +210,6 @@ const Join = () => {
 
   const onDateChange = (e: Date | null) => {
     if (e) {
-      const time = Date.parse(e?.toString());
       const year = e.getFullYear();
       const month = e.getMonth() + 1;
       let month_text: string = month.toString();
@@ -239,9 +237,9 @@ const Join = () => {
   const getCommonField = (label: string, id: string, width: number, value: string) => {
     return (
       <FieldWrapper>
-        <Typography>{label}</Typography>
+        <Label label={label} size={LABEL_SIZE_SMALL} />
         <TextField sx={{ width: width }} id={id} type="text" value={value} onChange={onChange} />
-        {account?.name ? <></> : <Typography>{MSG_ERR_EMPTY}</Typography>}
+        {account?.name ? <></> : <Label label={MSG_ERR_EMPTY} size={LABEL_SIZE_ERROR} />}
       </FieldWrapper>
     );
   };
@@ -249,13 +247,15 @@ const Join = () => {
   const getImageField = () => {
     return (
       <FieldWrapper>
-        <Typography>{LABEL_IMAGE}</Typography>
+        <Label label={LABEL_IMAGE} size={LABEL_SIZE_SMALL} />
         <input ref={fileRef} type="file" accept="image/" onChange={onImageChange} />
         {localFile.path ? (
           <>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <img src={localFile.path} width={IMAGE_SIZE_WIDTH} height={IMAGE_SIZE_HEIGHT} alt="photo" />
-              <Button onClick={onImageResetClick}>초기화</Button>
+              <img src={localFile.path} width={IMAGE_SIZE_WIDTH} height={IMAGE_SIZE_HEIGHT} alt="logo" />
+              <Button variant="contained" onClick={onImageResetClick}>
+                초기화
+              </Button>
             </div>
           </>
         ) : (
@@ -267,7 +267,7 @@ const Join = () => {
   const getEmailField = () => {
     return (
       <FieldWrapper>
-        <Typography>{LABEL_EMAIL}</Typography>
+        <Label label={LABEL_EMAIL} size={LABEL_SIZE_SMALL} />
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
           <TextField
             sx={{ width: DEFAULT_FIELD_WIDTH, marginRight: 1 }}
@@ -280,14 +280,18 @@ const Join = () => {
             {LABEL_EMAIL_CHECK}
           </Button>
         </div>
-        {account?.email ? <Typography>{valid?.email}</Typography> : <Typography>{MSG_ERR_EMPTY}</Typography>}
+        {account?.email ? (
+          <Label label={valid?.email} size={LABEL_SIZE_ERROR} />
+        ) : (
+          <Label label={MSG_ERR_EMPTY} size={LABEL_SIZE_ERROR} />
+        )}
       </FieldWrapper>
     );
   };
   const getPasswordField = (label: string, id: string, width: number, value: string) => {
     return (
       <FieldWrapper>
-        <Typography>{label}</Typography>
+        <Label label={label} size={LABEL_SIZE_SMALL} />
         <TextField sx={{ width: width }} id={id} type="password" value={value} onChange={onChange} />
       </FieldWrapper>
     );
@@ -296,7 +300,7 @@ const Join = () => {
   const getAgeField = () => {
     return (
       <FieldWrapper>
-        <Typography>{LABEL_AGE}</Typography>
+        <Label label={LABEL_AGE} size={LABEL_SIZE_SMALL} />
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DesktopDatePicker
             label={LABEL_AGE}
@@ -334,6 +338,7 @@ const Join = () => {
 
   return (
     <>
+      <GlobalTab />
       <Container fixed>
         <Box>
           {NAME_FIELD}
@@ -346,8 +351,12 @@ const Join = () => {
           {ADDRESS_FIELD}
         </Box>
         <Box display="flex" justifyContent="end">
-          <Button onClick={() => navigate(ROUTE_LOGIN)}>{LABEL_CANCEL}</Button>
-          <Button onClick={onJoinClick}>{LABEL_JOIN}</Button>
+          <Button sx={{ m: 1 }} variant="contained" onClick={() => navigate(ROUTE_LOGIN)}>
+            {LABEL_CANCEL}
+          </Button>
+          <Button sx={{ m: 1 }} variant="contained" onClick={onJoinClick}>
+            {LABEL_JOIN}
+          </Button>
         </Box>
       </Container>
     </>
