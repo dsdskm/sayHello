@@ -1,11 +1,21 @@
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
 import { signInWithEmailAndPassword, signOut, User } from "firebase/auth";
 import { useState } from "react";
 import { TextField } from "@material-ui/core";
 import { auth } from "config/FirebaseConfig";
-import { MARGIN_DEFAULT, ROUTE_JOIN } from "common/Constant";
+import {
+  getLogoImageComponent,
+  LOGO_IMAGE,
+  LOGO_IMAGE_COMPONENT,
+  LOGO_IMAGE_HEIGHT,
+  LOGO_IMAGE_WIDTH,
+  MARGIN_DEFAULT,
+  ROUTE_DASHBOARD,
+  ROUTE_JOIN,
+  ROUTE_LOGIN,
+} from "common/Constant";
 
 const LABEL_LOG_IN = "로그인";
 const LABEL_LOG_OUT = "로그아웃";
@@ -17,7 +27,8 @@ const ID_PASSWORD = "password";
 
 const Login = () => {
   const [user, setUser] = useState<User>();
-
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const navigate = useNavigate();
   const WRAPPER_STYLE: React.CSSProperties | undefined = {
     width: "100%",
@@ -28,11 +39,20 @@ const Login = () => {
     justifyContent: "center",
   };
 
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const goPage = (path: string): void => {
+    navigate(path);
+  };
+
+  const checkLogin = useCallback(() => {
+    if (user) {
+      goPage(ROUTE_DASHBOARD);
+    }
+  }, [goPage, user]);
+  useEffect(() => {
+    checkLogin();
+  }, [checkLogin, user]);
 
   const onLoginClick = () => {
-    console.log(`onLoginClick email=${email} password=${password}`);
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
@@ -54,21 +74,12 @@ const Login = () => {
   };
 
   const onJoinClick = () => {
-    navigate(ROUTE_JOIN);
+    goPage(ROUTE_JOIN);
   };
-
   return (
     <>
       <div style={WRAPPER_STYLE}>
-        <img
-          src={process.env.PUBLIC_URL + "/images/app_icon.png"}
-          alt="logo"
-          style={{
-            margin: MARGIN_DEFAULT,
-            width: "250px",
-            height: "75px",
-          }}
-        />
+        {getLogoImageComponent(ROUTE_LOGIN, goPage)}
         <TextField
           style={{ margin: MARGIN_DEFAULT }}
           id={ID_EMAIL}
