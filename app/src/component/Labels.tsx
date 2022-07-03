@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import { FC } from "react";
+import React, { FC } from "react";
 
 export const LABEL_SIZE_ERROR = "subtitle2";
 export const LABEL_SIZE_SMALL = "h5";
@@ -24,14 +24,14 @@ interface LabelProps {
     | "overline"
     | "inherit"
     | undefined;
+  fontStyle?: string;
 }
-const Label: FC<LabelProps> = ({ label, size }) => {
-  
+const CustomLabel: React.FC<LabelProps> = ({ label = "", size = "h1", fontStyle = "italic" }) => {
   return (
-    <Typography sx={{ m: 1 }} variant={size} fontStyle="italic">
+    <Typography sx={{ m: 1 }} variant={size} fontStyle={fontStyle}>
       {label}
     </Typography>
   );
 };
 
-export default Label;
+export default CustomLabel;

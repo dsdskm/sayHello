@@ -5,7 +5,7 @@ import { Account } from "interface/Account";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { LocalFile } from "interface/LocalFile";
 
-const COLLECTION_ACCOUNT = "account";
+export const COLLECTION_ACCOUNT = "account";
 
 export const emailExistCheck = async (email: string) => {
   const q = query(collection(db, COLLECTION_ACCOUNT), where("email", "==", email));

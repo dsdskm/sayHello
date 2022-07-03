@@ -4,7 +4,7 @@ const Account = () => {
   return (
     <>
       <GlobalTab />
-      DashBoard
+      Account
     </>
   );
 };

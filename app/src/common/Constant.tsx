@@ -1,5 +1,3 @@
-import { Navigate, NavigateFunction } from "react-router-dom";
-
 export const MARGIN_DEFAULT = 10;
 export const LOGO_IMAGE_WIDTH = "250px";
 export const LOGO_IMAGE_HEIGHT = "75px";
@@ -11,6 +9,8 @@ export const ROUTE_MEMBER = "/member";
 export const ROUTE_NOTICE = "/notice";
 export const ROUTE_ACCOUNT = "/account";
 export const LOGO_IMAGE = process.env.PUBLIC_URL + "/images/app_icon.png";
+
+export const MESSAGE_LOGOUT = "로그아웃하였습니다.";
 
 export const LOGO_IMAGE_COMPONENT = (
   <img
@@ -43,3 +43,4 @@ export const getLogoImageComponent = (path: string, callback: (path: string) => 
     />
   );
 };
+
