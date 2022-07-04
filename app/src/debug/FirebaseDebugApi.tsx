@@ -21,7 +21,7 @@ export const deleteDebugAccount = async () => {
   const ref = collection(db, COLLECTION_ACCOUNT);
   const q = query(ref, where("password", "==", "123456"));
   const data = await getDocs(q);
-  if (data.docs.length != 0) {
+  if (data.docs.length !== 0) {
     for (let i = 0; i < data.docs.length; i++) {
       await deleteDoc(data.docs[i].ref);
     }

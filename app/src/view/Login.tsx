@@ -39,9 +39,9 @@ const Login = () => {
     justifyContent: "center",
   };
 
-  const goPage = (path: string): void => {
+  const goPage = useCallback((path: string): void => {
     navigate(path);
-  };
+  }, [navigate]);
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -49,7 +49,7 @@ const Login = () => {
         goPage(ROUTE_DASHBOARD);
       }
     });
-  }, []);
+  }, [goPage]);
 
   const onLoginClick = () => {
     setUpdating(true);

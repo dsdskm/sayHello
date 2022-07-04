@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import { Button, Typography } from "@mui/material";
 import {
@@ -15,9 +15,6 @@ import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { auth } from "config/FirebaseConfig";
 import { useNavigate } from "react-router-dom";
 import DataHook from "api/DataHook";
-import Label, { LABEL_SIZE_ERROR, LABEL_SIZE_SMALL } from "component/Labels";
-import CustomLabel from "component/Labels";
-import { sign } from "crypto";
 
 const ID_JOIN = "join";
 const ID_DASHBOARD = "dashboard";
@@ -62,17 +59,7 @@ const GlobalTab = () => {
         break;
     }
   };
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(user);
-      }
-    });
-
-    checkTabFocus();
-  }, []);
-
-  const checkTabFocus = () => {
+  const checkTabFocus = useCallback(() => {
     for (let i = 0; i < tabColor.length; i++) {
       tabColor[i] = DEFAULT_TAB_COLOR;
     }
@@ -87,7 +74,17 @@ const GlobalTab = () => {
     } else if (url.includes(ROUTE_JOIN)) {
       tabColor[4] = SELECTED_TAB_COLOR;
     }
-  };
+    setTabColor({ ...tabColor });
+  }, [tabColor, url]);
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+      }
+    });
+    checkTabFocus();
+  }, []);
 
   const goPage = (path: string): void => {
     navigate(path);
@@ -121,7 +118,7 @@ const GlobalTab = () => {
             {account && (
               <Box sx={{ mr: 5, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", height: 100, width: 300 }}>
                 <Box sx={{ p: 1, display: "grid", gridTemplateColumns: "repeat(1, 1fr)", height: 100 }}>
-                  <img width="80" height="80" src={account.image}></img>
+                  <img width="80" height="80" src={account.image} alt="profile"></img>
                 </Box>
 
                 <Box sx={{ p: 1, display: "grid", gridTemplateColumns: "repeat(1, 2fr)", height: 100 }}>
