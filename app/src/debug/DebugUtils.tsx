@@ -1,0 +1,72 @@
+const lastName = [
+  "곽",
+  "김",
+  "강",
+  "고",
+  "구",
+  "계",
+  "감",
+  "금",
+  "나",
+  "남",
+  "노",
+  "도",
+  "마",
+  "모",
+  "문",
+  "박",
+  "백",
+  "소",
+  "손",
+  "사",
+  "오",
+  "이",
+  "안",
+  "우",
+  "유",
+  "양",
+  "윤",
+  "예",
+  "제",
+  "장",
+  "정",
+  "주",
+  "지",
+  "진",
+  "최",
+  "채",
+  "하",
+  "함",
+  "황",
+  "허",
+];
+const firstName = [
+  "선영",
+  "경민",
+  "기선",
+  "기수",
+  "기영",
+  "기현",
+  "동열",
+  "명숙",
+  "서화",
+  "연만",
+  "연숙",
+  "연업",
+  "연호",
+  "이슬",
+  "중구",
+  "중현",
+  "지선",
+  "혜연",
+  "혜진",
+];
+export const getRandomName = () => {
+  const last = lastName[rand(0, lastName.length - 1)];
+  const first = firstName[rand(0, firstName.length - 1)];
+  return last + first;
+};
+
+const rand = (min: number, max: number) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
