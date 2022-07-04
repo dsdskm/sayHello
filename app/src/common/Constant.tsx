@@ -8,7 +8,7 @@ export const ROUTE_DASHBOARD = "/dashboard";
 export const ROUTE_MEMBER = "/member";
 export const ROUTE_NOTICE = "/notice";
 export const ROUTE_ACCOUNT = "/account";
-export const ROUTE_DEBUG_ACCOUNT="/debug_account"
+export const ROUTE_DEBUG = "/debug";
 
 export const LOGO_IMAGE = process.env.PUBLIC_URL + "/images/app_icon.png";
 
@@ -45,4 +45,3 @@ export const getLogoImageComponent = (path: string, callback: (path: string) => 
     />
   );
 };
-
