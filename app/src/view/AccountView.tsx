@@ -8,75 +8,40 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
+import DataHook from "api/DataHook";
+import { Box } from "@mui/system";
+import { CircularProgress } from "@material-ui/core";
+import { getTimeText } from "common/Utils";
+import { Button, TextField } from "@mui/material";
+
+const COLUMN_NO = "NO";
+const COLUMN_NAME = "이름";
+const COLUMN_EMAIL = "email";
+const COLUMN_PHONE = "전화번호";
+const COLUMN_TIME = "생성날짜";
+const KEYWORD_HINT = "이름이나 이메일을 입력하세요";
 
 interface Column {
-  id: "name" | "code" | "population" | "size" | "density";
-  label: string;
+  id: string;
+  name: string;
   minWidth?: number;
-  align?: "right";
+  align?: "center";
   format?: (value: number) => string;
 }
 
 const columns: readonly Column[] = [
-  { id: "name", label: "Name", minWidth: 170 },
-  { id: "code", label: "ISO\u00a0Code", minWidth: 100 },
-  {
-    id: "population",
-    label: "Population",
-    minWidth: 170,
-    align: "right",
-    format: (value: number) => value.toLocaleString("en-US"),
-  },
-  {
-    id: "size",
-    label: "Size\u00a0(km\u00b2)",
-    minWidth: 170,
-    align: "right",
-    format: (value: number) => value.toLocaleString("en-US"),
-  },
-  {
-    id: "density",
-    label: "Density",
-    minWidth: 170,
-    align: "right",
-    format: (value: number) => value.toFixed(2),
-  },
-];
-
-interface Data {
-  name: string;
-  code: string;
-  population: number;
-  size: number;
-  density: number;
-}
-
-function createData(name: string, code: string, population: number, size: number): Data {
-  const density = population / size;
-  return { name, code, population, size, density };
-}
-
-const rows = [
-  createData("India", "IN", 1324171354, 3287263),
-  createData("China", "CN", 1403500365, 9596961),
-  createData("Italy", "IT", 60483973, 301340),
-  createData("United States", "US", 327167434, 9833520),
-  createData("Canada", "CA", 37602103, 9984670),
-  createData("Australia", "AU", 25475400, 7692024),
-  createData("Germany", "DE", 83019200, 357578),
-  createData("Ireland", "IE", 4857000, 70273),
-  createData("Mexico", "MX", 126577691, 1972550),
-  createData("Japan", "JP", 126317000, 377973),
-  createData("France", "FR", 67022000, 640679),
-  createData("United Kingdom", "GB", 67545757, 242495),
-  createData("Russia", "RU", 146793744, 17098246),
-  createData("Nigeria", "NG", 200962417, 923768),
-  createData("Brazil", "BR", 210147125, 8515767),
+  { id: "no", name: COLUMN_NO, align: "center" },
+  { id: "name", name: COLUMN_NAME, align: "center" },
+  { id: "email", name: COLUMN_EMAIL, align: "center" },
+  { id: "phone", name: COLUMN_PHONE, align: "center" },
+  { id: "time", name: COLUMN_TIME, align: "center" },
 ];
 
 const AccountView = () => {
+  const { accountList } = DataHook();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [keyword, setKeyword] = React.useState<string>();
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -87,50 +52,78 @@ const AccountView = () => {
     setPage(0);
   };
 
+  if (!accountList) {
+    return (
+      <Box sx={{ width: "100wh", height: "100vh" }} display="flex" justifyContent="center" alignItems="center">
+        <CircularProgress />
+      </Box>
+    );
+  }
   return (
     <>
       <GlobalTab />
 
       <Paper sx={{ width: "100%", overflow: "hidden" }}>
-        <TableContainer sx={{ maxHeight: 440 }}>
+        <TableContainer sx={{ height: 500, width: "100%" }}>
           <Table stickyHeader aria-label="sticky table">
             <TableHead>
               <TableRow>
                 {columns.map((column) => (
-                  <TableCell key={column.id} align={column.align} style={{ minWidth: column.minWidth }}>
-                    {column.label}
+                  <TableCell key={column.name} align={column.align} style={{ minWidth: column.minWidth }}>
+                    {column.name}
                   </TableCell>
                 ))}
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === "number" ? column.format(value) : value}
+              {accountList &&
+                accountList
+                  .filter((v) => {
+                    if (keyword) {
+                      return v.name.includes(keyword) || v.email.includes(keyword);
+                    } else {
+                      return true;
+                    }
+                  })
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((value, index) => {
+                    const time = getTimeText(value.time);
+                    return (
+                      <TableRow hover role="checkbox" tabIndex={-1} key={value.id}>
+                        <TableCell key={index} align={columns[0].align}>
+                          {index + 1}
                         </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
+                        <TableCell key={value.name} align={columns[1].align}>
+                          {value.name}
+                        </TableCell>
+                        <TableCell key={value.email} align={columns[2].align}>
+                          {value.email}
+                        </TableCell>
+                        <TableCell key={value.phone} align={columns[3].align}>
+                          {value.phone}
+                        </TableCell>
+                        <TableCell key={value.time} align={columns[4].align}>
+                          {time}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
             </TableBody>
           </Table>
         </TableContainer>
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component="div"
-          count={rows.length}
+          count={accountList.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
+      <Box sx={{ width: "50wh", m: 5 }} display="flex" justifyContent="center" alignItems="center">
+        <TextField placeholder={KEYWORD_HINT} onChange={(e) => setKeyword(e.target.value)} />
+      </Box>
     </>
   );
 };
