@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import React, { FC } from "react";
+import React from "react";
 
 export const LABEL_SIZE_ERROR = "subtitle2";
 export const LABEL_SIZE_SMALL = "h5";
