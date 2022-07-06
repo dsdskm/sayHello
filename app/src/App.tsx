@@ -11,10 +11,10 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AccountView from "view/account/AccountView";
 import Dashboard from "view/dashboard/Dashboard";
 import DebugView from "debug/DebugView";
-import Join from "view/account/join/Join";
-import Login from "view/account/login/Login";
-import Member from "view/account/member/Member";
-import Notice from "view/account/notice/Notice";
+import Join from "view/join/Join";
+import Login from "view/login/Login";
+import Member from "view/member/Member";
+import Notice from "view/notice/Notice";
 
 const App = () => {
   return (
