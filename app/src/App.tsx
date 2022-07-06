@@ -1,7 +1,9 @@
 import {
   ROUTE_ACCOUNT,
+  ROUTE_ACCOUNT_EDIT,
   ROUTE_DASHBOARD,
   ROUTE_DEBUG,
+  ROUTE_ID,
   ROUTE_JOIN,
   ROUTE_LOGIN,
   ROUTE_MEMBER,
@@ -11,10 +13,11 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AccountView from "view/account/AccountView";
 import Dashboard from "view/dashboard/Dashboard";
 import DebugView from "debug/DebugView";
-import Join from "view/join/Join";
-import Login from "view/login/Login";
+import Join from "view/join/JoinView";
+import Login from "view/login/LoginView";
 import Member from "view/member/Member";
 import Notice from "view/notice/Notice";
+import AccountEditView from "view/account/AccountEditView";
 
 const App = () => {
   return (
@@ -27,6 +30,7 @@ const App = () => {
           <Route path={ROUTE_MEMBER} element={<Member />} />
           <Route path={ROUTE_NOTICE} element={<Notice />} />
           <Route path={ROUTE_ACCOUNT} element={<AccountView />} />
+          <Route path={ROUTE_ACCOUNT_EDIT + ROUTE_ID} element={<AccountEditView />} />
           <Route path={ROUTE_DEBUG} element={<DebugView />} />
         </Routes>
       </BrowserRouter>

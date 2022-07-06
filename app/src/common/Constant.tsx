@@ -2,12 +2,15 @@ export const MARGIN_DEFAULT = 10;
 export const LOGO_IMAGE_WIDTH = "250px";
 export const LOGO_IMAGE_HEIGHT = "75px";
 
+export const ROUTE_ID = "/:id";
+export const ROUTE_EDIT = "/edit";
 export const ROUTE_LOGIN = "/";
 export const ROUTE_JOIN = "/join";
 export const ROUTE_DASHBOARD = "/dashboard";
 export const ROUTE_MEMBER = "/member";
 export const ROUTE_NOTICE = "/notice";
 export const ROUTE_ACCOUNT = "/account";
+export const ROUTE_ACCOUNT_EDIT = ROUTE_ACCOUNT + ROUTE_EDIT;
 export const ROUTE_DEBUG = "/debug";
 
 export const LOGO_IMAGE = process.env.PUBLIC_URL + "/images/app_icon.png";
