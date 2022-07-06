@@ -3,7 +3,7 @@ import { Button, TextField, Typography } from "@mui/material";
 import { Box, Container } from "@mui/system";
 import { Account } from "interface/Account";
 import { useState } from "react";
-import GlobalTab from "../view/GlobalTab";
+import GlobalTab from "../view/common/GlobalTab";
 import { getRandomName } from "./DebugUtils";
 import { addAccountList, deleteDebugAccount } from "./FirebaseDebugApi";
 

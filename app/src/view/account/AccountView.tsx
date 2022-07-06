@@ -1,4 +1,4 @@
-import GlobalTab from "./GlobalTab";
+import GlobalTab from "../common/GlobalTab";
 import * as React from "react";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -122,7 +122,7 @@ const AccountView = () => {
         />
       </Paper>
       <Box sx={{ width: "50wh", m: 5 }} display="flex" justifyContent="center" alignItems="center">
-        <TextField placeholder={KEYWORD_HINT} onChange={(e) => setKeyword(e.target.value)} />
+        <TextField sx={{width:"300px"}} placeholder={KEYWORD_HINT} onChange={(e) => setKeyword(e.target.value)} />
       </Box>
     </>
   );
