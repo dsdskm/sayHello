@@ -12,7 +12,7 @@ import { styled } from "@material-ui/styles";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import CustomLabel, { LABEL_SIZE_ERROR, LABEL_SIZE_SMALL } from "component/Labels";
-import GlobalTab from "./GlobalTab";
+import GlobalTab from "../../common/GlobalTab";
 const IMAGE_SIZE_WIDTH = 400;
 const IMAGE_SIZE_HEIGHT = 400;
 

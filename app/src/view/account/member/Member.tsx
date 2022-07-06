@@ -1,7 +1,7 @@
-import GlobalTab from "./GlobalTab";
-import MapArea from "../component/member/MapArea"
-import MemberInfoArea from "../component/member/MemberInfoArea"
-import MemberDetailArea from "../component/member/MemberDetailArea"
+import GlobalTab from "../../common/GlobalTab";
+import MapArea from "../../../component/member/MapArea"
+import MemberInfoArea from "../../../component/member/MemberInfoArea"
+import MemberDetailArea from "../../../component/member/MemberDetailArea"
 
 const Member = () => {
   return (

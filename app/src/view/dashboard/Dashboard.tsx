@@ -1,6 +1,6 @@
-import GlobalTab from "./GlobalTab";
-import LeftAlertArea from "../component/dashboard/LeftAlertArea";
-import RightListArea from "../component/dashboard/RightListArea";
+import GlobalTab from "../common/GlobalTab";
+import LeftAlertArea from "../../component/dashboard/LeftAlertArea";
+import RightListArea from "../../component/dashboard/RightListArea";
 
 const Dashboard = () => {
   return (
