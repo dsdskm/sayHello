@@ -23,7 +23,7 @@ const MESSAGE_LOGIN_FAILED = "로그인 실패하였습니다.";
 const ID_EMAIL = "email";
 const ID_PASSWORD = "password";
 
-const Login = () => {
+const LoginView = () => {
   const [user, setUser] = useState<User>();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -126,4 +126,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginView;

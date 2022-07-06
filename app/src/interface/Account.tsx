@@ -10,3 +10,16 @@ export interface Account {
   password: string;
   password_re: string;
 }
+
+export const DEFAULT_ACCOUNT_DATA = {
+  id: "",
+  name: "",
+  image: "",
+  email: "",
+  phone: "",
+  age: "",
+  address: "",
+  time: 0,
+  password: "",
+  password_re: "",
+};

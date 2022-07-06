@@ -5,7 +5,7 @@ import { ROUTE_LOGIN } from "common/Constant";
 import { ChangeEvent, useState } from "react";
 import { addAccount, emailExistCheck } from "api/FirebaseApi";
 import { useNavigate } from "react-router-dom";
-import { Account } from "interface/Account";
+import { Account, DEFAULT_ACCOUNT_DATA } from "interface/Account";
 import { useRef } from "react";
 import { LocalFile } from "interface/LocalFile";
 import { styled } from "@material-ui/styles";
@@ -66,21 +66,10 @@ const FieldWrapper = styled(Paper)({
   textAlign: "center",
 });
 
-const Join = () => {
+const JoinView = () => {
   const navigate = useNavigate();
   const fileRef = useRef<any>(null);
-  const [account, setAccount] = useState<Account>({
-    id: "",
-    name: "",
-    image: "",
-    email: "",
-    phone: "",
-    age: "",
-    address: "",
-    time: 0,
-    password: "",
-    password_re: "",
-  });
+  const [account, setAccount] = useState<Account>(DEFAULT_ACCOUNT_DATA);
 
   const [valid, setValid] = useState<Valid>({
     name: MSG_ERR_DISABLE,
@@ -239,7 +228,7 @@ const Join = () => {
       <FieldWrapper>
         <CustomLabel label={label} size={LABEL_SIZE_SMALL} />
         <TextField sx={{ width: width }} id={id} type="text" value={value} onChange={onChange} />
-        {account?.name ? <></> : <CustomLabel label={MSG_ERR_EMPTY} size={LABEL_SIZE_ERROR} />}
+        {value ? <></> : <CustomLabel label={MSG_ERR_EMPTY} size={LABEL_SIZE_ERROR} />}
       </FieldWrapper>
     );
   };
@@ -363,4 +352,4 @@ const Join = () => {
   );
 };
 
-export default Join;
+export default JoinView;

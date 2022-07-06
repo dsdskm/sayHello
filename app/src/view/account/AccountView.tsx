@@ -13,6 +13,9 @@ import { Box } from "@mui/system";
 import { CircularProgress } from "@material-ui/core";
 import { getTimeText } from "common/Utils";
 import { Button, TextField } from "@mui/material";
+import { Account } from "interface/Account";
+import { useNavigate } from "react-router-dom";
+import { ROUTE_ACCOUNT_EDIT } from "common/Constant";
 
 const COLUMN_NO = "NO";
 const COLUMN_NAME = "이름";
@@ -39,6 +42,7 @@ const columns: readonly Column[] = [
 
 const AccountView = () => {
   const { accountList } = DataHook();
+  const navigate = useNavigate();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [keyword, setKeyword] = React.useState<string>();
@@ -59,6 +63,16 @@ const AccountView = () => {
       </Box>
     );
   }
+
+  const onTableRowClick = (value: Account) => {
+    console.log(`value`, value);
+    goPage(ROUTE_ACCOUNT_EDIT + `/${value.id}`);
+  };
+
+  const goPage = (path: string): void => {
+    navigate(path);
+  };
+
   return (
     <>
       <GlobalTab />
@@ -89,7 +103,13 @@ const AccountView = () => {
                   .map((value, index) => {
                     const time = getTimeText(value.time);
                     return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={value.id}>
+                      <TableRow
+                        hover
+                        role="checkbox"
+                        tabIndex={-1}
+                        key={value.id}
+                        onClick={() => onTableRowClick(value)}
+                      >
                         <TableCell key={index} align={columns[0].align}>
                           {index + 1}
                         </TableCell>
@@ -122,7 +142,7 @@ const AccountView = () => {
         />
       </Paper>
       <Box sx={{ width: "50wh", m: 5 }} display="flex" justifyContent="center" alignItems="center">
-        <TextField sx={{width:"300px"}} placeholder={KEYWORD_HINT} onChange={(e) => setKeyword(e.target.value)} />
+        <TextField sx={{ width: "300px" }} placeholder={KEYWORD_HINT} onChange={(e) => setKeyword(e.target.value)} />
       </Box>
     </>
   );
