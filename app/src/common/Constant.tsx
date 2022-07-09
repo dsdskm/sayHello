@@ -1,6 +1,8 @@
 export const MARGIN_DEFAULT = 10;
 export const LOGO_IMAGE_WIDTH = "250px";
 export const LOGO_IMAGE_HEIGHT = "75px";
+export const PROFILE_IMAGE_WIDTH = "75px";
+export const PROFILE_IMAGE_HEIGHT = "75px";
 
 export const ROUTE_ID = "/:id";
 export const ROUTE_EDIT = "/edit";
