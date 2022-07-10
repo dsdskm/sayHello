@@ -6,7 +6,7 @@ import { Account } from "interface/Account";
 import { useEffect, useState } from "react";
 import { COLLECTION_ACCOUNT } from "./FirebaseApi";
 
-const DataHook = () => {
+const AccountDataHook = () => {
   const [account, setAccount] = useState<Account>();
   const [accountList, setAccountList] = useState<Array<Account>>();
   const fetchingAccountData = async (email: string | null) => {
@@ -39,4 +39,4 @@ const DataHook = () => {
     accountList,
   };
 };
-export default DataHook;
+export default AccountDataHook;

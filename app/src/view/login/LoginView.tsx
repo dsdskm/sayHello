@@ -6,9 +6,9 @@ import { useState } from "react";
 import { TextField } from "@material-ui/core";
 import { auth } from "config/FirebaseConfig";
 import { getLogoImageComponent, MARGIN_DEFAULT, ROUTE_DASHBOARD, ROUTE_JOIN, ROUTE_LOGIN } from "common/Constant";
-import { Box } from "@mui/system";
-import { CircularProgress } from "@material-ui/core";
 import { resetPassword } from "api/FirebaseApi";
+import Loading from "component/Loading";
+import { KEY_ACCOUNT, setStorage } from "common/Utils";
 
 const LABEL_LOG_IN = "로그인";
 const LABEL_PASSWORD_RESET = "비밀번호 초기화";
@@ -58,6 +58,9 @@ const LoginView = () => {
         if (user) {
           setUser(user);
           setUpdating(false);
+          if (user.email) {
+            setStorage(KEY_ACCOUNT, user.email?.toString());
+          }
         }
       })
       .catch((error) => {
@@ -72,11 +75,7 @@ const LoginView = () => {
   };
 
   if (updating) {
-    return (
-      <Box sx={{ width: "100wh", height: "100vh" }} display="flex" justifyContent="center" alignItems="center">
-        <CircularProgress />
-      </Box>
-    );
+    return <Loading />;
   }
 
   const onPasswordResetClick = async () => {

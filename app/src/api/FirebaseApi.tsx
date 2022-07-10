@@ -7,9 +7,14 @@ import { LocalFile } from "interface/LocalFile";
 import { ACCOUNT_TYPE_NORMAL, DEFAULT_PROFILE_IMAGE } from "common/Constant";
 import { httpsCallable } from "firebase/functions";
 import emailjs from "emailjs-com";
+import { Notice } from "interface/Notice";
 
 export const COLLECTION_ACCOUNT = "account";
-
+export const COLLECTION_NOTICE = "notice";
+export const COLLECTION_DATA = "data";
+const OP = "op";
+const QA = "qa";
+export const MODE = QA;
 export const emailExistCheck = async (email: string) => {
   const q = query(collection(db, COLLECTION_ACCOUNT), where("email", "==", email));
   let id;
@@ -18,6 +23,26 @@ export const emailExistCheck = async (email: string) => {
     id = doc.id;
   });
   return id;
+};
+
+export const addNotice = async (notice: Notice, isAdd: Boolean) => {
+  notice.time = new Date().getTime();
+  notice.id = isAdd ? notice.time.toString() : notice.id;
+  const ref = doc(db, COLLECTION_NOTICE, MODE, COLLECTION_DATA, notice.id);
+  if (isAdd) {
+    await setDoc(ref, notice);
+  } else {
+    await updateDoc(ref, {
+      title: notice.title,
+      contents: notice.contents,
+      time: notice.time,
+    });
+  }
+};
+
+export const deleteNotice = async (notice: Notice) => {
+  const ref = doc(db, COLLECTION_NOTICE, MODE, COLLECTION_DATA, notice.id);
+  await deleteDoc(ref);
 };
 
 export const addAccount = async (account: Account, localFile: LocalFile, isAdd: Boolean) => {
@@ -37,10 +62,11 @@ export const addAccount = async (account: Account, localFile: LocalFile, isAdd: 
       const url = await uploadFile(localFile, account.id);
       account.image = url ? url : DEFAULT_PROFILE_IMAGE;
     }
+    const ref = doc(db, COLLECTION_ACCOUNT, account.id);
     if (isAdd) {
-      await setDoc(doc(db, COLLECTION_ACCOUNT, account.id), account);
+      await setDoc(ref, account);
     } else {
-      await updateDoc(doc(db, COLLECTION_ACCOUNT, account.id), {
+      await updateDoc(ref, {
         address: account.address,
         age: account.age,
         image: account.image,
