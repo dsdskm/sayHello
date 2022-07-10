@@ -22,7 +22,7 @@ const COLUMN_NAME = "이름";
 const COLUMN_IMAGE = "사진";
 const COLUMN_EMAIL = "email";
 const COLUMN_PHONE = "전화번호";
-const COLUMN_TIME = "생성날짜";
+const COLUMN_TIME = "날짜";
 const KEYWORD_HINT = "이름이나 이메일을 입력하세요";
 
 interface Column {
@@ -67,7 +67,6 @@ const AccountListView = () => {
   }
 
   const onTableRowClick = (value: Account) => {
-    console.log(`value`, value);
     goPage(ROUTE_ACCOUNT_EDIT + `/${value.id}`);
   };
 

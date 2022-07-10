@@ -9,6 +9,7 @@ export interface Account {
   time: number;
   password: string;
   password_re: string;
+  type: string;
 }
 
 export const DEFAULT_ACCOUNT_DATA = {
@@ -22,4 +23,5 @@ export const DEFAULT_ACCOUNT_DATA = {
   time: 0,
   password: "",
   password_re: "",
+  type:""
 };

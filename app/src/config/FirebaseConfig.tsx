@@ -8,6 +8,7 @@ import { getFirestore } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { getStorage } from "firebase/storage";
+import { getFunctions } from "firebase/functions";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBvtS09Jh48cuYrKreB3AKgIQ5h5Zgzk9E",
@@ -25,4 +26,5 @@ const analytics = getAnalytics(app);
 const auth = getAuth(); // https://firebase.google.com/docs/auth/web/start
 const db = getFirestore(app); // https://firebase.google.com/docs/firestore/quickstart?hl=ko
 const storage = getStorage(app); // https://firebase.google.com/docs/storage/web/start
-export { app, analytics, auth, db, storage };
+const functions = getFunctions(app); // https://firebase.google.com/docs/functions/callable#web-version-9
+export { app, analytics, auth, db, storage, functions };

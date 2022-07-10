@@ -3,8 +3,8 @@ import { useCallback, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import { Button, Typography } from "@mui/material";
 import {
+  DEFAULT_PROFILE_IMAGE,
   getLogoImageComponent,
-  MESSAGE_LOGOUT,
   ROUTE_ACCOUNT,
   ROUTE_DASHBOARD,
   ROUTE_JOIN,
@@ -24,6 +24,7 @@ const ID_NOTICE = "notice";
 const ID_ACCOUNT = "account";
 const SELECTED_TAB_COLOR = "#D9EDFF";
 const DEFAULT_TAB_COLOR = "#FFFFFF";
+const MESSAGE_LOGOUT = "로그아웃하였습니다.";
 const GlobalTab = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User>();
@@ -98,6 +99,14 @@ const GlobalTab = () => {
       goPage(ROUTE_LOGIN);
     });
   };
+
+  const onAccountEditClick = () => {
+    if (account) {
+      goPage(ROUTE_JOIN + `/${account.id}`);
+    }
+  };
+
+  const imgPath = account && account.image ? account.image : DEFAULT_PROFILE_IMAGE;
   return (
     <>
       <Box sx={{ p: 2, display: "grid", gridTemplateColumns: "repeat(6, 1fr)", height: 150 }}>
@@ -119,7 +128,7 @@ const GlobalTab = () => {
             {account && (
               <Box sx={{ mr: 5, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", height: 100, width: 300 }}>
                 <Box sx={{ p: 1, display: "grid", gridTemplateColumns: "repeat(1, 1fr)", height: 100 }}>
-                  <img width="80" height="80" src={account.image} alt="profile"></img>
+                  <img width="80" height="80" src={imgPath} alt="profile"></img>
                 </Box>
 
                 <Box sx={{ p: 1, display: "grid", gridTemplateColumns: "repeat(1, 2fr)", height: 100 }}>
@@ -131,7 +140,9 @@ const GlobalTab = () => {
                   </Typography>
                 </Box>
                 <Box sx={{ p: 1, display: "grid", gridTemplateColumns: "repeat(1, 2fr)", height: 100 }}>
-                  <Button sx={{ height: 20, width: 100 }}>수정</Button>
+                  <Button sx={{ height: 20, width: 100 }} onClick={onAccountEditClick}>
+                    수정
+                  </Button>
                   <Button sx={{ height: 20, width: 100 }} onClick={onLogoutClick}>
                     로그아웃
                   </Button>

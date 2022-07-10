@@ -1,10 +1,10 @@
 import { Button, CircularProgress, TextField } from "@mui/material";
 import { Paper } from "@mui/material";
 import { Box, Container } from "@mui/system";
-import { ROUTE_LOGIN } from "common/Constant";
-import { ChangeEvent, useState } from "react";
-import { addAccount, emailExistCheck } from "api/FirebaseApi";
-import { useNavigate } from "react-router-dom";
+import { IMAGE_SIZE_HEIGHT, IMAGE_SIZE_WIDTH, ROUTE_LOGIN } from "common/Constant";
+import { ChangeEvent, useEffect, useState } from "react";
+import { addAccount, deleteAccount, emailExistCheck } from "api/FirebaseApi";
+import { useNavigate, useParams } from "react-router-dom";
 import { Account, DEFAULT_ACCOUNT_DATA } from "interface/Account";
 import { useRef } from "react";
 import { LocalFile } from "interface/LocalFile";
@@ -13,8 +13,9 @@ import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import CustomLabel, { LABEL_SIZE_ERROR, LABEL_SIZE_SMALL } from "component/Labels";
 import GlobalTab from "../common/GlobalTab";
-const IMAGE_SIZE_WIDTH = 400;
-const IMAGE_SIZE_HEIGHT = 400;
+import DataHook from "api/DataHook";
+import { signOut } from "firebase/auth";
+import { auth } from "config/FirebaseConfig";
 
 const ID_NAME = "name";
 const ID_EMAIL = "email";
@@ -29,8 +30,8 @@ const MSG_ERR_DISABLE = "사용 불가능";
 const MSG_ERR_UNCHECKED = "인증 필요";
 const MSG_EMAIL_DISABLE = "이미 존재하는 아이디 입니다.";
 const MSG_EMAIL_ENABLE = "사용 가능한 아이디 입니다.";
-const MSG_JOIN_COMPLETED = "가입이 완료되었습니다.";
-const MSG_JOIN_FAILED = "가입에 실패하였습니다.";
+const MSG_JOIN_COMPLETED = "완료되었습니다.";
+const MSG_JOIN_FAILED = "실패하였습니다.";
 const MSG_ERR_EMPTY_NAME = "이름을 입력하세요.";
 const MSG_ERR_EMPTY_EMAIL = "이메일을 입력하세요.";
 const MSG_ERR_EMPTY_PHONE = "연락처를 입력하세요.";
@@ -38,6 +39,8 @@ const MSG_ERR_PASSWORD_LENGTH = "비밀번호는 6자이상이어야 합니다."
 const MSG_ERR_EMPTY_PASSWORD = "비밀번호를 입력하세요.";
 const MSG_ERR_EMPTY_PASSWORD2 = "비밀번호가 일치하지 않습니다.";
 const MSG_ERR_EXIST_EMAIL = "이메일 중복 확인을 해주세요.";
+const MSG_DELETE = "탈퇴하시겠습니까?";
+const MSG_DELETE_COMPLETED = "탈퇴하였습니다";
 const LABEL_NAME = "이름";
 const LABEL_IMAGE = `사진(${IMAGE_SIZE_WIDTH}X${IMAGE_SIZE_HEIGHT})`;
 const LABEL_EMAIL = "이메일";
@@ -49,6 +52,8 @@ const LABEL_ADDRESS = "주소";
 const LABEL_EMAIL_CHECK = "중복 확인";
 const LABEL_CANCEL = "취소";
 const LABEL_JOIN = "가입";
+const LABEL_UPDATE = "수정";
+const LABEL_DELETE = "탈퇴";
 const DEFAULT_FIELD_WIDTH = 400;
 
 interface Valid {
@@ -67,9 +72,13 @@ const FieldWrapper = styled(Paper)({
 });
 
 const JoinView = () => {
+  const parmas = useParams();
+  const id = parmas.id;
+  const isAdd = id === "-1";
   const navigate = useNavigate();
   const fileRef = useRef<any>(null);
   const [account, setAccount] = useState<Account>(DEFAULT_ACCOUNT_DATA);
+  const { accountList } = DataHook();
 
   const [valid, setValid] = useState<Valid>({
     name: MSG_ERR_DISABLE,
@@ -86,6 +95,21 @@ const JoinView = () => {
   });
 
   const [updating, setUpdating] = useState(false);
+
+  useEffect(() => {
+    const loadAccountData = () => {
+      if (!isAdd) {
+        const data = accountList?.filter((data) => {
+          return data.id === id;
+        });
+        if (data) {
+          setAccount(data[0]);
+        }
+      }
+    };
+
+    loadAccountData();
+  }, [accountList, isAdd, id]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const id = e.target.id;
@@ -143,6 +167,17 @@ const JoinView = () => {
     setUpdating(false);
   };
 
+  const onDeleteClick = async () => {
+    setUpdating(true);
+    if (window.confirm(MSG_DELETE)) {
+      await deleteAccount(account);
+      alert(MSG_DELETE_COMPLETED);
+      await signOut(auth);
+      navigate(ROUTE_LOGIN);
+    }
+    setUpdating(false);
+  };
+
   const onJoinClick = async () => {
     if (!account.name) {
       alert(MSG_ERR_EMPTY_NAME);
@@ -164,12 +199,13 @@ const JoinView = () => {
       return;
     }
 
-    if (valid.email === MSG_ERR_DISABLE) {
+    if (isAdd && valid.email === MSG_ERR_DISABLE) {
       alert(MSG_ERR_EXIST_EMAIL);
       return;
     }
     setUpdating(true);
-    const result = await addAccount(account, localFile);
+
+    const result = await addAccount(account, localFile, isAdd);
     if (result) {
       alert(MSG_JOIN_COMPLETED);
     } else {
@@ -227,21 +263,27 @@ const JoinView = () => {
     return (
       <FieldWrapper>
         <CustomLabel label={label} size={LABEL_SIZE_SMALL} />
-        <TextField sx={{ width: width }} id={id} type="text" value={value} onChange={onChange} />
+        <TextField autoComplete="off" sx={{ width: width }} id={id} type="text" value={value} onChange={onChange} />
         {value ? <></> : <CustomLabel label={MSG_ERR_EMPTY} size={LABEL_SIZE_ERROR} />}
       </FieldWrapper>
     );
   };
 
   const getImageField = () => {
+    let imgSrc = "";
+    if (localFile.path) {
+      imgSrc = localFile.path;
+    } else if (account.image) {
+      imgSrc = account.image;
+    }
     return (
       <FieldWrapper>
         <CustomLabel label={LABEL_IMAGE} size={LABEL_SIZE_SMALL} />
         <input ref={fileRef} type="file" accept="image/" onChange={onImageChange} />
-        {localFile.path ? (
+        {imgSrc ? (
           <>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <img src={localFile.path} width={IMAGE_SIZE_WIDTH} height={IMAGE_SIZE_HEIGHT} alt="logo" />
+              <img src={imgSrc} width={IMAGE_SIZE_WIDTH} height={IMAGE_SIZE_HEIGHT} alt="logo" />
               <Button variant="contained" onClick={onImageResetClick}>
                 초기화
               </Button>
@@ -259,6 +301,7 @@ const JoinView = () => {
         <CustomLabel label={LABEL_EMAIL} size={LABEL_SIZE_SMALL} />
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
           <TextField
+            autoComplete="off"
             sx={{ width: DEFAULT_FIELD_WIDTH, marginRight: 1 }}
             id={ID_EMAIL}
             type="email"
@@ -281,7 +324,7 @@ const JoinView = () => {
     return (
       <FieldWrapper>
         <CustomLabel label={label} size={LABEL_SIZE_SMALL} />
-        <TextField sx={{ width: width }} id={id} type="password" value={value} onChange={onChange} />
+        <TextField sx={{ width: width }} id={id} autoComplete="off" type="password" value={value} onChange={onChange} />
       </FieldWrapper>
     );
   };
@@ -332,7 +375,7 @@ const JoinView = () => {
         <Box>
           {NAME_FIELD}
           {IMAGE_FIELD}
-          {EMAIL_FIELD}
+          {isAdd ? EMAIL_FIELD : <></>}
           {PHONE_FIELD}
           {PASSWORD_FIELD}
           {PASSWORD_RE_FIELD}
@@ -340,11 +383,18 @@ const JoinView = () => {
           {ADDRESS_FIELD}
         </Box>
         <Box display="flex" justifyContent="end">
+          {isAdd ? (
+            <></>
+          ) : (
+            <Button sx={{ m: 1 }} variant="contained" onClick={onDeleteClick}>
+              {LABEL_DELETE}
+            </Button>
+          )}
           <Button sx={{ m: 1 }} variant="contained" onClick={() => navigate(ROUTE_LOGIN)}>
             {LABEL_CANCEL}
           </Button>
           <Button sx={{ m: 1 }} variant="contained" onClick={onJoinClick}>
-            {LABEL_JOIN}
+            {isAdd ? LABEL_JOIN : LABEL_UPDATE}
           </Button>
         </Box>
       </Container>

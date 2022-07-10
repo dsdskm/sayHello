@@ -1,8 +1,11 @@
 import { CircularProgress } from "@material-ui/core";
 import { Button, TextField, Typography } from "@mui/material";
 import { Box, Container } from "@mui/system";
+import { auth, functions } from "config/FirebaseConfig";
+import { onAuthStateChanged } from "firebase/auth";
+import { connectFunctionsEmulator, httpsCallable } from "firebase/functions";
 import { Account } from "interface/Account";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GlobalTab from "../view/common/GlobalTab";
 import { getRandomName } from "./DebugUtils";
 import { addAccountList, deleteDebugAccount } from "./FirebaseDebugApi";
@@ -10,6 +13,7 @@ import { addAccountList, deleteDebugAccount } from "./FirebaseDebugApi";
 const DebugAccount = () => {
   const [count, setCount] = useState<number>(1);
   const [updating, setUpdating] = useState<Boolean>(false);
+  const [email, setEmail] = useState<string>();
   const onGenerateClick = async () => {
     if (window.confirm(`${count}개 생성`)) {
       setUpdating(true);
@@ -28,6 +32,7 @@ const DebugAccount = () => {
           time: time + i,
           password: "123456",
           password_re: "123456",
+          type: "normal",
         };
         list.push(account);
       }
@@ -37,6 +42,14 @@ const DebugAccount = () => {
     }
   };
 
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user && user.email) {
+        setEmail(user.email);
+      }
+    });
+  }, []);
+
   const onClickAllClick = async () => {
     if (window.confirm(`debug 계정 삭제`)) {
       setUpdating(true);
@@ -45,6 +58,20 @@ const DebugAccount = () => {
       setUpdating(false);
     }
   };
+
+  const functionCall = async () => {
+    console.log(`functionCall`);
+    connectFunctionsEmulator(functions, "localhost", 5001);
+    const hello = httpsCallable(functions, "helloWorld");
+    hello({ email: email })
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((e) => {
+        console.log(`e `, e);
+      });
+  };
+
   if (updating) {
     return (
       <Box sx={{ width: "100wh", height: "100vh" }} display="flex" justifyContent="center" alignItems="center">
@@ -62,6 +89,11 @@ const DebugAccount = () => {
           <TextField type="number" value={count} onChange={(e) => setCount(+e.target.value)}></TextField>
           <Button onClick={onGenerateClick}>Generate</Button>
           <Button onClick={onClickAllClick}>Clear All</Button>
+        </Box>
+        <Box sx={{ p: 2, display: "grid", gridTemplateColumns: "repeat(4, 1fr)", alignItems: "center" }}>
+          <Typography>Functions</Typography>
+
+          <Button onClick={() => functionCall()}>Function Call</Button>
         </Box>
       </Container>
     </>
