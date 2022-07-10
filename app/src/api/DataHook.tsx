@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { auth, db } from "config/FirebaseConfig";
-import { onAuthStateChanged, User } from "firebase/auth";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
+import { collection, getDocs, query } from "firebase/firestore";
 import { Account } from "interface/Account";
 import { useEffect, useState } from "react";
 import { COLLECTION_ACCOUNT } from "./FirebaseApi";
