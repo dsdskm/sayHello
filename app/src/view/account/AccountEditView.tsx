@@ -3,10 +3,11 @@ import GlobalTab from "view/common/GlobalTab";
 import { styled } from "@material-ui/styles";
 import CustomLabel, { LABEL_SIZE_SMALL } from "component/Labels";
 import React, { useEffect, useState } from "react";
-import DataHook from "api/DataHook";
+import AccountDataHook from "api/AccountDataHook";
 import { useParams } from "react-router-dom";
 import { Account, DEFAULT_ACCOUNT_DATA } from "interface/Account";
 import { IMAGE_SIZE_HEIGHT, IMAGE_SIZE_WIDTH } from "common/Constant";
+import FieldContentWrapper from "component/FieldContentWrapper";
 
 const ID_NAME = "name";
 const ID_EMAIL = "email";
@@ -30,7 +31,7 @@ const FieldWrapper = styled(Paper)({
 });
 
 const AccountEditView = () => {
-  const { accountList } = DataHook();
+  const { accountList } = AccountDataHook();
   const params = useParams();
   const queryId = params.id;
   const [account, setAccount] = useState<Account>(DEFAULT_ACCOUNT_DATA);
@@ -112,12 +113,14 @@ const AccountEditView = () => {
   return (
     <>
       <GlobalTab />
-      {NAME_FIELD}
-      {IMAGE_FIELD}
-      {EMAIL_FIELD}
-      {PHONE_FIELD}
-      {AGE_FIELD}
-      {ADDRESS_FIELD}
+      <FieldContentWrapper>
+        {NAME_FIELD}
+        {IMAGE_FIELD}
+        {EMAIL_FIELD}
+        {PHONE_FIELD}
+        {AGE_FIELD}
+        {ADDRESS_FIELD}
+      </FieldContentWrapper>
     </>
   );
 };

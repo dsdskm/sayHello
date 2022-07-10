@@ -1,6 +1,5 @@
-import { Button, CircularProgress, TextField } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import { Paper } from "@mui/material";
-import { Box, Container } from "@mui/system";
 import { IMAGE_SIZE_HEIGHT, IMAGE_SIZE_WIDTH, ROUTE_LOGIN } from "common/Constant";
 import { ChangeEvent, useEffect, useState } from "react";
 import { addAccount, deleteAccount, emailExistCheck } from "api/FirebaseApi";
@@ -13,9 +12,12 @@ import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import CustomLabel, { LABEL_SIZE_ERROR, LABEL_SIZE_SMALL } from "component/Labels";
 import GlobalTab from "../common/GlobalTab";
-import DataHook from "api/DataHook";
+import AccountDataHook from "api/AccountDataHook";
 import { signOut } from "firebase/auth";
 import { auth } from "config/FirebaseConfig";
+import FieldContentWrapper from "component/FieldContentWrapper";
+import FieldContentBottomWrapper from "component/FieldContentBottomWrapper";
+import Loading from "component/Loading";
 
 const ID_NAME = "name";
 const ID_EMAIL = "email";
@@ -78,7 +80,7 @@ const JoinView = () => {
   const navigate = useNavigate();
   const fileRef = useRef<any>(null);
   const [account, setAccount] = useState<Account>(DEFAULT_ACCOUNT_DATA);
-  const { accountList } = DataHook();
+  const { accountList } = AccountDataHook();
 
   const [valid, setValid] = useState<Valid>({
     name: MSG_ERR_DISABLE,
@@ -204,7 +206,6 @@ const JoinView = () => {
       return;
     }
     setUpdating(true);
-
     const result = await addAccount(account, localFile, isAdd);
     if (result) {
       alert(MSG_JOIN_COMPLETED);
@@ -361,43 +362,37 @@ const JoinView = () => {
   const ADDRESS_FIELD = getCommonField(LABEL_ADDRESS, ID_ADDRESS, DEFAULT_FIELD_WIDTH, account?.address);
 
   if (updating) {
-    return (
-      <Box sx={{ width: "100wh", height: "100vh" }} display="flex" justifyContent="center" alignItems="center">
-        <CircularProgress />
-      </Box>
-    );
+    return <Loading />;
   }
 
   return (
     <>
       <GlobalTab />
-      <Container fixed>
-        <Box>
-          {NAME_FIELD}
-          {IMAGE_FIELD}
-          {isAdd ? EMAIL_FIELD : <></>}
-          {PHONE_FIELD}
-          {PASSWORD_FIELD}
-          {PASSWORD_RE_FIELD}
-          {AGE_FIELD}
-          {ADDRESS_FIELD}
-        </Box>
-        <Box display="flex" justifyContent="end">
-          {isAdd ? (
-            <></>
-          ) : (
-            <Button sx={{ m: 1 }} variant="contained" onClick={onDeleteClick}>
-              {LABEL_DELETE}
-            </Button>
-          )}
-          <Button sx={{ m: 1 }} variant="contained" onClick={() => navigate(ROUTE_LOGIN)}>
-            {LABEL_CANCEL}
+      <FieldContentWrapper>
+        {NAME_FIELD}
+        {IMAGE_FIELD}
+        {isAdd ? EMAIL_FIELD : <></>}
+        {PHONE_FIELD}
+        {PASSWORD_FIELD}
+        {PASSWORD_RE_FIELD}
+        {AGE_FIELD}
+        {ADDRESS_FIELD}
+      </FieldContentWrapper>
+      <FieldContentBottomWrapper>
+        {isAdd ? (
+          <></>
+        ) : (
+          <Button sx={{ m: 1 }} variant="contained" onClick={onDeleteClick}>
+            {LABEL_DELETE}
           </Button>
-          <Button sx={{ m: 1 }} variant="contained" onClick={onJoinClick}>
-            {isAdd ? LABEL_JOIN : LABEL_UPDATE}
-          </Button>
-        </Box>
-      </Container>
+        )}
+        <Button sx={{ m: 1 }} variant="contained" onClick={() => navigate(ROUTE_LOGIN)}>
+          {LABEL_CANCEL}
+        </Button>
+        <Button sx={{ m: 1 }} variant="contained" onClick={onJoinClick}>
+          {isAdd ? LABEL_JOIN : LABEL_UPDATE}
+        </Button>
+      </FieldContentBottomWrapper>
     </>
   );
 };

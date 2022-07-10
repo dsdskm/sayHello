@@ -1,6 +1,6 @@
-import { CircularProgress } from "@material-ui/core";
 import { Button, TextField, Typography } from "@mui/material";
 import { Box, Container } from "@mui/system";
+import Loading from "component/Loading";
 import { auth, functions } from "config/FirebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 import { connectFunctionsEmulator, httpsCallable } from "firebase/functions";
@@ -73,11 +73,7 @@ const DebugAccount = () => {
   };
 
   if (updating) {
-    return (
-      <Box sx={{ width: "100wh", height: "100vh" }} display="flex" justifyContent="center" alignItems="center">
-        <CircularProgress />
-      </Box>
-    );
+    return <Loading />;
   }
 
   return (

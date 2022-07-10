@@ -15,7 +15,7 @@ import {
 import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { auth } from "config/FirebaseConfig";
 import { useNavigate } from "react-router-dom";
-import DataHook from "api/DataHook";
+import AccountDataHook from "api/AccountDataHook";
 
 const ID_JOIN = "join";
 const ID_DASHBOARD = "dashboard";
@@ -30,7 +30,7 @@ const GlobalTab = () => {
   const [user, setUser] = useState<User>();
   const url = window.location.href;
 
-  const { account } = DataHook();
+  const { account } = AccountDataHook();
   const [tabColor, setTabColor] = useState([
     DEFAULT_TAB_COLOR,
     DEFAULT_TAB_COLOR,
