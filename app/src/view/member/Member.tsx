@@ -8,8 +8,8 @@ const Member = () => {
     <>
       <GlobalTab />
       {/* 대략적인 파일만 */}
-      <MapArea></MapArea>
       <MemberInfoArea></MemberInfoArea>
+      <MapArea></MapArea>
       <MemberDetailArea></MemberDetailArea>
     </>
   );
