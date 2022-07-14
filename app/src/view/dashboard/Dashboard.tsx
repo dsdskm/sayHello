@@ -1,19 +1,37 @@
 import GlobalTab from "../common/GlobalTab";
-import LeftAlertArea from "../../component/dashboard/LeftAlertArea";
-import RightListArea from "../../component/dashboard/RightListArea";
+import { Grid } from "@mui/material";
+import React from "react";
+import Paper from "@mui/material/Paper";
+import { SetStateAction, useState } from "react";
+import NoticeArea from "./NoticeArea";
+import ListArea from "./ListArea";
+import CalendarArea from "./CalendarArea";
+
+export interface DashBoardProps {
+  showListView: React.Dispatch<SetStateAction<Boolean | undefined>>;
+  showingListView: Boolean | undefined;
+}
 
 const Dashboard = () => {
+  const [showingListView, showListView] = useState<Boolean>();
   return (
     <>
       <GlobalTab />
-        {/* 부트스트랩 col-md-3과 같이, mui에서도 영역 나누는 class등을 찾아서 변경 예정*/}
-        <div col-md-3>
-            <LeftAlertArea></LeftAlertArea>
-        </div>
-        <div col-md-9>
-            <RightListArea></RightListArea>
-        </div>
-        DashBoard
+      <Grid container spacing={2}>
+        <Grid item xs={5}>
+          <Paper sx={{ minWidth: "500px", textAlign: "center" }}>
+            <NoticeArea
+              showListView={showListView}
+              showingListView={showingListView}
+            />
+          </Paper>
+        </Grid>
+        <Grid item xs={7}>
+          <Paper sx={{ minWidth: "500px", textAlign: "center" }}>
+            {showingListView ? <ListArea /> : <CalendarArea />}
+          </Paper>
+        </Grid>
+      </Grid>
     </>
   );
 };
