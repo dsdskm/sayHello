@@ -8,10 +8,12 @@ import { ACCOUNT_TYPE_NORMAL, DEFAULT_PROFILE_IMAGE } from "common/Constant";
 import { httpsCallable } from "firebase/functions";
 import emailjs from "emailjs-com";
 import { Notice } from "interface/Notice";
+import { Member } from "interface/Member";
 
 export const COLLECTION_ACCOUNT = "account";
 export const COLLECTION_NOTICE = "notice";
 export const COLLECTION_DATA = "data";
+export const COLLECTION_MEMBER = "member";
 const OP = "op";
 const QA = "qa";
 export const MODE = QA;
@@ -141,4 +143,38 @@ export const resetPassword = async (email: string) => {
   emailjs.send("service_0fcb118", "password_reset_template", templateParams, "kPfpSSlMg1_FmZty-").then((res) => {
     console.log(res);
   });
+};
+
+export const addMember = async (member: Member, isAdd: Boolean, account: Account) => {
+  //
+  member.creater = account.id;
+  member.createTime = new Date().getTime();
+  member.updater = account.id;
+  member.updateTime = new Date().getTime();
+  member.id = isAdd ? member.createTime.toString() : member.id;
+  const ref = doc(db, COLLECTION_MEMBER, MODE, COLLECTION_DATA, member.id);
+  if (isAdd) {
+    await setDoc(ref, member);
+  } else {
+    await updateDoc(ref, {
+      id: member.id,
+      name: member.name,
+      image: member.image,
+      email: member.email,
+      phone: member.phone,
+      age: member.age,
+      address: member.address,
+      lastHellotime: member.lastHellotime,
+      accountId: account.id,
+    });
+    // data 연결관계 맺는거 어떻게하는지 찾아봐야함.
+    // 로그인사용자 가져오는방법
+    // 지도 연동하는 방법
+    // DB ..? 알아서 생성되나?
+  }
+};
+
+export const deleteMember = async (notice: Notice) => {
+  const ref = doc(db, COLLECTION_NOTICE, MODE, COLLECTION_DATA, notice.id);
+  await deleteDoc(ref);
 };

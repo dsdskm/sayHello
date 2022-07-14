@@ -12,6 +12,7 @@ export const ROUTE_LOGIN = "/";
 export const ROUTE_JOIN = "/join";
 export const ROUTE_DASHBOARD = "/dashboard";
 export const ROUTE_MEMBER = "/member";
+export const ROUTE_MEMBER_EDIT = ROUTE_MEMBER + ROUTE_EDIT;
 export const ROUTE_NOTICE = "/notice";
 export const ROUTE_NOTICE_EDIT = ROUTE_NOTICE + ROUTE_EDIT;
 export const ROUTE_ACCOUNT = "/account";

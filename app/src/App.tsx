@@ -22,6 +22,7 @@ import { functions } from "config/FirebaseConfig";
 import { connectFunctionsEmulator } from "firebase/functions";
 import NoticeListView from "view/notice/NoticeListView";
 import NoticeEditView from "view/notice/NoticeEditView";
+import MemberListView from "./component/member/MemberListView";
 
 const App = () => {
   // emulator 실행시
@@ -33,7 +34,7 @@ const App = () => {
           <Route path={ROUTE_LOGIN} element={<Login />} />
           <Route path={ROUTE_JOIN + ROUTE_ID} element={<Join />} />
           <Route path={ROUTE_DASHBOARD} element={<Dashboard />} />
-          <Route path={ROUTE_MEMBER} element={<Member />} />
+          <Route path={ROUTE_MEMBER} element={<MemberListView />} />
           <Route path={ROUTE_NOTICE} element={<NoticeListView />} />
           <Route path={ROUTE_NOTICE_EDIT + ROUTE_ID} element={<NoticeEditView />} />
           <Route path={ROUTE_ACCOUNT} element={<AccountListView />} />
