@@ -301,23 +301,12 @@ const JoinView = () => {
       <FieldWrapper>
         <CustomLabel label={LABEL_EMAIL} size={LABEL_SIZE_SMALL} />
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
-          <TextField
-            autoComplete="off"
-            sx={{ width: DEFAULT_FIELD_WIDTH, marginRight: 1 }}
-            id={ID_EMAIL}
-            type="email"
-            value={account?.email}
-            onChange={onChange}
-          />
+          <TextField autoComplete="off" sx={{ width: DEFAULT_FIELD_WIDTH, marginRight: 1 }} id={ID_EMAIL} type="email" value={account?.email} onChange={onChange} />
           <Button variant="contained" onClick={emailCheck}>
             {LABEL_EMAIL_CHECK}
           </Button>
         </div>
-        {account?.email ? (
-          <CustomLabel label={valid?.email} size={LABEL_SIZE_ERROR} />
-        ) : (
-          <CustomLabel label={MSG_ERR_EMPTY} size={LABEL_SIZE_ERROR} />
-        )}
+        {account?.email ? <CustomLabel label={valid?.email} size={LABEL_SIZE_ERROR} /> : <CustomLabel label={MSG_ERR_EMPTY} size={LABEL_SIZE_ERROR} />}
       </FieldWrapper>
     );
   };
@@ -335,13 +324,7 @@ const JoinView = () => {
       <FieldWrapper>
         <CustomLabel label={LABEL_AGE} size={LABEL_SIZE_SMALL} />
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <DesktopDatePicker
-            label={LABEL_AGE}
-            inputFormat="yyyy//MM/dd"
-            value={account.age}
-            onChange={onDateChange}
-            renderInput={(params) => <TextField {...params} />}
-          />
+          <DesktopDatePicker label={LABEL_AGE} inputFormat="yyyy//MM/dd" value={account.age} onChange={onDateChange} renderInput={(params) => <TextField {...params} />} />
         </LocalizationProvider>
       </FieldWrapper>
     );
@@ -351,12 +334,7 @@ const JoinView = () => {
   const EMAIL_FIELD = getEmailField();
   const PHONE_FIELD = getCommonField(LABEL_PHONE, ID_PHONE, DEFAULT_FIELD_WIDTH, account?.phone);
   const PASSWORD_FIELD = getPasswordField(LABEL_PASSWORD, ID_PASSWORD, DEFAULT_FIELD_WIDTH, account?.password);
-  const PASSWORD_RE_FIELD = getPasswordField(
-    LABEL_PASSWORD_RE,
-    ID_PASSWORD_RE,
-    DEFAULT_FIELD_WIDTH,
-    account?.password_re
-  );
+  const PASSWORD_RE_FIELD = getPasswordField(LABEL_PASSWORD_RE, ID_PASSWORD_RE, DEFAULT_FIELD_WIDTH, account?.password_re);
 
   const AGE_FIELD = getAgeField();
   const ADDRESS_FIELD = getCommonField(LABEL_ADDRESS, ID_ADDRESS, DEFAULT_FIELD_WIDTH, account?.address);

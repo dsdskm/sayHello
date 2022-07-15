@@ -1,4 +1,12 @@
-import { TableHead, TableRow, TableCell, TableBody, TablePagination, TextField, Button } from "@mui/material";
+import {
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  TablePagination,
+  TextField,
+  Button,
+} from "@mui/material";
 import * as React from "react";
 import NoticeDataHook from "api/NoticeDataHook";
 import ContentWrapper from "component/ContentWrapper";
@@ -7,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 import GlobalTab from "view/common/GlobalTab";
 import Loading from "component/Loading";
 import { ROUTE_NOTICE_EDIT } from "common/Constant";
-import { Notice } from "interface/Notice";
+import { NoticeData } from "interface/NoticeData";
 import { getTimeText } from "common/Utils";
 import SearchWrapper from "component/SearchWrapper";
 import ContentTopWrapper from "component/ContentTopWrapper";
@@ -44,12 +52,14 @@ const NoticeListView = () => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
 
-  const onTableRowClick = (value: Notice) => {
+  const onTableRowClick = (value: NoticeData) => {
     goPage(ROUTE_NOTICE_EDIT + `/${value.id}`);
   };
 
@@ -78,7 +88,11 @@ const NoticeListView = () => {
           <TableHead>
             <TableRow>
               {columns.map((column) => (
-                <TableCell key={column.name} align={column.align} style={{ minWidth: column.minWidth }}>
+                <TableCell
+                  key={column.name}
+                  align={column.align}
+                  style={{ minWidth: column.minWidth }}
+                >
                   {column.name}
                 </TableCell>
               ))}
@@ -89,7 +103,9 @@ const NoticeListView = () => {
               noticeList
                 .filter((v) => {
                   if (keyword) {
-                    return v.title.includes(keyword) || v.contents.includes(keyword);
+                    return (
+                      v.title.includes(keyword) || v.contents.includes(keyword)
+                    );
                   } else {
                     return true;
                   }
@@ -98,7 +114,13 @@ const NoticeListView = () => {
                 .map((value, index) => {
                   const time = getTimeText(value.time);
                   return (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={value.id} onClick={() => onTableRowClick(value)}>
+                    <TableRow
+                      hover
+                      role="checkbox"
+                      tabIndex={-1}
+                      key={value.id}
+                      onClick={() => onTableRowClick(value)}
+                    >
                       <TableCell key={index} align={columns[0].align}>
                         {index + 1}
                       </TableCell>
@@ -127,7 +149,11 @@ const NoticeListView = () => {
         />
       </ContentWrapper>
       <SearchWrapper>
-        <TextField sx={{ width: "300px" }} placeholder={KEYWORD_HINT} onChange={(e) => setKeyword(e.target.value)} />
+        <TextField
+          sx={{ width: "300px" }}
+          placeholder={KEYWORD_HINT}
+          onChange={(e) => setKeyword(e.target.value)}
+        />
       </SearchWrapper>
     </>
   );

@@ -7,9 +7,8 @@ import { LocalFile } from "interface/LocalFile";
 import { ACCOUNT_TYPE_NORMAL, DEFAULT_PROFILE_IMAGE } from "common/Constant";
 import { httpsCallable } from "firebase/functions";
 import emailjs from "emailjs-com";
-import { Notice } from "interface/Notice";
 import { Member } from "interface/Member";
-
+import { DEFAULT_NOTICE_DATA, NoticeData } from "interface/NoticeData";
 export const COLLECTION_ACCOUNT = "account";
 export const COLLECTION_NOTICE = "notice";
 export const COLLECTION_DATA = "data";
@@ -27,7 +26,7 @@ export const emailExistCheck = async (email: string) => {
   return id;
 };
 
-export const addNotice = async (notice: Notice, isAdd: Boolean) => {
+export const addNotice = async (notice: NoticeData, isAdd: Boolean) => {
   notice.time = new Date().getTime();
   notice.id = isAdd ? notice.time.toString() : notice.id;
   const ref = doc(db, COLLECTION_NOTICE, MODE, COLLECTION_DATA, notice.id);
@@ -42,46 +41,48 @@ export const addNotice = async (notice: Notice, isAdd: Boolean) => {
   }
 };
 
-export const deleteNotice = async (notice: Notice) => {
+export const deleteNotice = async (notice: NoticeData) => {
   const ref = doc(db, COLLECTION_NOTICE, MODE, COLLECTION_DATA, notice.id);
   await deleteDoc(ref);
 };
 
 export const addAccount = async (account: Account, localFile: LocalFile, isAdd: Boolean) => {
-  let user;
-  if (isAdd) {
-    const userCredential = await createUserWithEmailAndPassword(auth, account.email, account.password);
-    user = userCredential.user;
-  }
-  if (user || !isAdd) {
-    account.time = new Date().getTime();
-    account.id = isAdd ? account.time.toString() : account.id;
-    const newPassword = account.password;
-    account.password = "";
-    account.password_re = "";
-    account.type = account.type ? account.type : ACCOUNT_TYPE_NORMAL;
-    if (localFile) {
-      const url = await uploadFile(localFile, account.id);
-      account.image = url ? url : DEFAULT_PROFILE_IMAGE;
-    }
-    const ref = doc(db, COLLECTION_ACCOUNT, account.id);
+  try {
+    let user;
     if (isAdd) {
-      await setDoc(ref, account);
-    } else {
-      await updateDoc(ref, {
-        address: account.address,
-        age: account.age,
-        image: account.image,
-        name: account.name,
-        phone: account.phone,
-        time: account.time,
-      });
-      await updateAuth(account.email, newPassword);
+      const userCredential = await createUserWithEmailAndPassword(auth, account.email, account.password);
+      user = userCredential.user;
     }
-
+    if (user || !isAdd) {
+      account.time = new Date().getTime();
+      account.id = isAdd ? account.time.toString() : account.id;
+      const newPassword = account.password;
+      account.password = "";
+      account.password_re = "";
+      account.type = account.type ? account.type : ACCOUNT_TYPE_NORMAL;
+      if (localFile) {
+        const url = await uploadFile(localFile, account.id);
+        account.image = url ? url : DEFAULT_PROFILE_IMAGE;
+      }
+      const ref = doc(db, COLLECTION_ACCOUNT, account.id);
+      if (isAdd) {
+        await setDoc(ref, account);
+      } else {
+        await updateDoc(ref, {
+          address: account.address,
+          age: account.age,
+          image: account.image,
+          name: account.name,
+          phone: account.phone,
+          time: account.time,
+        });
+        await updateAuth(account.email, newPassword);
+      }
+    }
     return true;
+  } catch (e) {
+    return false;
   }
-  return false;
 };
 
 const uploadFile = async (file: LocalFile, id: string) => {
@@ -145,36 +146,39 @@ export const resetPassword = async (email: string) => {
   });
 };
 
-export const addMember = async (member: Member, isAdd: Boolean, account: Account) => {
-  //
-  member.creater = account.id;
-  member.createTime = new Date().getTime();
-  member.updater = account.id;
-  member.updateTime = new Date().getTime();
-  member.id = isAdd ? member.createTime.toString() : member.id;
-  const ref = doc(db, COLLECTION_MEMBER, MODE, COLLECTION_DATA, member.id);
-  if (isAdd) {
-    await setDoc(ref, member);
-  } else {
-    await updateDoc(ref, {
-      id: member.id,
-      name: member.name,
-      image: member.image,
-      email: member.email,
-      phone: member.phone,
-      age: member.age,
-      address: member.address,
-      lastHellotime: member.lastHellotime,
-      accountId: account.id,
-    });
-    // data 연결관계 맺는거 어떻게하는지 찾아봐야함.
-    // 로그인사용자 가져오는방법
-    // 지도 연동하는 방법
-    // DB ..? 알아서 생성되나?
+export const addMember = async (member: Member, localFile: LocalFile, isAdd: Boolean) => {
+  try {
+    const time = new Date().getTime();
+    const ref = doc(db, COLLECTION_MEMBER, MODE, COLLECTION_DATA, member.id);
+    if (isAdd) {
+      member.id = time.toString();
+      member.createTime = time;
+      member.updateTime = time;
+      await setDoc(ref, member);
+    } else {
+      member.updateTime = time;
+      await updateDoc(ref, {
+        name: member.name,
+        image: member.image,
+        phone: member.phone,
+        age: member.age,
+        address: member.address,
+        latitude: member.latitude,
+        longitude: member.longitude,
+        lastHellotime: member.lastHellotime,
+        accountId: member.accountId,
+        writer: member.writer,
+        updateTime: member.updateTime,
+        memo: member.memo,
+      });
+    }
+    return true;
+  } catch (e) {
+    return false;
   }
 };
 
-export const deleteMember = async (notice: Notice) => {
+export const deleteMember = async (notice: NoticeData) => {
   const ref = doc(db, COLLECTION_NOTICE, MODE, COLLECTION_DATA, notice.id);
   await deleteDoc(ref);
 };

@@ -5,7 +5,7 @@ import { Button, Paper, TextField } from "@mui/material";
 import NoticeDataHook from "api/NoticeDataHook";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { DEFAULT_NOTICE_DATA, Notice } from "interface/Notice";
+import { DEFAULT_NOTICE_DATA, NoticeData } from "interface/NoticeData";
 import FieldContentWrapper from "component/FieldContentWrapper";
 import FieldContentBottomWrapper from "component/FieldContentBottomWrapper";
 import { ROUTE_NOTICE } from "common/Constant";
@@ -45,7 +45,7 @@ const NoticeEditView = () => {
   const id = params.id;
   const isAdd = id === "-1";
   const navigate = useNavigate();
-  const [notice, setNotice] = useState<Notice>(DEFAULT_NOTICE_DATA);
+  const [notice, setNotice] = useState<NoticeData>(DEFAULT_NOTICE_DATA);
   const [updating, setUpdating] = useState(false);
 
   useEffect(() => {

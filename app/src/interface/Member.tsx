@@ -2,30 +2,32 @@ export interface Member {
   id: string;
   name: string;
   image: string;
-  email: string;
   phone: string;
   age: string;
   address: string;
+  latitude: number;
+  longitude: number;
   lastHellotime: number;
   accountId: string;
-  creater: string;
+  writer: string;
   createTime: number;
-  updater: string;
   updateTime: number;
+  memo: string;
 }
 
 export const DEFAULT_MEMBER_DATA = {
   id: "",
   name: "",
   image: "",
-  email: "",
   phone: "",
   age: "",
   address: "",
-  lastHellotime: new Date(),
+  latitude: 0,
+  longitude: 0,
+  lastHellotime: 0,
   accountId: "",
-  creater: "",
+  writer: "",
   createTime: 0,
-  updater: "",
-  updateTime: 0
+  updateTime: 0,
+  memo: "",
 };

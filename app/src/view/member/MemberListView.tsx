@@ -7,7 +7,7 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import MemberDataHook from "api/MemberDataHook";
 import { getTimeText } from "common/Utils";
-import { TextField } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import { Member } from "interface/Member";
 import { useNavigate } from "react-router-dom";
 import {
@@ -15,12 +15,13 @@ import {
   PROFILE_IMAGE_HEIGHT,
   PROFILE_IMAGE_WIDTH,
   ROUTE_ACCOUNT_EDIT,
-  ROUTE_MEMBER_EDIT
+  ROUTE_MEMBER_EDIT,
 } from "common/Constant";
 import ContentWrapper from "component/ContentWrapper";
 import TableComponent from "component/TableComponent";
 import SearchWrapper from "component/SearchWrapper";
 import Loading from "component/Loading";
+import ContentTopWrapper from "component/ContentTopWrapper";
 
 const COLUMN_NO = "NO";
 const COLUMN_IMAGE = "사진";
@@ -61,7 +62,9 @@ const MemberListView = () => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
@@ -78,15 +81,28 @@ const MemberListView = () => {
     navigate(path);
   };
 
+  const onAddClick = () => {
+    goPage(ROUTE_MEMBER_EDIT + `/-1`);
+  };
+
   return (
     <>
       <GlobalTab />
+      <ContentTopWrapper>
+        <Button variant="contained" onClick={onAddClick}>
+          등록
+        </Button>
+      </ContentTopWrapper>
       <ContentWrapper>
         <TableComponent>
           <TableHead>
             <TableRow>
               {columns.map((column) => (
-                <TableCell key={column.name} align={column.align} style={{ minWidth: column.minWidth }}>
+                <TableCell
+                  key={column.name}
+                  align={column.align}
+                  style={{ minWidth: column.minWidth }}
+                >
                   {column.name}
                 </TableCell>
               ))}
@@ -97,7 +113,7 @@ const MemberListView = () => {
               memberList
                 .filter((v) => {
                   if (keyword) {
-                    return v.name.includes(keyword) || v.email.includes(keyword);
+                    return v.name.includes(keyword);
                   } else {
                     return true;
                   }
@@ -106,15 +122,25 @@ const MemberListView = () => {
                 .map((value, index) => {
                   const lastHellotime = getTimeText(value.lastHellotime);
                   return (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={value.id} onClick={() => onTableRowClick(value)}>
+                    <TableRow
+                      hover
+                      role="checkbox"
+                      tabIndex={-1}
+                      key={value.id}
+                      onClick={() => onTableRowClick(value)}
+                    >
                       <TableCell key={index} align={columns[0].align}>
                         {index + 1}
                       </TableCell>
                       <TableCell key={value.image} align={columns[1].align}>
                         <img
-                            src={value.image}
-                            alt="account"
-                            style={{ margin: MARGIN_DEFAULT, width: PROFILE_IMAGE_WIDTH, height: PROFILE_IMAGE_HEIGHT }}
+                          src={value.image}
+                          alt="account"
+                          style={{
+                            margin: MARGIN_DEFAULT,
+                            width: PROFILE_IMAGE_WIDTH,
+                            height: PROFILE_IMAGE_HEIGHT,
+                          }}
                         />
                       </TableCell>
                       <TableCell key={value.name} align={columns[2].align}>
@@ -129,7 +155,10 @@ const MemberListView = () => {
                       <TableCell key={value.phone} align={columns[5].align}>
                         {value.phone}
                       </TableCell>
-                      <TableCell key={value.lastHellotime} align={columns[5].align}>
+                      <TableCell
+                        key={value.lastHellotime}
+                        align={columns[5].align}
+                      >
                         {value.lastHellotime}
                       </TableCell>
                       <TableCell key={value.accountId} align={columns[5].align}>
@@ -151,7 +180,11 @@ const MemberListView = () => {
         />
       </ContentWrapper>
       <SearchWrapper>
-        <TextField sx={{ width: "300px" }} placeholder={""} onChange={(e) => setKeyword(e.target.value)} />
+        <TextField
+          sx={{ width: "300px" }}
+          placeholder={""}
+          onChange={(e) => setKeyword(e.target.value)}
+        />
       </SearchWrapper>
     </>
   );
