@@ -9,10 +9,12 @@ import { httpsCallable } from "firebase/functions";
 import emailjs from "emailjs-com";
 import { Member } from "interface/Member";
 import { DEFAULT_NOTICE_DATA, NoticeData } from "interface/NoticeData";
+import { HelloData } from "interface/HelloData";
 export const COLLECTION_ACCOUNT = "account";
 export const COLLECTION_NOTICE = "notice";
 export const COLLECTION_DATA = "data";
 export const COLLECTION_MEMBER = "member";
+export const COLLECTION_HELLO = "hello";
 const OP = "op";
 const QA = "qa";
 export const MODE = QA;
@@ -146,6 +148,13 @@ export const resetPassword = async (email: string) => {
   });
 };
 
+export const updateLastHelloTime = async(memberId:string)=>{
+  const ref = doc(db, COLLECTION_MEMBER, MODE, COLLECTION_DATA, memberId);
+  await updateDoc(ref,{
+    lastHellotime:new Date().getTime()
+  })
+}
+
 export const addMember = async (member: Member, localFile: LocalFile, isAdd: Boolean) => {
   try {
     const time = new Date().getTime();
@@ -189,6 +198,11 @@ export const addMember = async (member: Member, localFile: LocalFile, isAdd: Boo
 export const deleteMember = async (member: Member) => {
   const ref = doc(db, COLLECTION_MEMBER, MODE, COLLECTION_DATA, member.id);
   await deleteDoc(ref);
+};
+
+export const addHello = async (hello: HelloData) => {
+  const ref = doc(db, COLLECTION_HELLO, MODE, COLLECTION_DATA, hello.id);
+  await setDoc(ref, hello);
 };
 
 export const searchAddress = async (query: string) => {

@@ -25,7 +25,6 @@ const COLUMN_ADDRESS = "주소";
 const COLUMN_PHONE = "전화번호";
 const COLUMN_LASTHELLO = "마지막 안부 확인";
 const COLUMN_ACCOUNTID = "담당자";
-
 interface Column {
   id: string;
   name: string;
@@ -43,7 +42,13 @@ const columns: readonly Column[] = [
   { id: "phone", name: COLUMN_PHONE, align: "center" },
   { id: "lastHellotime", name: COLUMN_LASTHELLO, align: "center" },
   { id: "accountId", name: COLUMN_ACCOUNTID, align: "center" },
+  // { id: "hello", name: COLUMN_HELLO, align: "center" },
+  // { id: "event", name: COLUMN_EVENT, align: "center" },
 ];
+
+export interface MemberProps {
+  member: Member;
+}
 
 const MemberListView = () => {
   const navigate = useNavigate();
@@ -138,11 +143,17 @@ const MemberListView = () => {
                         {value.phone}
                       </TableCell>
                       <TableCell key={value.lastHellotime} align={columns[5].align}>
-                        {value.lastHellotime}
+                        {lastHellotime}
                       </TableCell>
                       <TableCell key={value.accountId} align={columns[5].align}>
                         {value.accountId}
                       </TableCell>
+                      {/* <TableCell key={index} align={columns[6].align}>
+                        <Button variant="contained" >안부</Button>
+                      </TableCell>
+                      <TableCell key={index} align={columns[7].align}>
+                        <Button variant="contained">이벤트</Button>
+                      </TableCell> */}
                     </TableRow>
                   );
                 })}

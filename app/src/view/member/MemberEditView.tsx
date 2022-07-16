@@ -1,7 +1,7 @@
 import CustomLabel, { LABEL_SIZE_SMALL } from "component/Labels";
 import GlobalTab from "view/common/GlobalTab";
 import { styled } from "@material-ui/styles";
-import { Box, Button, Paper, TextField, Typography } from "@mui/material";
+import { Box, Button, Grid, Paper, TextField, Typography } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import FieldContentWrapper from "component/FieldContentWrapper";
 import FieldContentBottomWrapper from "component/FieldContentBottomWrapper";
@@ -16,6 +16,8 @@ import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { getStorage, KEY_ACCOUNT } from "common/Utils";
 import { addMember, deleteMember, searchAddress } from "api/FirebaseApi";
+import MemberCalendarView from "./MemberCalendarView";
+import MemberHelloView from "./MemberHelloView";
 
 const ID_NAME = "name";
 const ID_CONTACT = "contact";
@@ -334,15 +336,27 @@ const MemberEditView = () => {
   return (
     <>
       <GlobalTab />
-      <FieldContentWrapper>
-        {NAME_FIELD}
-        {AGE_FIELD}
-        {PHONE_FIELD}
-        {IMAGE_FIELD}
-        {ADDRESS_FILED}
-        {MEMO_FIELD}
-        {MANAGER_FIELD}
-      </FieldContentWrapper>
+      <Grid container spacing={2}>
+        <Grid item xs={isAdd ? 12 : 6}>
+          <FieldContentWrapper>
+            {NAME_FIELD}
+            {AGE_FIELD}
+            {PHONE_FIELD}
+            {IMAGE_FIELD}
+            {ADDRESS_FILED}
+            {MEMO_FIELD}
+            {MANAGER_FIELD}
+          </FieldContentWrapper>
+        </Grid>
+        {isAdd ? (
+          <></>
+        ) : (
+          <Grid item xs={isAdd ? 0 : 6}>
+            <MemberCalendarView />
+            <MemberHelloView />
+          </Grid>
+        )}
+      </Grid>
       <FieldContentBottomWrapper>
         <Button sx={{ m: 1 }} variant="contained" onClick={() => navigate(ROUTE_MEMBER)}>
           {LABEL_CANCEL}

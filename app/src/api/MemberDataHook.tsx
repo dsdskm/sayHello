@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { db } from "config/FirebaseConfig";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, getDocs, onSnapshot, orderBy, query } from "firebase/firestore";
 import { Member } from "interface/Member";
 import { useEffect, useState } from "react";
 import { COLLECTION_DATA, COLLECTION_MEMBER, MODE } from "./FirebaseApi";
@@ -8,22 +8,20 @@ import { COLLECTION_DATA, COLLECTION_MEMBER, MODE } from "./FirebaseApi";
 const MemberDataHook = () => {
   const [memberList, setMemberList] = useState<Array<Member>>();
 
-  const fetchingMemberData = async () => {
+  useEffect(() => {
     const list: Array<Member> = [];
     const q = query(collection(db, COLLECTION_MEMBER, MODE, COLLECTION_DATA), orderBy("updateTime", "desc"));
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      const memberData = data as Member;
-      if (data) {
-        list.push(memberData);
-      }
+    const snapshot = onSnapshot(q, (querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const memberData = data as Member;
+        if (data) {
+          list.push(memberData);
+        }
+      });
+      setMemberList(list);
     });
-    setMemberList(list);
-  };
-
-  useEffect(() => {
-    fetchingMemberData();
+    return () => snapshot();
   }, []);
 
   return {
