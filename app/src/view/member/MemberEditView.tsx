@@ -1,34 +1,26 @@
 import CustomLabel, { LABEL_SIZE_SMALL } from "component/Labels";
 import GlobalTab from "view/common/GlobalTab";
 import { styled } from "@material-ui/styles";
-import { Button, Paper, TextField } from "@mui/material";
+import { Box, Button, Paper, TextField, Typography } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import FieldContentWrapper from "component/FieldContentWrapper";
 import FieldContentBottomWrapper from "component/FieldContentBottomWrapper";
-import { IMAGE_SIZE_HEIGHT, IMAGE_SIZE_WIDTH, ROUTE_NOTICE } from "common/Constant";
+import { IMAGE_SIZE_HEIGHT, IMAGE_SIZE_WIDTH, ROUTE_MEMBER, ROUTE_NOTICE } from "common/Constant";
 import Loading from "component/Loading";
 import { DEFAULT_MEMBER_DATA, Member } from "interface/Member";
 import MemberDataHook from "api/MemberDataHook";
 import { LocalFile } from "interface/LocalFile";
 import { ChangeEvent, useEffect, useState, useRef } from "react";
-import GoogleMapReact from "google-map-react";
+
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { auth } from "config/FirebaseConfig";
-import { onAuthStateChanged } from "firebase/auth";
 import { getStorage, KEY_ACCOUNT } from "common/Utils";
-import { addMember } from "api/FirebaseApi";
+import { addMember, deleteMember, searchAddress } from "api/FirebaseApi";
+
 const ID_NAME = "name";
-const ID_AGE = "age";
 const ID_CONTACT = "contact";
-const ID_IMAGE = "image";
 const ID_ADDRESS = "address";
-const ID_LATITUDE = "latitude";
-const ID_LONGITUDE = "longitude";
-const ID_CREATOR = "creator";
 const ID_MEMO = "memo";
-const ID_CREATE_TIME = "create_time";
-const ID_UPDATE_TIME = "update_time";
 const ID_ACCOUNT_ID = "account_id";
 
 const LABEL_NAME = "이름";
@@ -36,20 +28,13 @@ const LABEL_AGE = "나이";
 const LABEL_CONTACT = "연락처";
 const LABEL_IMAGE = "사진";
 const LABEL_ADDRESS = "주소";
-const LABEL_LATITUDE = "위도";
-const LABEL_LONGITUDE = "경도";
-const LABEL_CREATOR = "생성자";
 const LABEL_MEMO = "메모";
-const LABEL_CREATE_TIME = "생성 시간";
-const LABEL_UPDATE_TIME = "업데이트 시간";
 const LABEL_MANAGER = "담당자";
 const LABEL_ADD = "추가";
 const LABEL_UPDATE = "수정";
 const LABEL_DELETE = "삭제";
 const LABEL_CANCEL = "취소";
 
-const MSG_ERR_TITLE = "제목을 입력하세요.";
-const MSG_ERR_CONTENTS = "내용을 입력하세요";
 const MSG_COMPLETED = "완료되었습니다.";
 const MSG_FAILED = "실패하였습니다.";
 const MSG_DELETED = "삭제되었습니다.";
@@ -62,6 +47,7 @@ const FieldWrapper = styled(Paper)({
   textAlign: "center",
 });
 
+const CENTER = new naver.maps.LatLng(37.4867995957995, 126.982211871752);
 const MemberEditView = () => {
   const { memberList } = MemberDataHook();
   const params = useParams();
@@ -76,8 +62,35 @@ const MemberEditView = () => {
     file: null,
   });
   const fileRef = useRef<any>(null);
+  let map: naver.maps.Map;
   useEffect(() => {
-    if (!isAdd) {
+    const initMap = () => {
+      let centerPos;
+      if (member) {
+        centerPos = new naver.maps.LatLng(member.latitude, member.longitude);
+      } else {
+        centerPos = CENTER;
+      }
+      map = new naver.maps.Map("map", {
+        center: centerPos,
+        zoom: 12,
+        scaleControl: false,
+        logoControl: false,
+        mapDataControl: false,
+        zoomControl: true,
+      });
+      if (member) {
+        addMarker(member.latitude, member.longitude);
+      }
+    };
+    initMap();
+  }, [member]);
+  useEffect(() => {
+    if (isAdd) {
+      member.accountId = getStorage(KEY_ACCOUNT);
+      member.writer = getStorage(KEY_ACCOUNT);
+      setMember({ ...member });
+    } else {
       const data = memberList?.filter((data) => {
         return data.id === id;
       });
@@ -85,9 +98,6 @@ const MemberEditView = () => {
         setMember(data[0]);
       }
     }
-    member.accountId = getStorage(KEY_ACCOUNT);
-    member.writer = getStorage(KEY_ACCOUNT);
-    setMember({ ...member });
   }, [memberList, isAdd, id]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -118,11 +128,13 @@ const MemberEditView = () => {
   };
 
   const onDeleteClick = async () => {
-    setUpdating(true);
-    // await deleteNotice(notice);
-    alert(MSG_DELETED);
-    setUpdating(false);
-    navigate(ROUTE_NOTICE);
+    if (window.confirm("삭제하시겠습니까?")) {
+      setUpdating(true);
+      await deleteMember(member);
+      alert(MSG_DELETED);
+      setUpdating(false);
+      navigate(ROUTE_MEMBER);
+    }
   };
 
   const onAddClick = async () => {
@@ -140,13 +152,14 @@ const MemberEditView = () => {
       return;
     }
     setUpdating(true);
-    const result = await addMember(member,localFile,isAdd)
+    const result = await addMember(member, localFile, isAdd);
     if (result) {
       alert(MSG_COMPLETED);
     } else {
       alert(MSG_FAILED);
     }
     setUpdating(false);
+    navigate(ROUTE_MEMBER);
   };
   const onImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const input = e?.target;
@@ -191,6 +204,29 @@ const MemberEditView = () => {
     fileRef.current.value = null;
     setLocalFile({ ...localFile });
   };
+
+  const addMarker = (lat: number, lon: number) => {
+    if (map) {
+      const marker_ = new naver.maps.Marker({
+        position: new naver.maps.LatLng(lat, lon),
+        map: map,
+        icon: {
+          content: `
+              <img alt="marker" src="http://maps.google.com/mapfiles/ms/micons/red.png" />
+            `,
+        },
+      });
+    }
+  };
+  const onSearchClick = async () => {
+    const ret: any = await searchAddress(member.address);
+    const address = ret.addresses[0];
+    const lat = address.y;
+    const lon = address.x;
+    member.latitude = lat;
+    member.longitude = lon;
+    setMember({ ...member });
+  };
   const getCommonField = (label: string, id: string, width: number, value: string) => {
     return (
       <FieldWrapper>
@@ -199,7 +235,24 @@ const MemberEditView = () => {
       </FieldWrapper>
     );
   };
-
+  const getAddressField = (label: string, id: string, width: number, value: string) => {
+    return (
+      <FieldWrapper>
+        <CustomLabel label={label} size={LABEL_SIZE_SMALL} />
+        <Box display="flex" justifyContent="center">
+          <TextField autoComplete="off" sx={{ width: width }} id={id} type="text" value={value} onChange={onChange} />
+          <Button onClick={onSearchClick}>검색</Button>
+        </Box>
+        <Box display="flex" justifyContent="center">
+          <Typography sx={{ m: 1 }}>위도 {member.latitude}</Typography>
+          <Typography sx={{ m: 1 }}>경도 {member.longitude}</Typography>
+        </Box>
+        <Box display="flex" justifyContent="center" sx={{ ml: 10, mr: 10 }}>
+          <div id="map" style={{ height: 500, width: 500 }}></div>
+        </Box>
+      </FieldWrapper>
+    );
+  };
   const getImageField = () => {
     let imgSrc = "";
     if (localFile.path) {
@@ -237,7 +290,16 @@ const MemberEditView = () => {
     return (
       <FieldWrapper>
         <CustomLabel label={label} size={LABEL_SIZE_SMALL} />
-        <TextField autoComplete="off" sx={{ width: width }} id={id} type="text" value={value} multiline maxRows={10} onChange={onChange} />
+        <TextField
+          autoComplete="off"
+          sx={{ width: width }}
+          id={id}
+          type="text"
+          value={value}
+          multiline
+          maxRows={10}
+          onChange={onChange}
+        />
       </FieldWrapper>
     );
   };
@@ -246,17 +308,24 @@ const MemberEditView = () => {
       <FieldWrapper>
         <CustomLabel label={LABEL_AGE} size={LABEL_SIZE_SMALL} />
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <DesktopDatePicker label={LABEL_AGE} inputFormat="yyyy//MM/dd" value={member.age} onChange={onDateChange} renderInput={(params) => <TextField {...params} />} />
+          <DesktopDatePicker
+            label={LABEL_AGE}
+            inputFormat="yyyy//MM/dd"
+            value={member.age}
+            onChange={onDateChange}
+            renderInput={(params) => <TextField {...params} />}
+          />
         </LocalizationProvider>
       </FieldWrapper>
     );
   };
+
   const NAME_FIELD = getCommonField(LABEL_NAME, ID_NAME, DEFAULT_FIELD_WIDTH, member.name);
   const AGE_FIELD = getAgeField();
 
   const PHONE_FIELD = getCommonField(LABEL_CONTACT, ID_CONTACT, DEFAULT_FIELD_WIDTH, member.phone.toString());
   const IMAGE_FIELD = getImageField();
-  const ADDRESS_FILED = getCommonField(LABEL_ADDRESS, ID_ADDRESS, DEFAULT_FIELD_WIDTH, member.address.toString());
+  const ADDRESS_FILED = getAddressField(LABEL_ADDRESS, ID_ADDRESS, DEFAULT_FIELD_WIDTH, member.address.toString());
   const MEMO_FIELD = getMemoField(LABEL_MEMO, ID_MEMO, DEFAULT_FIELD_WIDTH, member.memo);
   const MANAGER_FIELD = getCommonField(LABEL_MANAGER, ID_ACCOUNT_ID, DEFAULT_FIELD_WIDTH, member.accountId);
   if (updating) {
@@ -271,14 +340,11 @@ const MemberEditView = () => {
         {PHONE_FIELD}
         {IMAGE_FIELD}
         {ADDRESS_FILED}
-        <div style={{ height: 500, width: 500 }}>
-          <GoogleMapReact bootstrapURLKeys={{ key: "AIzaSyDtpMKacZ8fsVuoaLABAQ7b113CBUZOKcY" }} defaultCenter={{ lat: 29.68402678282475, lng: -8.320964890236837 }} defaultZoom={2}></GoogleMapReact>
-        </div>
         {MEMO_FIELD}
         {MANAGER_FIELD}
       </FieldContentWrapper>
       <FieldContentBottomWrapper>
-        <Button sx={{ m: 1 }} variant="contained" onClick={() => navigate(ROUTE_NOTICE)}>
+        <Button sx={{ m: 1 }} variant="contained" onClick={() => navigate(ROUTE_MEMBER)}>
           {LABEL_CANCEL}
         </Button>
         {isAdd ? (

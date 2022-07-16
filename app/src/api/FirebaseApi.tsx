@@ -60,8 +60,8 @@ export const addAccount = async (account: Account, localFile: LocalFile, isAdd: 
       account.password = "";
       account.password_re = "";
       account.type = account.type ? account.type : ACCOUNT_TYPE_NORMAL;
-      if (localFile) {
-        const url = await uploadFile(localFile, account.id);
+      if (localFile.file) {
+        const url = await uploadFile(localFile, "account", account.id);
         account.image = url ? url : DEFAULT_PROFILE_IMAGE;
       }
       const ref = doc(db, COLLECTION_ACCOUNT, account.id);
@@ -85,8 +85,8 @@ export const addAccount = async (account: Account, localFile: LocalFile, isAdd: 
   }
 };
 
-const uploadFile = async (file: LocalFile, id: string) => {
-  const folder_name = `images/account/${id}`;
+const uploadFile = async (file: LocalFile, folder: string, id: string) => {
+  const folder_name = `images/${folder}/${id}`;
   const file_object = file.file;
   const file_name = file.name;
   if (!file_name) {
@@ -149,9 +149,16 @@ export const resetPassword = async (email: string) => {
 export const addMember = async (member: Member, localFile: LocalFile, isAdd: Boolean) => {
   try {
     const time = new Date().getTime();
-    const ref = doc(db, COLLECTION_MEMBER, MODE, COLLECTION_DATA, member.id);
     if (isAdd) {
       member.id = time.toString();
+    }
+
+    if (localFile.file) {
+      const url = await uploadFile(localFile, "member", member.id);
+      member.image = url ? url : DEFAULT_PROFILE_IMAGE;
+    }
+    const ref = doc(db, COLLECTION_MEMBER, MODE, COLLECTION_DATA, member.id);
+    if (isAdd) {
       member.createTime = time;
       member.updateTime = time;
       await setDoc(ref, member);
@@ -174,11 +181,19 @@ export const addMember = async (member: Member, localFile: LocalFile, isAdd: Boo
     }
     return true;
   } catch (e) {
+    console.log(e);
     return false;
   }
 };
 
-export const deleteMember = async (notice: NoticeData) => {
-  const ref = doc(db, COLLECTION_NOTICE, MODE, COLLECTION_DATA, notice.id);
+export const deleteMember = async (member: Member) => {
+  const ref = doc(db, COLLECTION_MEMBER, MODE, COLLECTION_DATA, member.id);
   await deleteDoc(ref);
+};
+
+export const searchAddress = async (query: string) => {
+  const serachAddress = httpsCallable(functions, "serachAddress");
+  const res = await serachAddress({ query: query });
+  console.log(`res`, res);
+  return res.data;
 };

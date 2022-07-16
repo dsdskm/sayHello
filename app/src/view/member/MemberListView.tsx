@@ -10,13 +10,7 @@ import { getTimeText } from "common/Utils";
 import { Button, TextField } from "@mui/material";
 import { Member } from "interface/Member";
 import { useNavigate } from "react-router-dom";
-import {
-  MARGIN_DEFAULT,
-  PROFILE_IMAGE_HEIGHT,
-  PROFILE_IMAGE_WIDTH,
-  ROUTE_ACCOUNT_EDIT,
-  ROUTE_MEMBER_EDIT,
-} from "common/Constant";
+import { MARGIN_DEFAULT, PROFILE_IMAGE_HEIGHT, PROFILE_IMAGE_WIDTH, ROUTE_MEMBER_EDIT } from "common/Constant";
 import ContentWrapper from "component/ContentWrapper";
 import TableComponent from "component/TableComponent";
 import SearchWrapper from "component/SearchWrapper";
@@ -62,9 +56,7 @@ const MemberListView = () => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
@@ -84,7 +76,7 @@ const MemberListView = () => {
   const onAddClick = () => {
     goPage(ROUTE_MEMBER_EDIT + `/-1`);
   };
-
+  console.log(`memberList`, memberList);
   return (
     <>
       <GlobalTab />
@@ -98,11 +90,7 @@ const MemberListView = () => {
           <TableHead>
             <TableRow>
               {columns.map((column) => (
-                <TableCell
-                  key={column.name}
-                  align={column.align}
-                  style={{ minWidth: column.minWidth }}
-                >
+                <TableCell key={column.name} align={column.align} style={{ minWidth: column.minWidth }}>
                   {column.name}
                 </TableCell>
               ))}
@@ -122,13 +110,7 @@ const MemberListView = () => {
                 .map((value, index) => {
                   const lastHellotime = getTimeText(value.lastHellotime);
                   return (
-                    <TableRow
-                      hover
-                      role="checkbox"
-                      tabIndex={-1}
-                      key={value.id}
-                      onClick={() => onTableRowClick(value)}
-                    >
+                    <TableRow hover role="checkbox" tabIndex={-1} key={index} onClick={() => onTableRowClick(value)}>
                       <TableCell key={index} align={columns[0].align}>
                         {index + 1}
                       </TableCell>
@@ -155,10 +137,7 @@ const MemberListView = () => {
                       <TableCell key={value.phone} align={columns[5].align}>
                         {value.phone}
                       </TableCell>
-                      <TableCell
-                        key={value.lastHellotime}
-                        align={columns[5].align}
-                      >
+                      <TableCell key={value.lastHellotime} align={columns[5].align}>
                         {value.lastHellotime}
                       </TableCell>
                       <TableCell key={value.accountId} align={columns[5].align}>
@@ -180,11 +159,7 @@ const MemberListView = () => {
         />
       </ContentWrapper>
       <SearchWrapper>
-        <TextField
-          sx={{ width: "300px" }}
-          placeholder={""}
-          onChange={(e) => setKeyword(e.target.value)}
-        />
+        <TextField sx={{ width: "300px" }} placeholder={""} onChange={(e) => setKeyword(e.target.value)} />
       </SearchWrapper>
     </>
   );
