@@ -11,10 +11,10 @@ const AccountDataHook = () => {
   const [accountList, setAccountList] = useState<Array<Account>>();
   const fetchingData = async (email: string | null) => {
     // currnet account
-    const list: Array<Account> = [];
 
     const q = query(collection(db, COLLECTION_ACCOUNT));
     const snapshot = onSnapshot(q, (querySnapshot) => {
+      const list: Array<Account> = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         const accountData = data as Account;

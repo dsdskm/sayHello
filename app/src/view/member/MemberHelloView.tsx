@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import {
   Box,
   Button,
+  Paper,
   TableBody,
   TableCell,
   TableHead,
   TablePagination,
   TableRow,
   TextField,
-  Typography,
 } from "@mui/material";
 import { DEFAULT_HELLO_DATA, HelloData } from "interface/HelloData";
 import { getStorage, getTimeText, KEY_ACCOUNT } from "common/Utils";
@@ -19,6 +19,8 @@ import { DEFAULT_MEMBER_DATA, Member } from "interface/Member";
 import TableComponent from "component/TableComponent";
 import { useParams } from "react-router-dom";
 import MemberDataHook from "api/MemberDataHook";
+import CustomLabel, { LABEL_SIZE_SMALL } from "component/Labels";
+import { styled } from "@mui/system";
 
 const COLUMN_NO = "NO";
 const COLUMN_TEXT = "내용";
@@ -38,6 +40,12 @@ const columns: readonly Column[] = [
   { id: "time", name: COLUMN_TIME, align: "center" },
   { id: "writer", name: COLUMN_WRITER, align: "center" },
 ];
+const FieldWrapper = styled(Paper)({
+  margin: 10,
+  padding: 50,
+  minWidth: 500,
+  textAlign: "center",
+});
 
 const MemberHelloView = () => {
   const [hello, setHello] = useState<HelloData>(DEFAULT_HELLO_DATA);
@@ -60,7 +68,7 @@ const MemberHelloView = () => {
     if (data) {
       setMember(data[0]);
     }
-  }, [helloList]);
+  }, [memberList, params]);
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
@@ -99,72 +107,70 @@ const MemberHelloView = () => {
 
   return (
     <>
-      <Box>
-        <Typography>안부 내역</Typography>
-        <>
-          <TableComponent>
-            <TableHead>
-              <TableRow>
-                {columns.map((column) => (
-                  <TableCell key={column.name} align={column.align} style={{ minWidth: column.minWidth }}>
-                    {column.name}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {helloList &&
-                helloList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((value, index) => {
-                  const time = getTimeText(value.time);
-                  return (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={value.id}>
-                      <TableCell key={index} align={columns[0].align}>
-                        {index + 1}
-                      </TableCell>
-                      <TableCell key={value.text} align={columns[1].align}>
-                        {value.text}
-                      </TableCell>
-                      <TableCell key={value.time} align={columns[2].align}>
-                        {time}
-                      </TableCell>
-                      <TableCell key={value.writer} align={columns[3].align}>
-                        {value.writer}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-            </TableBody>
-          </TableComponent>
-          <TablePagination
-            rowsPerPageOptions={[10, 25, 100]}
-            component="div"
-            count={helloList ? helloList.length : 0}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-          {updating ? (
-            <LoadingWrap />
-          ) : (
-            <>
-              <TextField
-                placeholder="안부를 입력하세요."
-                value={hello.text}
-                autoComplete="off"
-                sx={{ width: "100%" }}
-                type="text"
-                multiline
-                maxRows={10}
-                onChange={onChange}
-              />
-              <Box display="flex" justifyContent="end">
-                <Button onClick={onClick}>등록</Button>
-              </Box>
-            </>
-          )}
-        </>
-      </Box>
+      <FieldWrapper>
+        <CustomLabel label="안부 내역" size={LABEL_SIZE_SMALL} />
+        <TableComponent>
+          <TableHead>
+            <TableRow>
+              {columns.map((column) => (
+                <TableCell key={column.name} align={column.align} style={{ minWidth: column.minWidth }}>
+                  {column.name}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {helloList &&
+              helloList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((value, index) => {
+                const time = getTimeText(value.time);
+                return (
+                  <TableRow hover role="checkbox" tabIndex={-1} key={value.id}>
+                    <TableCell key={index} align={columns[0].align}>
+                      {index + 1}
+                    </TableCell>
+                    <TableCell key={value.text} align={columns[1].align}>
+                      {value.text}
+                    </TableCell>
+                    <TableCell key={value.time} align={columns[2].align}>
+                      {time}
+                    </TableCell>
+                    <TableCell key={value.writer} align={columns[3].align}>
+                      {value.writer}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+          </TableBody>
+        </TableComponent>
+        <TablePagination
+          rowsPerPageOptions={[10, 25, 100]}
+          component="div"
+          count={helloList ? helloList.length : 0}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+        {updating ? (
+          <LoadingWrap />
+        ) : (
+          <Box display="flex" justifyContent="center" sx={{ m: 1 }}>
+            <TextField
+              placeholder="안부를 입력하세요."
+              value={hello.text}
+              autoComplete="off"
+              sx={{ width: "500px" }}
+              type="text"
+              multiline
+              maxRows={10}
+              onChange={onChange}
+            />
+            <Button onClick={onClick} variant="contained">
+              등록
+            </Button>
+          </Box>
+        )}
+      </FieldWrapper>
     </>
   );
 };

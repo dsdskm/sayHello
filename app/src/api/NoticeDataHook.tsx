@@ -9,9 +9,9 @@ const NoticeDataHook = () => {
   const [noticeList, setNoticeList] = useState<Array<NoticeData>>();
 
   useEffect(() => {
-    const list: Array<NoticeData> = [];
     const q = query(collection(db, COLLECTION_NOTICE, MODE, COLLECTION_DATA), orderBy("time", "desc"));
     const snapshot = onSnapshot(q, (querySnapshot) => {
+      const list: Array<NoticeData> = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         const noticeData = data as NoticeData;

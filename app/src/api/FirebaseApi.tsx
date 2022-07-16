@@ -8,13 +8,15 @@ import { ACCOUNT_TYPE_NORMAL, DEFAULT_PROFILE_IMAGE } from "common/Constant";
 import { httpsCallable } from "firebase/functions";
 import emailjs from "emailjs-com";
 import { Member } from "interface/Member";
-import { DEFAULT_NOTICE_DATA, NoticeData } from "interface/NoticeData";
+import { NoticeData } from "interface/NoticeData";
 import { HelloData } from "interface/HelloData";
+import { EventData } from "interface/EventData";
 export const COLLECTION_ACCOUNT = "account";
 export const COLLECTION_NOTICE = "notice";
 export const COLLECTION_DATA = "data";
 export const COLLECTION_MEMBER = "member";
 export const COLLECTION_HELLO = "hello";
+export const COLLECTION_EVENT = "event";
 const OP = "op";
 const QA = "qa";
 export const MODE = QA;
@@ -134,7 +136,6 @@ const getRandomPassword = () => {
 };
 export const resetPassword = async (email: string) => {
   const newPassword = getRandomPassword();
-  console.log(`newPassword ${newPassword}`);
   await updateAuth(email, newPassword);
   const passwordReset = httpsCallable(functions, "updatePassword");
   const res = await passwordReset({ email: email, password: newPassword });
@@ -148,12 +149,12 @@ export const resetPassword = async (email: string) => {
   });
 };
 
-export const updateLastHelloTime = async(memberId:string)=>{
+export const updateLastHelloTime = async (memberId: string) => {
   const ref = doc(db, COLLECTION_MEMBER, MODE, COLLECTION_DATA, memberId);
-  await updateDoc(ref,{
-    lastHellotime:new Date().getTime()
-  })
-}
+  await updateDoc(ref, {
+    lastHellotime: new Date().getTime(),
+  });
+};
 
 export const addMember = async (member: Member, localFile: LocalFile, isAdd: Boolean) => {
   try {
@@ -208,6 +209,10 @@ export const addHello = async (hello: HelloData) => {
 export const searchAddress = async (query: string) => {
   const serachAddress = httpsCallable(functions, "serachAddress");
   const res = await serachAddress({ query: query });
-  console.log(`res`, res);
   return res.data;
+};
+
+export const addEvent = async (event: EventData) => {
+  const ref = doc(db, COLLECTION_EVENT, MODE, COLLECTION_DATA, event.id);
+  await setDoc(ref, event);
 };

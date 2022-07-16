@@ -81,7 +81,6 @@ const MemberListView = () => {
   const onAddClick = () => {
     goPage(ROUTE_MEMBER_EDIT + `/-1`);
   };
-  console.log(`memberList`, memberList);
   return (
     <>
       <GlobalTab />

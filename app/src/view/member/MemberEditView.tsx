@@ -1,11 +1,11 @@
 import CustomLabel, { LABEL_SIZE_SMALL } from "component/Labels";
 import GlobalTab from "view/common/GlobalTab";
 import { styled } from "@material-ui/styles";
-import { Box, Button, Grid, Paper, TextField, Typography } from "@mui/material";
+import { Box, Button, Paper, TextField, Typography } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import FieldContentWrapper from "component/FieldContentWrapper";
 import FieldContentBottomWrapper from "component/FieldContentBottomWrapper";
-import { IMAGE_SIZE_HEIGHT, IMAGE_SIZE_WIDTH, ROUTE_MEMBER, ROUTE_NOTICE } from "common/Constant";
+import { IMAGE_SIZE_HEIGHT, IMAGE_SIZE_WIDTH, ROUTE_MEMBER } from "common/Constant";
 import Loading from "component/Loading";
 import { DEFAULT_MEMBER_DATA, Member } from "interface/Member";
 import MemberDataHook from "api/MemberDataHook";
@@ -68,7 +68,7 @@ const MemberEditView = () => {
   useEffect(() => {
     const initMap = () => {
       let centerPos;
-      if (member) {
+      if (member.latitude && member.longitude) {
         centerPos = new naver.maps.LatLng(member.latitude, member.longitude);
       } else {
         centerPos = CENTER;
@@ -336,27 +336,23 @@ const MemberEditView = () => {
   return (
     <>
       <GlobalTab />
-      <Grid container spacing={2}>
-        <Grid item xs={isAdd ? 12 : 6}>
-          <FieldContentWrapper>
-            {NAME_FIELD}
-            {AGE_FIELD}
-            {PHONE_FIELD}
-            {IMAGE_FIELD}
-            {ADDRESS_FILED}
-            {MEMO_FIELD}
-            {MANAGER_FIELD}
-          </FieldContentWrapper>
-        </Grid>
+      <FieldContentWrapper>
+        {NAME_FIELD}
+        {AGE_FIELD}
+        {PHONE_FIELD}
+        {IMAGE_FIELD}
+        {ADDRESS_FILED}
+        {MEMO_FIELD}
+        {MANAGER_FIELD}
         {isAdd ? (
           <></>
         ) : (
-          <Grid item xs={isAdd ? 0 : 6}>
+          <>
             <MemberCalendarView />
             <MemberHelloView />
-          </Grid>
+          </>
         )}
-      </Grid>
+      </FieldContentWrapper>
       <FieldContentBottomWrapper>
         <Button sx={{ m: 1 }} variant="contained" onClick={() => navigate(ROUTE_MEMBER)}>
           {LABEL_CANCEL}
