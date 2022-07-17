@@ -9,6 +9,8 @@ export interface EventData {
   hour: number;
   min: number;
   eventTime: number;
+  checked: Boolean;
+  image: string;
 }
 
 export const DEFAULT_EVENT_DATA = {
@@ -19,7 +21,9 @@ export const DEFAULT_EVENT_DATA = {
   year: 0,
   month: 0,
   date: 0,
-  hour: 0,
-  min: 0,
+  hour: -1,
+  min: -1,
   eventTime: 0,
+  checked: false,
+  image: "",
 };

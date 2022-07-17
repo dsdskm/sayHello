@@ -45,7 +45,7 @@ const AccountListView = () => {
   const navigate = useNavigate();
   const { accountList } = AccountDataHook();
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [keyword, setKeyword] = React.useState<string>();
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -126,7 +126,7 @@ const AccountListView = () => {
           </TableBody>
         </TableComponent>
         <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
+          rowsPerPageOptions={[5, 10, 25, 100]}
           component="div"
           count={accountList.length}
           rowsPerPage={rowsPerPage}

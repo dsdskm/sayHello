@@ -5,7 +5,7 @@ import Paper from "@mui/material/Paper";
 import { SetStateAction, useState } from "react";
 import NoticeArea from "./NoticeArea";
 import ListArea from "./ListArea";
-import CalendarArea from "./CalendarArea";
+import EventArea from "./EventArea";
 
 export interface DashBoardProps {
   showListView: React.Dispatch<SetStateAction<Boolean | undefined>>;
@@ -28,7 +28,7 @@ const Dashboard = () => {
         </Grid>
         <Grid item xs={7}>
           <Paper sx={{ minWidth: "500px", textAlign: "center" }}>
-            {showingListView ? <ListArea /> : <CalendarArea />}
+            {showingListView ? <ListArea /> : <EventArea />}
           </Paper>
         </Grid>
       </Grid>

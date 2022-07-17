@@ -216,3 +216,15 @@ export const addEvent = async (event: EventData) => {
   const ref = doc(db, COLLECTION_EVENT, MODE, COLLECTION_DATA, event.id);
   await setDoc(ref, event);
 };
+
+export const updateEventChecked = async (id: string) => {
+  const ref = doc(db, COLLECTION_EVENT, MODE, COLLECTION_DATA, id);
+  await updateDoc(ref, {
+    checked: true,
+  });
+};
+
+export const deleteEvent = async (id: string) => {
+  const ref = doc(db, COLLECTION_EVENT, MODE, COLLECTION_DATA, id);
+  await deleteDoc(ref);
+};

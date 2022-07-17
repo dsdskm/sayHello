@@ -1,3 +1,4 @@
+/* eslint-disable */
 import CustomLabel, { LABEL_SIZE_SMALL } from "component/Labels";
 import GlobalTab from "view/common/GlobalTab";
 import { styled } from "@material-ui/styles";
@@ -16,7 +17,7 @@ import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { getStorage, KEY_ACCOUNT } from "common/Utils";
 import { addMember, deleteMember, searchAddress } from "api/FirebaseApi";
-import MemberCalendarView from "./MemberCalendarView";
+import MemberEventView from "./MemberEventView";
 import MemberHelloView from "./MemberHelloView";
 
 const ID_NAME = "name";
@@ -100,7 +101,7 @@ const MemberEditView = () => {
         setMember(data[0]);
       }
     }
-  }, [memberList, isAdd, id]);
+  }, [memberList, isAdd, id, member]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const id = e.target.id;
@@ -209,7 +210,7 @@ const MemberEditView = () => {
 
   const addMarker = (lat: number, lon: number) => {
     if (map) {
-      const marker_ = new naver.maps.Marker({
+      const marker = new naver.maps.Marker({
         position: new naver.maps.LatLng(lat, lon),
         map: map,
         icon: {
@@ -348,7 +349,7 @@ const MemberEditView = () => {
           <></>
         ) : (
           <>
-            <MemberCalendarView />
+            <MemberEventView />
             <MemberHelloView />
           </>
         )}

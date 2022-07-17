@@ -54,7 +54,7 @@ const MemberListView = () => {
   const navigate = useNavigate();
   const { memberList } = MemberDataHook();
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [keyword, setKeyword] = React.useState<string>();
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -147,19 +147,13 @@ const MemberListView = () => {
                       <TableCell key={value.accountId} align={columns[5].align}>
                         {value.accountId}
                       </TableCell>
-                      {/* <TableCell key={index} align={columns[6].align}>
-                        <Button variant="contained" >안부</Button>
-                      </TableCell>
-                      <TableCell key={index} align={columns[7].align}>
-                        <Button variant="contained">이벤트</Button>
-                      </TableCell> */}
                     </TableRow>
                   );
                 })}
           </TableBody>
         </TableComponent>
         <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
+          rowsPerPageOptions={[5, 10, 25, 100]}
           component="div"
           count={memberList.length}
           rowsPerPage={rowsPerPage}

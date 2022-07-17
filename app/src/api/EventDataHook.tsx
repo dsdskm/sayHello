@@ -9,11 +9,14 @@ const EventDataHook = (member_id: string | undefined) => {
   const [eventList, setEventList] = useState<Array<EventData>>();
 
   useEffect(() => {
-    const q = query(
-      collection(db, COLLECTION_EVENT, MODE, COLLECTION_DATA),
-      where("member_id", "==", member_id),
-      orderBy("eventTime", "asc")
-    );
+    const q = member_id
+      ? query(
+          collection(db, COLLECTION_EVENT, MODE, COLLECTION_DATA),
+          where("member_id", "==", member_id),
+          orderBy("eventTime", "asc")
+        )
+      : query(collection(db, COLLECTION_EVENT, MODE, COLLECTION_DATA), orderBy("eventTime", "asc"));
+
     const snapshot = onSnapshot(q, (querySnapshot) => {
       const list: Array<EventData> = [];
       querySnapshot.forEach((doc) => {

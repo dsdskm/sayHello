@@ -51,7 +51,7 @@ const MemberHelloView = () => {
   const [hello, setHello] = useState<HelloData>(DEFAULT_HELLO_DATA);
   const [updating, setUpdating] = useState(false);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [member, setMember] = useState<Member>(DEFAULT_MEMBER_DATA);
   const params = useParams();
   if (params.id) {
@@ -143,7 +143,7 @@ const MemberHelloView = () => {
           </TableBody>
         </TableComponent>
         <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
+          rowsPerPageOptions={[5, 10, 25, 100]}
           component="div"
           count={helloList ? helloList.length : 0}
           rowsPerPage={rowsPerPage}

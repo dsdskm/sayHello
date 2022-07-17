@@ -1,3 +1,6 @@
+import { CalendarData } from "interface/CalendarData";
+import { EventData } from "interface/EventData";
+
 export const KEY_ACCOUNT = "account";
 export const getTimeText = (mil: number) => {
   const date = new Date(mil);
@@ -37,4 +40,29 @@ export const getDayText = (day: number) => {
       break;
   }
   return "일요일";
+};
+
+export const getCalendarEventList = (eventList: Array<EventData> | undefined) => {
+  const list: Array<CalendarData> = [];
+  if (eventList) {
+    eventList.forEach((data, index) => {
+      const date = new Date();
+      const startDate = date;
+      startDate.setFullYear(data.year);
+      startDate.setMonth(data.month - 1);
+      startDate.setDate(data.date);
+      startDate.setHours(data.hour);
+      startDate.setMinutes(data.min);
+      const c = {
+        id: index,
+        title: `[${data.name}]${data.text}`,
+        desc: data.text,
+        start: startDate,
+        end: startDate,
+      } as CalendarData;
+      list.push(c);
+    });
+  }
+
+  return list;
 };

@@ -1,12 +1,4 @@
-import {
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  TablePagination,
-  TextField,
-  Button,
-} from "@mui/material";
+import { TableHead, TableRow, TableCell, TableBody, TablePagination, TextField, Button } from "@mui/material";
 import * as React from "react";
 import NoticeDataHook from "api/NoticeDataHook";
 import ContentWrapper from "component/ContentWrapper";
@@ -45,16 +37,14 @@ const NoticeListView = () => {
   const navigate = useNavigate();
   const { noticeList } = NoticeDataHook();
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [keyword, setKeyword] = React.useState<string>();
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
@@ -88,11 +78,7 @@ const NoticeListView = () => {
           <TableHead>
             <TableRow>
               {columns.map((column) => (
-                <TableCell
-                  key={column.name}
-                  align={column.align}
-                  style={{ minWidth: column.minWidth }}
-                >
+                <TableCell key={column.name} align={column.align} style={{ minWidth: column.minWidth }}>
                   {column.name}
                 </TableCell>
               ))}
@@ -103,9 +89,7 @@ const NoticeListView = () => {
               noticeList
                 .filter((v) => {
                   if (keyword) {
-                    return (
-                      v.title.includes(keyword) || v.contents.includes(keyword)
-                    );
+                    return v.title.includes(keyword) || v.contents.includes(keyword);
                   } else {
                     return true;
                   }
@@ -114,13 +98,7 @@ const NoticeListView = () => {
                 .map((value, index) => {
                   const time = getTimeText(value.time);
                   return (
-                    <TableRow
-                      hover
-                      role="checkbox"
-                      tabIndex={-1}
-                      key={value.id}
-                      onClick={() => onTableRowClick(value)}
-                    >
+                    <TableRow hover role="checkbox" tabIndex={-1} key={value.id} onClick={() => onTableRowClick(value)}>
                       <TableCell key={index} align={columns[0].align}>
                         {index + 1}
                       </TableCell>
@@ -139,7 +117,7 @@ const NoticeListView = () => {
           </TableBody>
         </TableComponent>
         <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
+          rowsPerPageOptions={[5, 10, 25, 100]}
           component="div"
           count={noticeList.length}
           rowsPerPage={rowsPerPage}
@@ -149,11 +127,7 @@ const NoticeListView = () => {
         />
       </ContentWrapper>
       <SearchWrapper>
-        <TextField
-          sx={{ width: "300px" }}
-          placeholder={KEYWORD_HINT}
-          onChange={(e) => setKeyword(e.target.value)}
-        />
+        <TextField sx={{ width: "300px" }} placeholder={KEYWORD_HINT} onChange={(e) => setKeyword(e.target.value)} />
       </SearchWrapper>
     </>
   );
