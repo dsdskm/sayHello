@@ -10,6 +10,7 @@ import { deleteEvent, updateEventChecked } from "api/FirebaseApi";
 import { CalendarData } from "interface/CalendarData";
 import LoadingWrap from "component/LoadingWrap";
 import SearchWrapper from "component/SearchWrapper";
+import { Box } from "@mui/system";
 const COLUMN_NO = "NO";
 const COLUMN_NAME = "이름";
 const COLUMN_TEXT = "내용";
@@ -83,71 +84,73 @@ const CalendarArea = () => {
         <LoadingWrap />
       ) : (
         <>
-          <TableComponent>
-            <TableHead>
-              <TableRow>
-                {columns.map((column) => (
-                  <TableCell key={column.name} align={column.align} style={{ minWidth: column.minWidth }}>
-                    {column.name}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {eventList &&
-                eventList
-                  .filter((v) => {
-                    if (keyword) {
-                      return v.name.includes(keyword) || v.text.includes(keyword);
-                    } else {
-                      return true;
-                    }
-                  })
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((value, index) => {
-                    const time = getTimeText(value.eventTime);
-                    const bgColor = value.checked ? "green" : "white";
-                    return (
-                      <TableRow role="checkbox" tabIndex={-1} key={value.id} sx={{ backgroundColor: bgColor }}>
-                        <TableCell key={index} align={columns[0].align}>
-                          {index + 1}
-                        </TableCell>
-                        <TableCell key={value.name} align={columns[1].align}>
-                          {value.name}
-                        </TableCell>
-                        <TableCell key={value.text} align={columns[2].align}>
-                          {value.text}
-                        </TableCell>
-                        <TableCell key={value.eventTime} align={columns[3].align}>
-                          {time}
-                        </TableCell>
-                        <TableCell key={(index + 1) * 100} align={columns[4].align}>
-                          <Button variant="contained" onClick={() => onCheckedClick(value.id)}>
-                            확인
-                          </Button>
-                        </TableCell>
-                        <TableCell key={(index + 1) * 10} align={columns[4].align}>
-                          <Button variant="contained" onClick={() => onDeleteClick(value.id)}>
-                            삭제
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-            </TableBody>
-          </TableComponent>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25, 100]}
-            component="div"
-            count={eventList ? eventList.length : 0}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-          <SearchWrapper>
-            <TextField sx={{ width: "300px" }} placeholder={""} onChange={(e) => setKeyword(e.target.value)} />
-          </SearchWrapper>
+          <Box sx={{ p: 1 }}>
+            <TableComponent>
+              <TableHead>
+                <TableRow>
+                  {columns.map((column) => (
+                    <TableCell key={column.name} align={column.align} style={{ minWidth: column.minWidth }}>
+                      {column.name}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {eventList &&
+                  eventList
+                    .filter((v) => {
+                      if (keyword) {
+                        return v.name.includes(keyword) || v.text.includes(keyword);
+                      } else {
+                        return true;
+                      }
+                    })
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((value, index) => {
+                      const time = getTimeText(value.eventTime);
+                      const bgColor = value.checked ? "green" : "white";
+                      return (
+                        <TableRow role="checkbox" tabIndex={-1} key={value.id} sx={{ backgroundColor: bgColor }}>
+                          <TableCell key={index} align={columns[0].align}>
+                            {index + 1}
+                          </TableCell>
+                          <TableCell key={value.name} align={columns[1].align}>
+                            {value.name}
+                          </TableCell>
+                          <TableCell key={value.text} align={columns[2].align}>
+                            {value.text}
+                          </TableCell>
+                          <TableCell key={value.eventTime} align={columns[3].align}>
+                            {time}
+                          </TableCell>
+                          <TableCell key={(index + 1) * 100} align={columns[4].align}>
+                            <Button variant="contained" onClick={() => onCheckedClick(value.id)}>
+                              확인
+                            </Button>
+                          </TableCell>
+                          <TableCell key={(index + 1) * 10} align={columns[4].align}>
+                            <Button variant="contained" onClick={() => onDeleteClick(value.id)}>
+                              삭제
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+              </TableBody>
+            </TableComponent>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25, 100]}
+              component="div"
+              count={eventList ? eventList.length : 0}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+            <SearchWrapper>
+              <TextField sx={{ width: "300px" }} placeholder={""} onChange={(e) => setKeyword(e.target.value)} />
+            </SearchWrapper>
+          </Box>
         </>
       )}
     </>

@@ -1,13 +1,14 @@
-import { Paper, TextField } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import GlobalTab from "view/common/GlobalTab";
-import { styled } from "@material-ui/styles";
 import CustomLabel, { LABEL_SIZE_SMALL } from "component/Labels";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import AccountDataHook from "api/AccountDataHook";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Account, DEFAULT_ACCOUNT_DATA } from "interface/Account";
-import { IMAGE_SIZE_HEIGHT, IMAGE_SIZE_WIDTH } from "common/Constant";
+import { DEFAULT_FIELD_WIDTH, IMAGE_SIZE_HEIGHT, IMAGE_SIZE_WIDTH, ROUTE_ACCOUNT } from "common/Constant";
 import FieldContentWrapper from "component/FieldContentWrapper";
+import FieldContentBottomWrapper from "component/FieldContentBottomWrapper";
+import { FieldWrapper } from "component/FieldWrapper";
 
 const ID_NAME = "name";
 const ID_EMAIL = "email";
@@ -20,19 +21,12 @@ const LABEL_EMAIL = "이메일";
 const LABEL_PHONE = "연락처";
 const LABEL_AGE = "생년월일";
 const LABEL_ADDRESS = "주소";
-
-const DEFAULT_FIELD_WIDTH = 400;
-
-const FieldWrapper = styled(Paper)({
-  margin: 10,
-  padding: 50,
-  minWidth: 500,
-  textAlign: "center",
-});
+const LABEL_OK = "확인";
 
 const AccountEditView = () => {
   const { accountList } = AccountDataHook();
   const params = useParams();
+  const navigate = useNavigate();
   const queryId = params.id;
   const [account, setAccount] = useState<Account>(DEFAULT_ACCOUNT_DATA);
   useEffect(() => {
@@ -45,12 +39,6 @@ const AccountEditView = () => {
       }
     }
   }, [accountList, queryId]);
-
-  /*
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(`e`);
-  };
-  */
 
   const getCommonField = (label: string, id: string, width: number, value: string) => {
     return (
@@ -121,6 +109,11 @@ const AccountEditView = () => {
         {AGE_FIELD}
         {ADDRESS_FIELD}
       </FieldContentWrapper>
+      <FieldContentBottomWrapper>
+        <Button sx={{ m: 1 }} variant="contained" onClick={() => navigate(ROUTE_ACCOUNT)}>
+          {LABEL_OK}
+        </Button>
+      </FieldContentBottomWrapper>
     </>
   );
 };

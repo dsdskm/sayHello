@@ -34,7 +34,6 @@ const FieldWrapper = styled(Paper)({
 });
 
 const COLUMN_NO = "NO";
-const COLUMN_NAME = "이름";
 const COLUMN_TEXT = "내용";
 const COLUMN_TIME = "일정";
 const COLUMN_DELETE = "삭제";
@@ -48,7 +47,6 @@ interface Column {
 }
 const columns: readonly Column[] = [
   { id: "no", name: COLUMN_NO, align: "center" },
-  { id: "name", name: COLUMN_NAME, align: "center" },
   { id: "text", name: COLUMN_TEXT, align: "center" },
   { id: "time", name: COLUMN_TIME, align: "center" },
   { id: "checked", name: COLUMN_CHECKED, align: "center" },
@@ -184,9 +182,6 @@ const MemberEventView = () => {
                   <TableRow role="checkbox" tabIndex={-1} key={value.id} sx={{ backgroundColor: bgColor }}>
                     <TableCell key={index} align={columns[0].align}>
                       {index + 1}
-                    </TableCell>
-                    <TableCell key={value.name} align={columns[1].align}>
-                      {value.name}
                     </TableCell>
                     <TableCell key={value.text} align={columns[2].align}>
                       {value.text}

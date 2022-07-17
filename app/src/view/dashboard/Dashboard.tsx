@@ -3,7 +3,7 @@ import { Grid } from "@mui/material";
 import React from "react";
 import Paper from "@mui/material/Paper";
 import { SetStateAction, useState } from "react";
-import NoticeArea from "./NoticeArea";
+import EventCardArea from "./EventCardArea";
 import ListArea from "./ListArea";
 import EventArea from "./EventArea";
 
@@ -20,10 +20,7 @@ const Dashboard = () => {
       <Grid container spacing={2}>
         <Grid item xs={5}>
           <Paper sx={{ minWidth: "500px", textAlign: "center" }}>
-            <NoticeArea
-              showListView={showListView}
-              showingListView={showingListView}
-            />
+            <EventCardArea showListView={showListView} showingListView={showingListView} />
           </Paper>
         </Grid>
         <Grid item xs={7}>

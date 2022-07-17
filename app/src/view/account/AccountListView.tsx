@@ -10,7 +10,13 @@ import { getTimeText } from "common/Utils";
 import { TextField } from "@mui/material";
 import { Account } from "interface/Account";
 import { useNavigate } from "react-router-dom";
-import { MARGIN_DEFAULT, PROFILE_IMAGE_HEIGHT, PROFILE_IMAGE_WIDTH, ROUTE_ACCOUNT_EDIT } from "common/Constant";
+import {
+  MARGIN_DEFAULT,
+  PROFILE_IMAGE_HEIGHT,
+  PROFILE_IMAGE_WIDTH,
+  ROUTE_ACCOUNT_EDIT,
+  SEARCH_BAR_WIDTH,
+} from "common/Constant";
 import ContentWrapper from "component/ContentWrapper";
 import TableComponent from "component/TableComponent";
 import SearchWrapper from "component/SearchWrapper";
@@ -45,7 +51,7 @@ const AccountListView = () => {
   const navigate = useNavigate();
   const { accountList } = AccountDataHook();
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [keyword, setKeyword] = React.useState<string>();
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -136,7 +142,11 @@ const AccountListView = () => {
         />
       </ContentWrapper>
       <SearchWrapper>
-        <TextField sx={{ width: "300px" }} placeholder={KEYWORD_HINT} onChange={(e) => setKeyword(e.target.value)} />
+        <TextField
+          sx={{ width: SEARCH_BAR_WIDTH }}
+          placeholder={KEYWORD_HINT}
+          onChange={(e) => setKeyword(e.target.value)}
+        />
       </SearchWrapper>
     </>
   );

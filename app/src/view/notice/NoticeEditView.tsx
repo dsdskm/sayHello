@@ -1,7 +1,6 @@
 import CustomLabel, { LABEL_SIZE_SMALL } from "component/Labels";
 import GlobalTab from "view/common/GlobalTab";
-import { styled } from "@material-ui/styles";
-import { Button, Paper, TextField } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import NoticeDataHook from "api/NoticeDataHook";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -12,6 +11,7 @@ import { ROUTE_NOTICE } from "common/Constant";
 import Loading from "component/Loading";
 import { addNotice, deleteNotice } from "api/FirebaseApi";
 import { getStorage, KEY_ACCOUNT } from "common/Utils";
+import { FieldWrapper } from "component/FieldWrapper";
 
 const ID_NUM = "id";
 const ID_TITLE = "title";
@@ -31,13 +31,6 @@ const MSG_ERR_CONTENTS = "내용을 입력하세요";
 const MSG_COMPLETED = "완료되었습니다.";
 const MSG_DELETED = "삭제되었습니다.";
 const DEFAULT_FIELD_WIDTH = 400;
-
-const FieldWrapper = styled(Paper)({
-  margin: 10,
-  padding: 50,
-  minWidth: 500,
-  textAlign: "center",
-});
 
 const NoticeEditView = () => {
   const { noticeList } = NoticeDataHook();

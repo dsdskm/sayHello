@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { db } from "config/FirebaseConfig";
-import { collection, getDocs, onSnapshot, orderBy, query } from "firebase/firestore";
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { Member } from "interface/Member";
 import { useEffect, useState } from "react";
 import { COLLECTION_DATA, COLLECTION_MEMBER, MODE } from "./FirebaseApi";

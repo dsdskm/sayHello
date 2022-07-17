@@ -10,13 +10,21 @@ import { getTimeText } from "common/Utils";
 import { Button, TextField } from "@mui/material";
 import { Member } from "interface/Member";
 import { useNavigate } from "react-router-dom";
-import { MARGIN_DEFAULT, PROFILE_IMAGE_HEIGHT, PROFILE_IMAGE_WIDTH, ROUTE_MEMBER_EDIT } from "common/Constant";
+import {
+  MARGIN_DEFAULT,
+  PROFILE_IMAGE_HEIGHT,
+  PROFILE_IMAGE_WIDTH,
+  ROUTE_MEMBER_EDIT,
+  SEARCH_BAR_WIDTH,
+} from "common/Constant";
 import ContentWrapper from "component/ContentWrapper";
 import TableComponent from "component/TableComponent";
 import SearchWrapper from "component/SearchWrapper";
 import Loading from "component/Loading";
 import ContentTopWrapper from "component/ContentTopWrapper";
 
+const LABEL_ADD = "등록";
+const MSG_HINT = "검색어를 입력하세요.";
 const COLUMN_NO = "NO";
 const COLUMN_IMAGE = "사진";
 const COLUMN_NAME = "이름";
@@ -42,8 +50,6 @@ const columns: readonly Column[] = [
   { id: "phone", name: COLUMN_PHONE, align: "center" },
   { id: "lastHellotime", name: COLUMN_LASTHELLO, align: "center" },
   { id: "accountId", name: COLUMN_ACCOUNTID, align: "center" },
-  // { id: "hello", name: COLUMN_HELLO, align: "center" },
-  // { id: "event", name: COLUMN_EVENT, align: "center" },
 ];
 
 export interface MemberProps {
@@ -54,7 +60,7 @@ const MemberListView = () => {
   const navigate = useNavigate();
   const { memberList } = MemberDataHook();
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [keyword, setKeyword] = React.useState<string>();
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -86,7 +92,7 @@ const MemberListView = () => {
       <GlobalTab />
       <ContentTopWrapper>
         <Button variant="contained" onClick={onAddClick}>
-          등록
+          {LABEL_ADD}
         </Button>
       </ContentTopWrapper>
       <ContentWrapper>
@@ -112,7 +118,10 @@ const MemberListView = () => {
                 })
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((value, index) => {
-                  const lastHellotime = getTimeText(value.lastHellotime);
+                  const lastHellotime = value.lastHellotime === 0 ? "-" : getTimeText(value.lastHellotime);
+                  const today = new Date();
+                  const ages = value.age.split("/");
+                  const age = today.getFullYear() - Number(ages[0]);
                   return (
                     <TableRow hover role="checkbox" tabIndex={-1} key={index} onClick={() => onTableRowClick(value)}>
                       <TableCell key={index} align={columns[0].align}>
@@ -133,7 +142,7 @@ const MemberListView = () => {
                         {value.name}
                       </TableCell>
                       <TableCell key={value.age} align={columns[3].align}>
-                        {value.age}
+                        {value.age + ` (${age}세)`}
                       </TableCell>
                       <TableCell key={value.address} align={columns[4].align}>
                         {value.address}
@@ -141,7 +150,7 @@ const MemberListView = () => {
                       <TableCell key={value.phone} align={columns[5].align}>
                         {value.phone}
                       </TableCell>
-                      <TableCell key={value.lastHellotime} align={columns[5].align}>
+                      <TableCell key={(index + 1) * 10} align={columns[5].align}>
                         {lastHellotime}
                       </TableCell>
                       <TableCell key={value.accountId} align={columns[5].align}>
@@ -163,7 +172,11 @@ const MemberListView = () => {
         />
       </ContentWrapper>
       <SearchWrapper>
-        <TextField sx={{ width: "300px" }} placeholder={""} onChange={(e) => setKeyword(e.target.value)} />
+        <TextField
+          sx={{ width: SEARCH_BAR_WIDTH }}
+          placeholder={MSG_HINT}
+          onChange={(e) => setKeyword(e.target.value)}
+        />
       </SearchWrapper>
     </>
   );

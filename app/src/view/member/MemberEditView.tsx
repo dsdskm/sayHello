@@ -6,7 +6,7 @@ import { Box, Button, Paper, TextField, Typography } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import FieldContentWrapper from "component/FieldContentWrapper";
 import FieldContentBottomWrapper from "component/FieldContentBottomWrapper";
-import { IMAGE_SIZE_HEIGHT, IMAGE_SIZE_WIDTH, ROUTE_MEMBER } from "common/Constant";
+import { DEFAULT_FIELD_WIDTH, IMAGE_SIZE_HEIGHT, IMAGE_SIZE_WIDTH, MAP_CENTER, ROUTE_MEMBER } from "common/Constant";
 import Loading from "component/Loading";
 import { DEFAULT_MEMBER_DATA, Member } from "interface/Member";
 import MemberDataHook from "api/MemberDataHook";
@@ -16,9 +16,10 @@ import { ChangeEvent, useEffect, useState, useRef } from "react";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { getStorage, KEY_ACCOUNT } from "common/Utils";
-import { addMember, deleteMember, searchAddress } from "api/FirebaseApi";
+import { addMember, deleteEventByMember, deleteHello, deleteMember, searchAddress } from "api/FirebaseApi";
 import MemberEventView from "./MemberEventView";
 import MemberHelloView from "./MemberHelloView";
+import { FieldWrapper } from "component/FieldWrapper";
 
 const ID_NAME = "name";
 const ID_CONTACT = "contact";
@@ -37,20 +38,20 @@ const LABEL_ADD = "추가";
 const LABEL_UPDATE = "수정";
 const LABEL_DELETE = "삭제";
 const LABEL_CANCEL = "취소";
+const LABEL_SEARCH = "검색";
+const LABEL_RESET = "초기화";
+const LABEL_LATITUDE = "위도";
+const LABEL_LONGITUDE = "경도";
 
 const MSG_COMPLETED = "완료되었습니다.";
 const MSG_FAILED = "실패하였습니다.";
+const MSG_DELETE = "삭제하시겠습니까? 모든 정보가 삭제됩니다.";
 const MSG_DELETED = "삭제되었습니다.";
-const DEFAULT_FIELD_WIDTH = 400;
+const MSG_ERROR_NAME = "이름을 입력하세요.";
+const MSG_ERROR_AGE = "나이를 입력하세요.";
+const MSG_ERROR_CONTACT = "연락처를 입력하세요.";
+const MSG_ERROR_ADDRESS = "주소를 입력하세요.";
 
-const FieldWrapper = styled(Paper)({
-  margin: 10,
-  padding: 50,
-  minWidth: 500,
-  textAlign: "center",
-});
-
-const CENTER = new naver.maps.LatLng(37.4867995957995, 126.982211871752);
 const MemberEditView = () => {
   const { memberList } = MemberDataHook();
   const params = useParams();
@@ -59,6 +60,7 @@ const MemberEditView = () => {
   const navigate = useNavigate();
   const [member, setMember] = useState<Member>(DEFAULT_MEMBER_DATA);
   const [updating, setUpdating] = useState(false);
+  const [searching, setSearching] = useState(false);
   const [localFile, setLocalFile] = useState<LocalFile>({
     name: null,
     path: null,
@@ -68,22 +70,26 @@ const MemberEditView = () => {
   let map: naver.maps.Map;
   useEffect(() => {
     const initMap = () => {
-      let centerPos;
-      if (member.latitude && member.longitude) {
-        centerPos = new naver.maps.LatLng(member.latitude, member.longitude);
-      } else {
-        centerPos = CENTER;
-      }
-      map = new naver.maps.Map("map", {
-        center: centerPos,
-        zoom: 12,
-        scaleControl: false,
-        logoControl: false,
-        mapDataControl: false,
-        zoomControl: true,
-      });
-      if (member) {
-        addMarker(member.latitude, member.longitude);
+      try {
+        let centerPos;
+        if (member.latitude && member.longitude) {
+          centerPos = new naver.maps.LatLng(member.latitude, member.longitude);
+        } else {
+          centerPos = MAP_CENTER;
+        }
+        map = new naver.maps.Map("map", {
+          center: centerPos,
+          zoom: 12,
+          scaleControl: false,
+          logoControl: false,
+          mapDataControl: false,
+          zoomControl: true,
+        });
+        if (member) {
+          addMarker(member.latitude, member.longitude);
+        }
+      } catch (e) {
+        console.log(e);
       }
     };
     initMap();
@@ -101,7 +107,7 @@ const MemberEditView = () => {
         setMember(data[0]);
       }
     }
-  }, [memberList, isAdd, id, member]);
+  }, [memberList, isAdd, id]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const id = e.target.id;
@@ -131,9 +137,11 @@ const MemberEditView = () => {
   };
 
   const onDeleteClick = async () => {
-    if (window.confirm("삭제하시겠습니까?")) {
+    if (window.confirm(MSG_DELETE)) {
       setUpdating(true);
       await deleteMember(member);
+      await deleteHello(member);
+      await deleteEventByMember(member);
       alert(MSG_DELETED);
       setUpdating(false);
       navigate(ROUTE_MEMBER);
@@ -142,16 +150,16 @@ const MemberEditView = () => {
 
   const onAddClick = async () => {
     if (!member.name) {
-      alert("이름을 입력하세요.");
+      alert(MSG_ERROR_NAME);
       return;
     } else if (!member.age) {
-      alert("나이를 입력하세요.");
+      alert(MSG_ERROR_AGE);
       return;
     } else if (!member.phone) {
-      alert("연락처를 입력하세요.");
+      alert(MSG_ERROR_CONTACT);
       return;
     } else if (!member.address) {
-      alert("주소를 입력하세요.");
+      alert(MSG_ERROR_ADDRESS);
       return;
     }
     setUpdating(true);
@@ -222,6 +230,7 @@ const MemberEditView = () => {
     }
   };
   const onSearchClick = async () => {
+    setSearching(true);
     const ret: any = await searchAddress(member.address);
     const address = ret.addresses[0];
     const lat = address.y;
@@ -229,6 +238,7 @@ const MemberEditView = () => {
     member.latitude = lat;
     member.longitude = lon;
     setMember({ ...member });
+    setSearching(false);
   };
   const getCommonField = (label: string, id: string, width: number, value: string) => {
     return (
@@ -244,11 +254,15 @@ const MemberEditView = () => {
         <CustomLabel label={label} size={LABEL_SIZE_SMALL} />
         <Box display="flex" justifyContent="center">
           <TextField autoComplete="off" sx={{ width: width }} id={id} type="text" value={value} onChange={onChange} />
-          <Button onClick={onSearchClick}>검색</Button>
+          {!searching && <Button onClick={onSearchClick}>{LABEL_SEARCH}</Button>}
         </Box>
         <Box display="flex" justifyContent="center">
-          <Typography sx={{ m: 1 }}>위도 {member.latitude}</Typography>
-          <Typography sx={{ m: 1 }}>경도 {member.longitude}</Typography>
+          <Typography sx={{ m: 1 }}>
+            {LABEL_LATITUDE} {member.latitude}
+          </Typography>
+          <Typography sx={{ m: 1 }}>
+            {LABEL_LONGITUDE} {member.longitude}
+          </Typography>
         </Box>
         <Box display="flex" justifyContent="center" sx={{ ml: 10, mr: 10 }}>
           <div id="map" style={{ height: 500, width: 500 }}></div>
@@ -278,7 +292,7 @@ const MemberEditView = () => {
             >
               <img src={imgSrc} width={IMAGE_SIZE_WIDTH} height={IMAGE_SIZE_HEIGHT} alt="logo" />
               <Button variant="contained" onClick={onImageResetClick}>
-                초기화
+                {LABEL_RESET}
               </Button>
             </div>
           </>
@@ -313,7 +327,7 @@ const MemberEditView = () => {
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DesktopDatePicker
             label={LABEL_AGE}
-            inputFormat="yyyy//MM/dd"
+            inputFormat="yyyy/MM/dd"
             value={member.age}
             onChange={onDateChange}
             renderInput={(params) => <TextField {...params} />}
@@ -325,7 +339,6 @@ const MemberEditView = () => {
 
   const NAME_FIELD = getCommonField(LABEL_NAME, ID_NAME, DEFAULT_FIELD_WIDTH, member.name);
   const AGE_FIELD = getAgeField();
-
   const PHONE_FIELD = getCommonField(LABEL_CONTACT, ID_CONTACT, DEFAULT_FIELD_WIDTH, member.phone.toString());
   const IMAGE_FIELD = getImageField();
   const ADDRESS_FILED = getAddressField(LABEL_ADDRESS, ID_ADDRESS, DEFAULT_FIELD_WIDTH, member.address.toString());

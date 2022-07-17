@@ -6,12 +6,13 @@ import TableComponent from "component/TableComponent";
 import { useNavigate } from "react-router-dom";
 import GlobalTab from "view/common/GlobalTab";
 import Loading from "component/Loading";
-import { ROUTE_NOTICE_EDIT } from "common/Constant";
+import { ROUTE_NOTICE_EDIT, SEARCH_BAR_WIDTH } from "common/Constant";
 import { NoticeData } from "interface/NoticeData";
 import { getTimeText } from "common/Utils";
 import SearchWrapper from "component/SearchWrapper";
 import ContentTopWrapper from "component/ContentTopWrapper";
 
+const LABEL_ADD = "등록";
 const COLUMN_NO = "NO";
 const COLUMN_NAME = "제목";
 const COLUMN_TIME = "시간";
@@ -69,7 +70,7 @@ const NoticeListView = () => {
       <GlobalTab />
       <ContentTopWrapper>
         <Button variant="contained" onClick={onAddClick}>
-          등록
+          {LABEL_ADD}
         </Button>
       </ContentTopWrapper>
 
@@ -127,7 +128,11 @@ const NoticeListView = () => {
         />
       </ContentWrapper>
       <SearchWrapper>
-        <TextField sx={{ width: "300px" }} placeholder={KEYWORD_HINT} onChange={(e) => setKeyword(e.target.value)} />
+        <TextField
+          sx={{ width: SEARCH_BAR_WIDTH }}
+          placeholder={KEYWORD_HINT}
+          onChange={(e) => setKeyword(e.target.value)}
+        />
       </SearchWrapper>
     </>
   );

@@ -57,3 +57,7 @@ export const getLogoImageComponent = (path: string, callback: (path: string) => 
     />
   );
 };
+
+export const DEFAULT_FIELD_WIDTH = 400;
+export const SEARCH_BAR_WIDTH = 300
+export const MAP_CENTER = new naver.maps.LatLng(37.4867995957995, 126.982211871752);

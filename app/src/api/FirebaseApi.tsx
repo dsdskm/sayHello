@@ -1,6 +1,6 @@
 import { auth, db, functions, storage } from "config/FirebaseConfig";
 import { uploadBytes, ref, getDownloadURL } from "firebase/storage";
-import { collection, deleteDoc, doc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDocs, query, setDoc, updateDoc, where, writeBatch } from "firebase/firestore";
 import { Account } from "interface/Account";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { LocalFile } from "interface/LocalFile";
@@ -206,6 +206,17 @@ export const addHello = async (hello: HelloData) => {
   await setDoc(ref, hello);
 };
 
+export const deleteHello = async (member: Member) => {
+  const q = query(collection(db, COLLECTION_HELLO, MODE, COLLECTION_DATA), where("member_id", "==", member.id));
+  const snapshot = await getDocs(q);
+  const batch = writeBatch(db);
+  snapshot.forEach((docu) => {
+    const ref = doc(db, COLLECTION_HELLO, MODE, COLLECTION_DATA, docu.id);
+    batch.delete(ref);
+  });
+  await batch.commit();
+};
+
 export const searchAddress = async (query: string) => {
   const serachAddress = httpsCallable(functions, "serachAddress");
   const res = await serachAddress({ query: query });
@@ -215,6 +226,17 @@ export const searchAddress = async (query: string) => {
 export const addEvent = async (event: EventData) => {
   const ref = doc(db, COLLECTION_EVENT, MODE, COLLECTION_DATA, event.id);
   await setDoc(ref, event);
+};
+
+export const deleteEventByMember = async (member: Member) => {
+  const q = query(collection(db, COLLECTION_EVENT, MODE, COLLECTION_DATA), where("member_id", "==", member.id));
+  const snapshot = await getDocs(q);
+  const batch = writeBatch(db);
+  snapshot.forEach((docu) => {
+    const ref = doc(db, COLLECTION_EVENT, MODE, COLLECTION_DATA, docu.id);
+    batch.delete(ref);
+  });
+  await batch.commit();
 };
 
 export const updateEventChecked = async (id: string) => {
