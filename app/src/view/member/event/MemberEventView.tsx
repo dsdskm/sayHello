@@ -230,7 +230,7 @@ const MemberEventView: React.FC<MemberProps> = ({ member, user }) => {
           {eventData.year > 0 && (
             <Typography>{eventData.year + "년 " + eventData.month + "월 " + eventData.date + "일"}</Typography>
           )}
-          {eventData.hour > 0 && <Typography>{eventData.hour + "시 " + eventData.min + "분"}</Typography>}
+          {eventData.hour >= 0 && <Typography>{eventData.hour + "시 " + eventData.min + "분"}</Typography>}
         </Box>
         {updating ? (
           <LoadingWrap />

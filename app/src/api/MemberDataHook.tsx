@@ -9,7 +9,7 @@ const MemberDataHook = () => {
   const [memberList, setMemberList] = useState<Array<Member>>();
 
   useEffect(() => {
-    const q = query(collection(db, COLLECTION_MEMBER, MODE, COLLECTION_DATA), orderBy("updateTime", "desc"));
+    const q = query(collection(db, COLLECTION_MEMBER, MODE, COLLECTION_DATA), orderBy("lastHellotime", "asc"));
     const snapshot = onSnapshot(q, (querySnapshot) => {
       const list: Array<Member> = [];
       querySnapshot.forEach((doc) => {

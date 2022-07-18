@@ -142,7 +142,7 @@ const MemberListView = () => {
               memberList
                 .filter((v) => {
                   if (keyword) {
-                    return v.name.includes(keyword);
+                    return v.name.includes(keyword) || v.memo.includes(keyword);
                   } else if (selectedManager && (selectedManager === v.accountId || selectedManager === LABEL_ALL)) {
                     return true;
                   } else {
