@@ -13,6 +13,11 @@ export interface Member {
   createTime: number;
   updateTime: number;
   memo: Array<string>;
+  sex: string;
+  partner: string;
+  child: string;
+  disabled: string;
+  level: number;
 }
 
 export const DEFAULT_MEMBER_DATA = {
@@ -30,4 +35,9 @@ export const DEFAULT_MEMBER_DATA = {
   createTime: 0,
   updateTime: 0,
   memo: [],
+  sex: "male",
+  partner: "없음",
+  child: "없음",
+  disabled: "없음",
+  level: 2, // 1~5
 };

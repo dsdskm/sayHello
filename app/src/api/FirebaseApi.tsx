@@ -188,6 +188,11 @@ export const addMember = async (member: Member, localFile: LocalFile, isAdd: Boo
         writer: member.writer,
         updateTime: member.updateTime,
         memo: member.memo,
+        sex: member.sex,
+        partner: member.partner,
+        child: member.child,
+        disabled: member.disabled,
+        level: member.level,
       });
     }
     return true;

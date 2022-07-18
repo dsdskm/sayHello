@@ -1,11 +1,18 @@
 /* eslint-disable */
 import CustomLabel, { LABEL_SIZE_SMALL } from "component/Labels";
 import GlobalTab from "view/common/GlobalTab";
-import { Box, Button, TextField, TextFieldProps, Typography } from "@mui/material";
+import { Box, Button, FormControl, FormControlLabel, Radio, RadioGroup, TextField, Typography } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import FieldContentWrapper from "component/FieldContentWrapper";
 import FieldContentBottomWrapper from "component/FieldContentBottomWrapper";
-import { DEFAULT_FIELD_WIDTH, IMAGE_SIZE_HEIGHT, IMAGE_SIZE_WIDTH, MAP_CENTER, ROUTE_MEMBER } from "common/Constant";
+import {
+  DEFAULT_FIELD_WIDTH,
+  IMAGE_SIZE_HEIGHT,
+  IMAGE_SIZE_WIDTH,
+  LARGE_FIELD_WIDTH,
+  MAP_CENTER,
+  ROUTE_MEMBER,
+} from "common/Constant";
 import Loading from "component/Loading";
 import { DEFAULT_MEMBER_DATA, Member } from "interface/Member";
 import MemberDataHook from "api/MemberDataHook";
@@ -14,10 +21,10 @@ import { ChangeEvent, useEffect, useState, useRef } from "react";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { getAge, getPhoneFormat } from "common/Utils";
-import { addEvent, addMember, deleteEventByMember, deleteHello, deleteMember, searchAddress } from "api/FirebaseApi";
+import { addMember, deleteEventByMember, deleteHello, deleteMember, searchAddress } from "api/FirebaseApi";
 import MemberEventView from "./event/MemberEventView";
 import MemberHelloView from "./hello/MemberHelloView";
-import { FieldWrapper } from "component/FieldWrapper";
+import { FieldWrapper, FieldWrapperSmall } from "component/FieldWrapper";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "config/FirebaseConfig";
 import AccountDataHook from "api/AccountDataHook";
@@ -29,6 +36,12 @@ const ID_CONTACT = "contact";
 const ID_ADDRESS = "address";
 const ID_MEMO = "memo";
 const ID_ACCOUNT_ID = "account_id";
+const ID_SEX = "sex";
+const ID_PARTNER = "partner";
+const ID_CHILD = "child";
+const ID_DISABLED = "disabled";
+const ID_LEVEL = "level";
+const ID_AGE = "age";
 
 const LABEL_NAME = "이름";
 const LABEL_AGE = "나이";
@@ -38,6 +51,13 @@ const LABEL_IMAGE = "사진";
 const LABEL_ADDRESS = "주소";
 const LABEL_MEMO = "메모";
 const LABEL_MANAGER = "담당자";
+const LABEL_SEX = "성별";
+const LABEL_MALE = "남";
+const LABEL_FEMALE = "여";
+const LABEL_PARTNER = "배우자";
+const LABEL_CHILD = "자식";
+const LABEL_DISALBED = "장애";
+const LABEL_LEVEL = "중요도";
 const LABEL_ADD = "추가";
 const LABEL_UPDATE = "수정";
 const LABEL_DELETE = "삭제";
@@ -47,6 +67,13 @@ const LABEL_SEARCH = "검색";
 const LABEL_RESET = "초기화";
 const LABEL_LATITUDE = "위도";
 const LABEL_LONGITUDE = "경도";
+const LABEL_TRUE = "있음";
+const LABEL_FALSE = "없음";
+export const LABEL_LEVEL_VERY_LOW = "보통";
+export const LABEL_LEVEL_LOW = "관심";
+export const LABEL_LEVEL_NORMAL = "중요";
+export const LABEL_LEVEL_HIGH = "높음";
+export const LABEL_LEVEL_VERY_HIGH = "매우높음";
 
 const MSG_COMPLETED = "완료되었습니다.";
 const MSG_FAILED = "실패하였습니다.";
@@ -143,6 +170,7 @@ const MemberEditView = () => {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const id = e.target.id;
     const value = e.target.value;
+    console.log(`id ${id} value ${value}`);
     if (member) {
       switch (id) {
         case ID_NAME:
@@ -304,7 +332,7 @@ const MemberEditView = () => {
   };
   const getCommonField = (label: string, id: string, width: number, value: string) => {
     return (
-      <FieldWrapper>
+      <FieldWrapper key={id}>
         <CustomLabel label={label} size={LABEL_SIZE_SMALL} />
         <TextField autoComplete="off" sx={{ width: width }} id={id} type="text" value={value} onChange={onChange} />
       </FieldWrapper>
@@ -312,7 +340,7 @@ const MemberEditView = () => {
   };
   const getAddressField = (label: string, id: string, width: number, value: string) => {
     return (
-      <FieldWrapper>
+      <FieldWrapper key={id}>
         <CustomLabel label={label} size={LABEL_SIZE_SMALL} />
         <Box display="flex" justifyContent="center">
           <TextField autoComplete="off" sx={{ width: width }} id={id} type="text" value={value} onChange={onChange} />
@@ -340,7 +368,7 @@ const MemberEditView = () => {
       imgSrc = member.image;
     }
     return (
-      <FieldWrapper>
+      <FieldWrapper key="image">
         <CustomLabel label={LABEL_IMAGE} size={LABEL_SIZE_SMALL} />
         <input ref={fileRef} type="file" accept="image/" onChange={onImageChange} />
         {imgSrc ? (
@@ -362,6 +390,122 @@ const MemberEditView = () => {
           <></>
         )}
       </FieldWrapper>
+    );
+  };
+
+  const getSexField = () => {
+    return (
+      <FieldWrapperSmall key={ID_SEX}>
+        <CustomLabel label={LABEL_SEX} size={LABEL_SIZE_SMALL} />
+        <FormControl>
+          <RadioGroup
+            row
+            aria-labelledby="demo-row-radio-buttons-group-label"
+            name="row-radio-buttons-group"
+            value={member.sex}
+            onChange={(e) => {
+              member.sex = e.target.value;
+              setMember({ ...member });
+            }}
+          >
+            <FormControlLabel value="male" control={<Radio />} label={LABEL_MALE} />
+            <FormControlLabel value="female" control={<Radio />} label={LABEL_FEMALE} />
+          </RadioGroup>
+        </FormControl>
+      </FieldWrapperSmall>
+    );
+  };
+
+  const getPartnerField = () => {
+    return (
+      <FieldWrapperSmall key={ID_PARTNER}>
+        <CustomLabel label={LABEL_PARTNER} size={LABEL_SIZE_SMALL} />
+        <FormControl>
+          <RadioGroup
+            row
+            aria-labelledby="demo-row-radio-buttons-group-label"
+            name="row-radio-buttons-group"
+            value={member.partner}
+            onChange={(e) => {
+              member.partner = e.target.value;
+              setMember({ ...member });
+            }}
+          >
+            <FormControlLabel value={LABEL_TRUE} control={<Radio />} label={LABEL_TRUE} />
+            <FormControlLabel value={LABEL_FALSE} control={<Radio />} label={LABEL_FALSE} />
+          </RadioGroup>
+        </FormControl>
+      </FieldWrapperSmall>
+    );
+  };
+  const getChildField = () => {
+    return (
+      <FieldWrapperSmall key={ID_CHILD}>
+        <CustomLabel label={LABEL_CHILD} size={LABEL_SIZE_SMALL} />
+        <FormControl>
+          <RadioGroup
+            row
+            aria-labelledby="demo-row-radio-buttons-group-label"
+            name="row-radio-buttons-group"
+            value={member.child}
+            onChange={(e) => {
+              member.child = e.target.value;
+              setMember({ ...member });
+            }}
+          >
+            <FormControlLabel value={LABEL_TRUE} control={<Radio />} label={LABEL_TRUE} />
+            <FormControlLabel value={LABEL_FALSE} control={<Radio />} label={LABEL_FALSE} />
+          </RadioGroup>
+        </FormControl>
+      </FieldWrapperSmall>
+    );
+  };
+  const getDisabledField = () => {
+    return (
+      <FieldWrapperSmall key={ID_DISABLED}>
+        <CustomLabel label={LABEL_DISALBED} size={LABEL_SIZE_SMALL} />
+        <FormControl>
+          <RadioGroup
+            row
+            aria-labelledby="demo-row-radio-buttons-group-label"
+            name="row-radio-buttons-group"
+            value={member.disabled}
+            onChange={(e) => {
+              member.disabled = e.target.value;
+              setMember({ ...member });
+            }}
+          >
+            <FormControlLabel value={LABEL_TRUE} control={<Radio />} label={LABEL_TRUE} />
+            <FormControlLabel value={LABEL_FALSE} control={<Radio />} label={LABEL_FALSE} />
+          </RadioGroup>
+        </FormControl>
+      </FieldWrapperSmall>
+    );
+  };
+
+  const getLevelField = () => {
+    return (
+      <FieldWrapperSmall key={ID_LEVEL}>
+        <CustomLabel label={LABEL_LEVEL} size={LABEL_SIZE_SMALL} />
+        <FormControl>
+          <RadioGroup
+            row
+            aria-labelledby="demo-row-radio-buttons-group-label"
+            name="row-radio-buttons-group"
+            value={member.level}
+            onChange={(e) => {
+              member.level = +e.target.value;
+              setMember({ ...member });
+            }}
+          >
+            <FormControlLabel value="1" control={<Radio />} label={LABEL_LEVEL_VERY_LOW} />
+            <FormControlLabel value="2" control={<Radio />} label={LABEL_LEVEL_LOW} />
+            <FormControlLabel value="3" control={<Radio />} label={LABEL_LEVEL_NORMAL} />
+            <FormControlLabel value="4" control={<Radio />} label={LABEL_LEVEL_HIGH} />
+            <FormControlLabel value="5" control={<Radio />} label={LABEL_LEVEL_VERY_HIGH} />
+          </RadioGroup>
+        </FormControl>
+      </FieldWrapperSmall>
     );
   };
 
@@ -388,7 +532,7 @@ const MemberEditView = () => {
   };
   const getMemoField = (label: string, id: string, width: number, memo: Array<string>) => {
     return (
-      <FieldWrapper>
+      <FieldWrapper id={id}>
         <CustomLabel label={label} size={LABEL_SIZE_SMALL} />
         <Box display="flex" flexDirection="column" alignItems="center">
           {memoArr.map((value, index) => {
@@ -407,7 +551,7 @@ const MemberEditView = () => {
                   }}
                 />
                 <Button
-                  sx={{ color: "red" }}
+                  sx={{ color: "red", m: 1 }}
                   onClick={(e) => {
                     onMemoDelete(index);
                   }}
@@ -417,14 +561,16 @@ const MemberEditView = () => {
               </Box>
             );
           })}
-          <Button onClick={onMemoAddClick}>{LABEL_ADD}</Button>
+          <Button sx={{ m: 1 }} onClick={onMemoAddClick}>
+            {LABEL_ADD}
+          </Button>
         </Box>
       </FieldWrapper>
     );
   };
   const getAgeField = () => {
     return (
-      <FieldWrapper>
+      <FieldWrapper id={ID_AGE}>
         <CustomLabel label={LABEL_AGE} size={LABEL_SIZE_SMALL} />
         {member.age && <Typography>{getAge(member.age)}세</Typography>}
         <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -453,8 +599,13 @@ const MemberEditView = () => {
   );
   const IMAGE_FIELD = getImageField();
   const ADDRESS_FILED = getAddressField(LABEL_ADDRESS, ID_ADDRESS, DEFAULT_FIELD_WIDTH, member.address.toString());
-  const MEMO_FIELD = getMemoField(LABEL_MEMO, ID_MEMO, DEFAULT_FIELD_WIDTH, member.memo);
+  const MEMO_FIELD = getMemoField(LABEL_MEMO, ID_MEMO, LARGE_FIELD_WIDTH, member.memo);
   const MANAGER_FIELD = getCommonField(LABEL_MANAGER, ID_ACCOUNT_ID, DEFAULT_FIELD_WIDTH, member.accountId);
+  const SEX_FIELD = getSexField();
+  const PARTNER_FIELD = getPartnerField();
+  const CHILD_FIELD = getChildField();
+  const DISABLED_FIELD = getDisabledField();
+  const LEVEL_FIELD = getLevelField();
   if (updating) {
     return <Loading />;
   }
@@ -462,11 +613,22 @@ const MemberEditView = () => {
     <>
       <GlobalTab />
       <FieldContentWrapper>
-        {NAME_FIELD}
-        {AGE_FIELD}
-        {PHONE_FIELD}
-        {IMAGE_FIELD}
-        {ADDRESS_FILED}
+        <Box display="flex" justifyContent="center">
+          {NAME_FIELD}
+          {AGE_FIELD}
+          {PHONE_FIELD}
+        </Box>
+        <Box display="flex" justifyContent="center">
+          {SEX_FIELD}
+          {PARTNER_FIELD}
+          {CHILD_FIELD}
+          {DISABLED_FIELD}
+          {LEVEL_FIELD}
+        </Box>
+        <Box display="flex" justifyContent="center">
+          {IMAGE_FIELD}
+          {ADDRESS_FILED}
+        </Box>
         {MEMO_FIELD}
         {MANAGER_FIELD}
         {isAdd ? (

@@ -34,6 +34,8 @@ import Loading from "component/Loading";
 import ContentTopWrapper from "component/ContentTopWrapper";
 import MemberMapView from "./MemberMapView";
 import AccountDataHook from "api/AccountDataHook";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "config/FirebaseConfig";
 
 const LABEL_ADD = "등록";
 const LABEL_MANAGER = "담당자";
@@ -68,6 +70,10 @@ export const columns: readonly Column[] = [
   { id: "accountId", name: COLUMN_ACCOUNTID, align: "center" },
 ];
 
+interface AccountKey {
+  [key: string]: Array<string>; // mail->name
+}
+
 const MemberListView = () => {
   const navigate = useNavigate();
   const { memberList } = MemberDataHook();
@@ -76,7 +82,32 @@ const MemberListView = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [keyword, setKeyword] = useState<string>();
   const [selectedManager, setSelecteManager] = useState<string>(LABEL_ALL);
+  const [nameList, setNameList] = useState<AccountKey | undefined>();
+  const [totalCount, setTotalCount] = useState(0);
 
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user && user.email) {
+        if (memberList) {
+          const filtered = memberList?.filter((data) => {
+            return data.accountId === user.email;
+          });
+          setTotalCount(filtered.length);
+        }
+      }
+    });
+    const initNameList = () => {
+      if (accountList) {
+        let tmpHash: AccountKey = {};
+        accountList.forEach((account) => {
+          tmpHash[account.email] = [account.name, account.phone];
+        });
+        setNameList(tmpHash);
+      }
+    };
+
+    initNameList();
+  }, [accountList]);
   const handleChange = (event: SelectChangeEvent) => {
     setSelecteManager(event.target.value as string);
   };
@@ -113,6 +144,9 @@ const MemberListView = () => {
           {LABEL_ADD}
         </Button>
       </ContentTopWrapper>
+      <Typography variant="h4" align="center">
+        담당 회원 {totalCount}명
+      </Typography>
       <MemberMapView />
       <ContentWrapper>
         <ContentTopWrapper>
@@ -151,6 +185,7 @@ const MemberListView = () => {
           </TableHead>
           <TableBody>
             {memberList &&
+              nameList &&
               memberList
                 .filter((v) => {
                   if (keyword) {
@@ -189,13 +224,21 @@ const MemberListView = () => {
                       <TableCell align={columns[3].align}>{value.age + ` (${age}세)`}</TableCell>
                       <TableCell align={columns[4].align}>{value.address}</TableCell>
                       <TableCell align={columns[5].align}>
-                        {value.memo.map((value,index) => {
-                          return <Typography align="left" key={index}>{value}</Typography>;
+                        {value.memo.map((value, index) => {
+                          return (
+                            <Typography align="left" key={index}>
+                              {value}
+                            </Typography>
+                          );
                         })}
                       </TableCell>
                       <TableCell align={columns[6].align}>{getPhoneFormat(value.phone)}</TableCell>
                       <TableCell align={columns[7].align}>{lastHellotime}</TableCell>
-                      <TableCell align={columns[8].align}>{value.accountId}</TableCell>
+                      <TableCell align={columns[8].align}>
+                        <Typography>{nameList[value.accountId][0]}</Typography>
+                        <Typography>{getPhoneFormat(nameList[value.accountId][1])}</Typography>
+                        <Typography>{value.accountId}</Typography>
+                      </TableCell>
                     </TableRow>
                   );
                 })}

@@ -26,7 +26,7 @@ import { getTimeText } from "common/Utils";
 import { MemberProps } from "../MemberProps";
 
 const LABEL_EVENT = "일정";
-const LABEL_OK = "확인";
+const LABEL_OK = "내용 확인";
 const LABEL_DELETE = "삭제";
 const LABEL_ADD = "등록";
 const MSG_ERROR_DATE = "날짜를 입력하세요.";
@@ -193,7 +193,11 @@ const MemberEventView: React.FC<MemberProps> = ({ member, user }) => {
                       </Button>
                     </TableCell>
                     <TableCell align={columns[5].align}>
-                      <Button sx={{ color: "red" }} variant="contained" onClick={() => onDeleteClick(value.id)}>
+                      <Button
+                        sx={{ backgroundColor: "red" }}
+                        variant="contained"
+                        onClick={() => onDeleteClick(value.id)}
+                      >
                         {LABEL_DELETE}
                       </Button>
                     </TableCell>
