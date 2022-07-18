@@ -120,7 +120,7 @@ const MemberHelloView: React.FC<MemberProps> = ({ member, user }) => {
                 const time = getTimeText(value.time);
                 return (
                   <TableRow hover role="checkbox" tabIndex={-1} key={value.id}>
-                    <TableCell align={columns[0].align}>{index + 1}</TableCell>
+                    <TableCell align={columns[0].align}>{page * rowsPerPage + index + 1}</TableCell>
                     <TableCell align={columns[1].align}>{value.text}</TableCell>
                     <TableCell align={columns[2].align}>{time}</TableCell>
                     <TableCell align={columns[3].align}>{value.writer}</TableCell>

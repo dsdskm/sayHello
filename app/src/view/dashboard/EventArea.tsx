@@ -49,7 +49,7 @@ const EventArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList }) =>
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [calendarEventList, setCalendarEventList] = useState<Array<CalendarData>>();
 
-  const { eventList } = EventDataHook("","desc");
+  const { eventList } = EventDataHook("", "desc");
 
   useEffect(() => {
     setCalendarEventList(
@@ -128,7 +128,7 @@ const EventArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList }) =>
                       const bgColor = value.checked ? "green" : "white";
                       return (
                         <TableRow role="checkbox" tabIndex={-1} key={value.id} sx={{ backgroundColor: bgColor }}>
-                          <TableCell align={columns[0].align}>{index + 1}</TableCell>
+                          <TableCell align={columns[0].align}>{page * rowsPerPage + index + 1}</TableCell>
                           <TableCell align={columns[1].align}>{value.name}</TableCell>
                           <TableCell align={columns[2].align}>{value.text}</TableCell>
                           <TableCell align={columns[3].align}>{time}</TableCell>

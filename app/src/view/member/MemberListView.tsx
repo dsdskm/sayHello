@@ -155,7 +155,7 @@ const MemberListView = () => {
                   const age = getAge(value.age);
                   return (
                     <TableRow hover role="checkbox" tabIndex={-1} key={index} onClick={() => onTableRowClick(value)}>
-                      <TableCell align={columns[0].align}>{index + 1}</TableCell>
+                      <TableCell align={columns[0].align}>{page * rowsPerPage + index + 1}</TableCell>
                       <TableCell align={columns[1].align}>
                         <img
                           src={value.image}
