@@ -12,7 +12,7 @@ export interface Member {
   writer: string;
   createTime: number;
   updateTime: number;
-  memo: string;
+  memo: Array<string>;
 }
 
 export const DEFAULT_MEMBER_DATA = {
@@ -29,5 +29,5 @@ export const DEFAULT_MEMBER_DATA = {
   writer: "",
   createTime: 0,
   updateTime: 0,
-  memo: "",
+  memo: [],
 };

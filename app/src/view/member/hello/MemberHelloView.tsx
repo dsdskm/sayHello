@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useState } from "react";
 import {
   Box,
@@ -107,19 +108,19 @@ const MemberHelloView: React.FC<MemberProps> = ({ member, user }) => {
         <TableComponent>
           <TableHead>
             <TableRow>
-              {columns.map((column) => (
-                <TableCell align={column.align} style={{ minWidth: column.minWidth }}>
+              {columns.map((column, index) => (
+                <TableCell align={column.align} style={{ minWidth: column.minWidth }} key={index}>
                   {column.name}
                 </TableCell>
               ))}
             </TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody key="">
             {helloList &&
               helloList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((value, index) => {
                 const time = getTimeText(value.time);
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={value.id}>
+                  <TableRow hover role="checkbox" tabIndex={index} key={index}>
                     <TableCell align={columns[0].align}>{page * rowsPerPage + index + 1}</TableCell>
                     <TableCell align={columns[1].align}>{value.text}</TableCell>
                     <TableCell align={columns[2].align}>{time}</TableCell>

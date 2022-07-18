@@ -8,7 +8,16 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import MemberDataHook from "api/MemberDataHook";
 import { getAge, getPhoneFormat, getTimeText } from "common/Utils";
-import { Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField } from "@mui/material";
+import {
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { Member } from "interface/Member";
 import { useNavigate } from "react-router-dom";
 import {
@@ -104,6 +113,7 @@ const MemberListView = () => {
           {LABEL_ADD}
         </Button>
       </ContentTopWrapper>
+      <MemberMapView />
       <ContentWrapper>
         <ContentTopWrapper>
           <FormControl sx={{ m: 1, width: 400 }}>
@@ -115,11 +125,13 @@ const MemberListView = () => {
               label="Manager"
               onChange={handleChange}
             >
-              <MenuItem value={LABEL_ALL}>{LABEL_ALL}</MenuItem>
+              <MenuItem value={LABEL_ALL} key="0">
+                {LABEL_ALL}
+              </MenuItem>
               {accountList &&
-                accountList.map((account) => {
+                accountList.map((account, index) => {
                   return (
-                    <MenuItem value={account.email}>
+                    <MenuItem value={account.email} key={index}>
                       {account.name}({account.email})
                     </MenuItem>
                   );
@@ -130,8 +142,8 @@ const MemberListView = () => {
         <TableComponent>
           <TableHead>
             <TableRow>
-              {columns.map((column) => (
-                <TableCell align={column.align} style={{ minWidth: column.minWidth }}>
+              {columns.map((column, index) => (
+                <TableCell align={column.align} style={{ minWidth: column.minWidth }} key={index}>
                   {column.name}
                 </TableCell>
               ))}
@@ -154,7 +166,13 @@ const MemberListView = () => {
                   const lastHellotime = value.lastHellotime === 0 ? "-" : getTimeText(value.lastHellotime);
                   const age = getAge(value.age);
                   return (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={index} onClick={() => onTableRowClick(value)}>
+                    <TableRow
+                      hover
+                      role="checkbox"
+                      tabIndex={index}
+                      key={value.id}
+                      onClick={() => onTableRowClick(value)}
+                    >
                       <TableCell align={columns[0].align}>{page * rowsPerPage + index + 1}</TableCell>
                       <TableCell align={columns[1].align}>
                         <img
@@ -170,7 +188,11 @@ const MemberListView = () => {
                       <TableCell align={columns[2].align}>{value.name}</TableCell>
                       <TableCell align={columns[3].align}>{value.age + ` (${age}세)`}</TableCell>
                       <TableCell align={columns[4].align}>{value.address}</TableCell>
-                      <TableCell align={columns[5].align}>{value.memo}</TableCell>
+                      <TableCell align={columns[5].align}>
+                        {value.memo.map((value,index) => {
+                          return <Typography align="left" key={index}>{value}</Typography>;
+                        })}
+                      </TableCell>
                       <TableCell align={columns[6].align}>{getPhoneFormat(value.phone)}</TableCell>
                       <TableCell align={columns[7].align}>{lastHellotime}</TableCell>
                       <TableCell align={columns[8].align}>{value.accountId}</TableCell>
@@ -196,7 +218,6 @@ const MemberListView = () => {
           onChange={(e) => setKeyword(e.target.value)}
         />
       </SearchWrapper>
-      <MemberMapView />
     </>
   );
 };

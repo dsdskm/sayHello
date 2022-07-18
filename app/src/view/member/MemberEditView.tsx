@@ -1,7 +1,7 @@
 /* eslint-disable */
 import CustomLabel, { LABEL_SIZE_SMALL } from "component/Labels";
 import GlobalTab from "view/common/GlobalTab";
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, TextField, TextFieldProps, Typography } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import FieldContentWrapper from "component/FieldContentWrapper";
 import FieldContentBottomWrapper from "component/FieldContentBottomWrapper";
@@ -75,6 +75,7 @@ const MemberEditView = () => {
   });
   const [user, setUser] = useState<string>();
   const [memberAccountId, setMemberAccountId] = useState<string>();
+  const [memoArr, setMemoArr] = useState<Array<string>>([]);
   const { accountList } = AccountDataHook();
   const fileRef = useRef<any>(null);
   let map: naver.maps.Map;
@@ -129,6 +130,7 @@ const MemberEditView = () => {
           return data.id === id;
         });
         if (data) {
+          setMemoArr(data[0].memo);
           setMember(data[0]);
           if (data[0]) {
             setMemberAccountId(data[0].accountId);
@@ -151,9 +153,6 @@ const MemberEditView = () => {
           break;
         case ID_ADDRESS:
           member.address = value;
-          break;
-        case ID_MEMO:
-          member.memo = value;
           break;
         case ID_ACCOUNT_ID:
           member.accountId = value;
@@ -196,7 +195,10 @@ const MemberEditView = () => {
       return;
     }
     setUpdating(true);
+    member.memo = memoArr;
     const result = await addMember(member, localFile, isAdd);
+
+    // 매년 생일 카드를 어떻게 뜨게 할지?
     const eventTime = new Date();
     eventTime.setFullYear(+member.age.split("/")[0]);
     eventTime.setMonth(+member.age.split("/")[1] - 1);
@@ -218,7 +220,6 @@ const MemberEditView = () => {
       image: member.image,
       writer: user,
     } as EventData;
-    // 매년 생일 카드를 어떻게 뜨게 할지?
     // await addEvent(eventData);
 
     if (result) {
@@ -364,20 +365,59 @@ const MemberEditView = () => {
     );
   };
 
-  const getMemoField = (label: string, id: string, width: number, value: string) => {
+  const onMemoAddClick = () => {
+    setMemoArr([...memoArr, ""]);
+  };
+  const onMemoChange = (value: string, index: number) => {
+    const tmpArr = memoArr;
+    tmpArr[index] = value;
+    setMemoArr(tmpArr);
+
+    member.memo = tmpArr;
+    setMember({ ...member });
+  };
+
+  const onMemoDelete = (index: number) => {
+    const tmpArr = memoArr;
+    const filteredArr = tmpArr.filter((v, i) => {
+      return index != i;
+    });
+    setMemoArr(filteredArr);
+    member.memo = filteredArr;
+    setMember({ ...member });
+  };
+  const getMemoField = (label: string, id: string, width: number, memo: Array<string>) => {
     return (
       <FieldWrapper>
         <CustomLabel label={label} size={LABEL_SIZE_SMALL} />
-        <TextField
-          autoComplete="off"
-          sx={{ width: width }}
-          id={id}
-          type="text"
-          value={value}
-          multiline
-          maxRows={10}
-          onChange={onChange}
-        />
+        <Box display="flex" flexDirection="column" alignItems="center">
+          {memoArr.map((value, index) => {
+            return (
+              <Box>
+                <TextField
+                  autoComplete="off"
+                  sx={{ width: width }}
+                  id={id}
+                  type="text"
+                  value={memo[index]}
+                  multiline
+                  maxRows={10}
+                  onChange={(e) => {
+                    onMemoChange(e.target.value, index);
+                  }}
+                />
+                <Button
+                  onClick={(e) => {
+                    onMemoDelete(index);
+                  }}
+                >
+                  {LABEL_DELETE}
+                </Button>
+              </Box>
+            );
+          })}
+          <Button onClick={onMemoAddClick}>{LABEL_ADD}</Button>
+        </Box>
       </FieldWrapper>
     );
   };

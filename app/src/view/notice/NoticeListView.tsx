@@ -78,8 +78,8 @@ const NoticeListView = () => {
         <TableComponent>
           <TableHead>
             <TableRow>
-              {columns.map((column) => (
-                <TableCell align={column.align} style={{ minWidth: column.minWidth }}>
+              {columns.map((column, index) => (
+                <TableCell align={column.align} style={{ minWidth: column.minWidth }} key={index}>
                   {column.name}
                 </TableCell>
               ))}
