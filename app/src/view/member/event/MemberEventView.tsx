@@ -71,7 +71,7 @@ const MemberEventView: React.FC<MemberProps> = ({ member, user }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const params = useParams();
-  const { eventList } = EventDataHook(params.id);
+  const { eventList } = EventDataHook(params.id, "desc");
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);

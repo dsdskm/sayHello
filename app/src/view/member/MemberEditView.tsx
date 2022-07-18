@@ -14,7 +14,7 @@ import { ChangeEvent, useEffect, useState, useRef } from "react";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { getAge, getPhoneFormat } from "common/Utils";
-import { addMember, deleteEventByMember, deleteHello, deleteMember, searchAddress } from "api/FirebaseApi";
+import { addEvent, addMember, deleteEventByMember, deleteHello, deleteMember, searchAddress } from "api/FirebaseApi";
 import MemberEventView from "./event/MemberEventView";
 import MemberHelloView from "./hello/MemberHelloView";
 import { FieldWrapper } from "component/FieldWrapper";
@@ -22,6 +22,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "config/FirebaseConfig";
 import AccountDataHook from "api/AccountDataHook";
 import { Account, DEFAULT_ACCOUNT_DATA } from "interface/Account";
+import { EventData } from "interface/EventData";
 
 const ID_NAME = "name";
 const ID_CONTACT = "contact";
@@ -55,6 +56,7 @@ const MSG_ERROR_NAME = "이름을 입력하세요.";
 const MSG_ERROR_AGE = "나이를 입력하세요.";
 const MSG_ERROR_CONTACT = "연락처를 입력하세요.";
 const MSG_ERROR_ADDRESS = "주소를 입력하세요.";
+const MSG_ERROR_EDIT = "담당자만 수정/삭제가 가능합니다.";
 
 const MemberEditView = () => {
   const { memberList } = MemberDataHook();
@@ -89,7 +91,7 @@ const MemberEditView = () => {
         }
       }
     });
-  }, [auth,accountList]);
+  }, [auth, accountList]);
   useEffect(() => {
     const initMap = () => {
       try {
@@ -128,7 +130,9 @@ const MemberEditView = () => {
         });
         if (data) {
           setMember(data[0]);
-          setMemberAccountId(data[0].accountId);
+          if (data[0]) {
+            setMemberAccountId(data[0].accountId);
+          }
         }
       }
     }
@@ -163,13 +167,17 @@ const MemberEditView = () => {
 
   const onDeleteClick = async () => {
     if (window.confirm(MSG_DELETE)) {
-      setUpdating(true);
-      await deleteMember(member);
-      await deleteHello(member);
-      await deleteEventByMember(member);
-      alert(MSG_DELETED);
-      setUpdating(false);
-      navigate(ROUTE_MEMBER);
+      try {
+        setUpdating(true);
+        await deleteMember(member);
+        await deleteHello(member);
+        await deleteEventByMember(member);
+        navigate(ROUTE_MEMBER);
+        alert(MSG_DELETED);
+      } catch (e) {
+        navigate(ROUTE_MEMBER);
+        alert(MSG_DELETED);
+      }
     }
   };
 
@@ -189,6 +197,29 @@ const MemberEditView = () => {
     }
     setUpdating(true);
     const result = await addMember(member, localFile, isAdd);
+    const eventTime = new Date();
+    eventTime.setFullYear(+member.age.split("/")[0]);
+    eventTime.setMonth(+member.age.split("/")[1] - 1);
+    eventTime.setDate(+member.age.split("/")[2]);
+    eventTime.setHours(7);
+    eventTime.setMinutes(0);
+    const eventData = {
+      id: new Date().getTime().toString(),
+      text: "생일",
+      member_id: member.id,
+      name: member.name,
+      year: eventTime.getFullYear(),
+      month: eventTime.getMonth() + 1,
+      date: eventTime.getDate(),
+      hour: eventTime.getHours(),
+      min: eventTime.getMinutes(),
+      eventTime: eventTime.getTime(),
+      checked: false,
+      image: member.image,
+      writer: user,
+    } as EventData;
+    await addEvent(eventData);
+
     if (result) {
       alert(MSG_COMPLETED);
     } else {
@@ -256,14 +287,18 @@ const MemberEditView = () => {
   };
   const onSearchClick = async () => {
     setSearching(true);
-    const ret: any = await searchAddress(member.address);
-    const address = ret.addresses[0];
-    const lat = address.y;
-    const lon = address.x;
-    member.latitude = lat;
-    member.longitude = lon;
-    setMember({ ...member });
-    setSearching(false);
+    try {
+      const ret: any = await searchAddress(member.address);
+      const address = ret.addresses[0];
+      const lat = address.y;
+      const lon = address.x;
+      member.latitude = lat;
+      member.longitude = lon;
+      setMember({ ...member });
+      setSearching(false);
+    } catch (e) {
+      setSearching(false);
+    }
   };
   const getCommonField = (label: string, id: string, width: number, value: string) => {
     return (
@@ -349,7 +384,7 @@ const MemberEditView = () => {
     return (
       <FieldWrapper>
         <CustomLabel label={LABEL_AGE} size={LABEL_SIZE_SMALL} />
-        <Typography>{getAge(member.age)}세</Typography>
+        {member.age && <Typography>{getAge(member.age)}세</Typography>}
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DesktopDatePicker
             label={LABEL_BORN}
@@ -363,6 +398,9 @@ const MemberEditView = () => {
     );
   };
 
+  if (!member) {
+    navigate(ROUTE_MEMBER);
+  }
   const NAME_FIELD = getCommonField(LABEL_NAME, ID_NAME, DEFAULT_FIELD_WIDTH, member.name);
   const AGE_FIELD = getAgeField();
   const PHONE_FIELD = getCommonField(
@@ -399,7 +437,7 @@ const MemberEditView = () => {
         )}
       </FieldContentWrapper>
       <FieldContentBottomWrapper>
-        {(memberAccountId && user === memberAccountId) || account.type === "master" ? (
+        {isAdd || (memberAccountId && user === memberAccountId) || account.type === "master" ? (
           <>
             <Button sx={{ m: 1 }} variant="contained" onClick={() => navigate(ROUTE_MEMBER)}>
               {LABEL_CANCEL}
@@ -417,9 +455,12 @@ const MemberEditView = () => {
           </>
         ) : (
           <>
-            <Button sx={{ m: 1 }} variant="contained" onClick={() => navigate(ROUTE_MEMBER)}>
-              {LABEL_OK}
-            </Button>
+            <Box display="flex" alignItems="center">
+              <Typography>{MSG_ERROR_EDIT}</Typography>
+              <Button sx={{ m: 1 }} variant="contained" onClick={() => navigate(ROUTE_MEMBER)}>
+                {LABEL_OK}
+              </Button>
+            </Box>
           </>
         )}
       </FieldContentBottomWrapper>

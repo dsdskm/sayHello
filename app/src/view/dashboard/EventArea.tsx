@@ -49,7 +49,7 @@ const EventArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList }) =>
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [calendarEventList, setCalendarEventList] = useState<Array<CalendarData>>();
 
-  const { eventList } = EventDataHook("");
+  const { eventList } = EventDataHook("","desc");
 
   useEffect(() => {
     setCalendarEventList(

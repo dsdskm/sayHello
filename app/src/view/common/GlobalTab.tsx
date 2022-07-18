@@ -113,16 +113,32 @@ const GlobalTab = () => {
         {getLogoImageComponent(ROUTE_LOGIN, goPage)}
         {user ? (
           <>
-            <Button id={ID_DASHBOARD} onClick={onClick} sx={{ height: 100, backgroundColor: tabColor[0] }}>
+            <Button
+              id={ID_DASHBOARD}
+              onClick={onClick}
+              sx={{ height: 100, backgroundColor: tabColor[0], fontSize: 20, borderRadius: "20px" }}
+            >
               대시보드
             </Button>
-            <Button id={ID_MEMBER} onClick={onClick} sx={{ height: 100, backgroundColor: tabColor[1] }}>
+            <Button
+              id={ID_MEMBER}
+              onClick={onClick}
+              sx={{ height: 100, backgroundColor: tabColor[1], fontSize: 20, borderRadius: "20px" }}
+            >
               회원관리
             </Button>
-            <Button id={ID_NOTICE} onClick={onClick} sx={{ height: 100, backgroundColor: tabColor[2] }}>
+            <Button
+              id={ID_NOTICE}
+              onClick={onClick}
+              sx={{ height: 100, backgroundColor: tabColor[2], fontSize: 20, borderRadius: "20px" }}
+            >
               공지사항
             </Button>
-            <Button id={ID_ACCOUNT} onClick={onClick} sx={{ height: 100, backgroundColor: tabColor[3] }}>
+            <Button
+              id={ID_ACCOUNT}
+              onClick={onClick}
+              sx={{ height: 100, backgroundColor: tabColor[3], fontSize: 20, borderRadius: "20px" }}
+            >
               계정관리
             </Button>
             {account && (
@@ -151,7 +167,11 @@ const GlobalTab = () => {
             )}
           </>
         ) : (
-          <Button id={ID_JOIN} onClick={onClick} sx={{ height: 100, backgroundColor: tabColor[4] }}>
+          <Button
+            id={ID_JOIN}
+            onClick={onClick}
+            sx={{ height: 100, backgroundColor: tabColor[4], fontSize: 20, borderRadius: "20px" }}
+          >
             회원가입
           </Button>
         )}

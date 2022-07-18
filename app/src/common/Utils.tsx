@@ -75,5 +75,13 @@ export const getAge = (value: string) => {
 };
 
 export const getPhoneFormat = (phone: string) => {
-  return phone.substring(0, 3) + "-" + phone.substring(3, 7) + "-" + phone.substring(7, 11);
+  if (phone) {
+    if (phone.length === 11 && !phone.includes("-")) {
+      return phone.substring(0, 3) + "-" + phone.substring(3, 7) + "-" + phone.substring(7, 11);
+    } else {
+      return phone;
+    }
+  } else {
+    return "";
+  }
 };
