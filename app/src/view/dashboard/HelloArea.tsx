@@ -2,10 +2,13 @@ import { TableBody, TableCell, TableHead, TablePagination, TableRow, TextField }
 import { Box } from "@mui/system";
 import HelloDataHook from "api/HelloDataHook";
 import { getTimeText } from "common/Utils";
+import CustomLabel, { LABEL_SIZE_SMALL } from "component/Labels";
 import SearchWrapper from "component/SearchWrapper";
 import TableComponent from "component/TableComponent";
 import { useState } from "react";
+import { DashBoardProps } from "./Dashboard";
 
+const LABEL_HELLO = "안부 내역";
 const COLUMN_NO = "NO";
 const COLUMN_NAME = "이름";
 const COLUMN_TEXT = "내용";
@@ -25,7 +28,7 @@ const columns: readonly Column[] = [
   { id: "time", name: COLUMN_TIME, align: "center" },
   { id: "writer", name: COLUMN_WRITER, align: "center" },
 ];
-const ListArea = () => {
+const ListArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList }) => {
   const { helloList } = HelloDataHook("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -42,11 +45,12 @@ const ListArea = () => {
   return (
     <>
       <Box sx={{ p: 1 }}>
+        <CustomLabel label={LABEL_HELLO} size={LABEL_SIZE_SMALL} />
         <TableComponent>
           <TableHead>
             <TableRow>
               {columns.map((column) => (
-                <TableCell key={column.name} align={column.align} style={{ minWidth: column.minWidth }}>
+                <TableCell align={column.align} style={{ minWidth: column.minWidth }}>
                   {column.name}
                 </TableCell>
               ))}
@@ -56,10 +60,14 @@ const ListArea = () => {
             {helloList &&
               helloList
                 .filter((v) => {
-                  if (keyword) {
-                    return v.name.includes(keyword) || v.text.includes(keyword);
+                  if (myMemberList && v.member_id in myMemberList) {
+                    if (keyword) {
+                      return v.name.includes(keyword) || v.text.includes(keyword);
+                    } else {
+                      return true;
+                    }
                   } else {
-                    return true;
+                    return false;
                   }
                 })
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -67,21 +75,11 @@ const ListArea = () => {
                   const time = getTimeText(value.time);
                   return (
                     <TableRow hover role="checkbox" tabIndex={-1} key={value.id}>
-                      <TableCell key={index} align={columns[0].align}>
-                        {index + 1}
-                      </TableCell>
-                      <TableCell key={value.text} align={columns[1].align}>
-                        {value.name}
-                      </TableCell>
-                      <TableCell key={value.text} align={columns[2].align}>
-                        {value.text}
-                      </TableCell>
-                      <TableCell key={value.time} align={columns[3].align}>
-                        {time}
-                      </TableCell>
-                      <TableCell key={value.writer} align={columns[4].align}>
-                        {value.writer}
-                      </TableCell>
+                      <TableCell align={columns[0].align}>{index + 1}</TableCell>
+                      <TableCell align={columns[1].align}>{value.name}</TableCell>
+                      <TableCell align={columns[2].align}>{value.text}</TableCell>
+                      <TableCell align={columns[3].align}>{time}</TableCell>
+                      <TableCell align={columns[4].align}>{value.writer}</TableCell>
                     </TableRow>
                   );
                 })}

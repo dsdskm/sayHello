@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable */
 import { db } from "config/FirebaseConfig";
 import { collection, onSnapshot, orderBy, query, where } from "firebase/firestore";
 import { EventData } from "interface/EventData";
@@ -13,9 +13,9 @@ const EventDataHook = (member_id: string | undefined) => {
       ? query(
           collection(db, COLLECTION_EVENT, MODE, COLLECTION_DATA),
           where("member_id", "==", member_id),
-          orderBy("eventTime", "asc")
+          orderBy("eventTime", "desc")
         )
-      : query(collection(db, COLLECTION_EVENT, MODE, COLLECTION_DATA), orderBy("eventTime", "asc"));
+      : query(collection(db, COLLECTION_EVENT, MODE, COLLECTION_DATA), orderBy("eventTime", "desc"));
 
     const snapshot = onSnapshot(q, (querySnapshot) => {
       const list: Array<EventData> = [];

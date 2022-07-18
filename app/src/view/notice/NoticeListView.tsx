@@ -79,7 +79,7 @@ const NoticeListView = () => {
           <TableHead>
             <TableRow>
               {columns.map((column) => (
-                <TableCell key={column.name} align={column.align} style={{ minWidth: column.minWidth }}>
+                <TableCell align={column.align} style={{ minWidth: column.minWidth }}>
                   {column.name}
                 </TableCell>
               ))}
@@ -100,18 +100,10 @@ const NoticeListView = () => {
                   const time = getTimeText(value.time);
                   return (
                     <TableRow hover role="checkbox" tabIndex={-1} key={value.id} onClick={() => onTableRowClick(value)}>
-                      <TableCell key={index} align={columns[0].align}>
-                        {index + 1}
-                      </TableCell>
-                      <TableCell key={value.title} align={columns[1].align}>
-                        {value.title}
-                      </TableCell>
-                      <TableCell key={value.time} align={columns[2].align}>
-                        {time}
-                      </TableCell>
-                      <TableCell key={value.writer} align={columns[3].align}>
-                        {value.writer}
-                      </TableCell>
+                      <TableCell align={columns[0].align}>{index + 1}</TableCell>
+                      <TableCell align={columns[1].align}>{value.title}</TableCell>
+                      <TableCell align={columns[2].align}>{time}</TableCell>
+                      <TableCell align={columns[3].align}>{value.writer}</TableCell>
                     </TableRow>
                   );
                 })}

@@ -10,8 +10,9 @@ import FieldContentBottomWrapper from "component/FieldContentBottomWrapper";
 import { ROUTE_NOTICE } from "common/Constant";
 import Loading from "component/Loading";
 import { addNotice, deleteNotice } from "api/FirebaseApi";
-import { getStorage, KEY_ACCOUNT } from "common/Utils";
 import { FieldWrapper } from "component/FieldWrapper";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "config/FirebaseConfig";
 
 const ID_NUM = "id";
 const ID_TITLE = "title";
@@ -40,7 +41,14 @@ const NoticeEditView = () => {
   const navigate = useNavigate();
   const [notice, setNotice] = useState<NoticeData>(DEFAULT_NOTICE_DATA);
   const [updating, setUpdating] = useState(false);
-
+  const [user, setUser] = useState<string>();
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user && user.email) {
+        setUser(user.email);
+      }
+    });
+  }, []);
   useEffect(() => {
     if (!isAdd) {
       const data = noticeList?.filter((data) => {
@@ -79,19 +87,21 @@ const NoticeEditView = () => {
   };
 
   const onAddClick = async () => {
-    notice.writer = getStorage(KEY_ACCOUNT);
-    if (!notice.title) {
-      alert(MSG_ERR_TITLE);
-      return;
-    } else if (!notice.contents) {
-      alert(MSG_ERR_CONTENTS);
-      return;
+    if (user) {
+      notice.writer = user;
+      if (!notice.title) {
+        alert(MSG_ERR_TITLE);
+        return;
+      } else if (!notice.contents) {
+        alert(MSG_ERR_CONTENTS);
+        return;
+      }
+      setUpdating(true);
+      await addNotice(notice, isAdd);
+      alert(MSG_COMPLETED);
+      setUpdating(false);
+      navigate(ROUTE_NOTICE);
     }
-    setUpdating(true);
-    await addNotice(notice, isAdd);
-    alert(MSG_COMPLETED);
-    setUpdating(false);
-    navigate(ROUTE_NOTICE);
   };
 
   const getCommonField = (label: string, id: string, width: number, value: string) => {

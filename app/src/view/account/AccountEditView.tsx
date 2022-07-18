@@ -97,7 +97,6 @@ const AccountEditView = () => {
   const PHONE_FIELD = getCommonField(LABEL_PHONE, ID_PHONE, DEFAULT_FIELD_WIDTH, account?.phone);
   const AGE_FIELD = getAgeField();
   const ADDRESS_FIELD = getCommonField(LABEL_ADDRESS, ID_ADDRESS, DEFAULT_FIELD_WIDTH, account?.address);
-
   return (
     <>
       <GlobalTab />

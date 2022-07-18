@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Button,
@@ -11,16 +11,20 @@ import {
   TextField,
 } from "@mui/material";
 import { DEFAULT_HELLO_DATA, HelloData } from "interface/HelloData";
-import { getStorage, getTimeText, KEY_ACCOUNT } from "common/Utils";
+import { getTimeText } from "common/Utils";
 import { addHello, updateLastHelloTime } from "api/FirebaseApi";
 import LoadingWrap from "component/LoadingWrap";
 import HelloDataHook from "api/HelloDataHook";
-import { DEFAULT_MEMBER_DATA, Member } from "interface/Member";
 import TableComponent from "component/TableComponent";
 import { useParams } from "react-router-dom";
-import MemberDataHook from "api/MemberDataHook";
 import CustomLabel, { LABEL_SIZE_SMALL } from "component/Labels";
 import { styled } from "@mui/system";
+import { MemberProps } from "../MemberProps";
+
+const MSG_ERROR_TEXT_LEN = "안부를 5자이상 입력하세요.";
+const MSG_ERROR_TEXT = "안부를 입력하세요.";
+const LABEL_ADD = "등록";
+const LABEL_LIST = "안부 내역";
 
 const COLUMN_NO = "NO";
 const COLUMN_TEXT = "내용";
@@ -33,7 +37,6 @@ interface Column {
   align?: "center";
   format?: (value: number) => string;
 }
-
 const columns: readonly Column[] = [
   { id: "no", name: COLUMN_NO, align: "center" },
   { id: "name", name: COLUMN_TEXT, align: "center" },
@@ -47,28 +50,17 @@ const FieldWrapper = styled(Paper)({
   textAlign: "center",
 });
 
-const MemberHelloView = () => {
+const MemberHelloView: React.FC<MemberProps> = ({ member, user }) => {
   const [hello, setHello] = useState<HelloData>(DEFAULT_HELLO_DATA);
   const [updating, setUpdating] = useState(false);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [member, setMember] = useState<Member>(DEFAULT_MEMBER_DATA);
   const params = useParams();
   if (params.id) {
     hello.member_id = params.id?.toString();
-    hello.writer = getStorage(KEY_ACCOUNT);
   }
-  const { memberList } = MemberDataHook();
   const { helloList } = HelloDataHook(hello.member_id);
 
-  useEffect(() => {
-    const data = memberList?.filter((data) => {
-      return data.id === params.id;
-    });
-    if (data) {
-      setMember(data[0]);
-    }
-  }, [memberList, params]);
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
@@ -84,18 +76,21 @@ const MemberHelloView = () => {
   };
 
   const onClick = async () => {
-    if (!hello.text || hello.text.length < 5) {
-      alert("안부를 5자 이상 입력하세요.");
-      return;
+    if (user) {
+      if (!hello.text || hello.text.length < 5) {
+        alert(MSG_ERROR_TEXT_LEN);
+        return;
+      }
+      setUpdating(true);
+      hello.writer = user;
+      hello.time = new Date().getTime();
+      hello.id = hello.time.toString();
+      hello.name = member.name;
+      await addHello(hello);
+      await updateLastHelloTime(hello.member_id);
+      reset();
+      setUpdating(false);
     }
-    setUpdating(true);
-    hello.time = new Date().getTime();
-    hello.id = hello.time.toString();
-    hello.name = member.name;
-    await addHello(hello);
-    await updateLastHelloTime(hello.member_id);
-    reset();
-    setUpdating(false);
   };
 
   const reset = () => {
@@ -108,12 +103,12 @@ const MemberHelloView = () => {
   return (
     <>
       <FieldWrapper>
-        <CustomLabel label="안부 내역" size={LABEL_SIZE_SMALL} />
+        <CustomLabel label={LABEL_LIST} size={LABEL_SIZE_SMALL} />
         <TableComponent>
           <TableHead>
             <TableRow>
               {columns.map((column) => (
-                <TableCell key={column.name} align={column.align} style={{ minWidth: column.minWidth }}>
+                <TableCell align={column.align} style={{ minWidth: column.minWidth }}>
                   {column.name}
                 </TableCell>
               ))}
@@ -125,18 +120,10 @@ const MemberHelloView = () => {
                 const time = getTimeText(value.time);
                 return (
                   <TableRow hover role="checkbox" tabIndex={-1} key={value.id}>
-                    <TableCell key={index} align={columns[0].align}>
-                      {index + 1}
-                    </TableCell>
-                    <TableCell key={value.text} align={columns[1].align}>
-                      {value.text}
-                    </TableCell>
-                    <TableCell key={value.time} align={columns[2].align}>
-                      {time}
-                    </TableCell>
-                    <TableCell key={value.writer} align={columns[3].align}>
-                      {value.writer}
-                    </TableCell>
+                    <TableCell align={columns[0].align}>{index + 1}</TableCell>
+                    <TableCell align={columns[1].align}>{value.text}</TableCell>
+                    <TableCell align={columns[2].align}>{time}</TableCell>
+                    <TableCell align={columns[3].align}>{value.writer}</TableCell>
                   </TableRow>
                 );
               })}
@@ -156,7 +143,7 @@ const MemberHelloView = () => {
         ) : (
           <Box display="flex" justifyContent="center" sx={{ m: 1 }}>
             <TextField
-              placeholder="안부를 입력하세요."
+              placeholder={MSG_ERROR_TEXT}
               value={hello.text}
               autoComplete="off"
               sx={{ width: "500px" }}
@@ -166,7 +153,7 @@ const MemberHelloView = () => {
               onChange={onChange}
             />
             <Button onClick={onClick} variant="contained">
-              등록
+              {LABEL_ADD}
             </Button>
           </Box>
         )}

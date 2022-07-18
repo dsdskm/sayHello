@@ -21,13 +21,15 @@ import ContentWrapper from "component/ContentWrapper";
 import TableComponent from "component/TableComponent";
 import SearchWrapper from "component/SearchWrapper";
 import Loading from "component/Loading";
+import MemberDataHook from "api/MemberDataHook";
 
 const COLUMN_NO = "NO";
 const COLUMN_NAME = "이름";
 const COLUMN_IMAGE = "사진";
 const COLUMN_EMAIL = "email";
 const COLUMN_PHONE = "전화번호";
-const COLUMN_TIME = "날짜";
+const COLUMN_MEMBER = "관리 회원";
+const COLUMN_TIME = "등록일";
 const KEYWORD_HINT = "이름이나 이메일을 입력하세요";
 
 interface Column {
@@ -44,12 +46,14 @@ const columns: readonly Column[] = [
   { id: "image", name: COLUMN_IMAGE, align: "center" },
   { id: "email", name: COLUMN_EMAIL, align: "center" },
   { id: "phone", name: COLUMN_PHONE, align: "center" },
+  { id: "member", name: COLUMN_MEMBER, align: "center" },
   { id: "time", name: COLUMN_TIME, align: "center" },
 ];
 
 const AccountListView = () => {
   const navigate = useNavigate();
   const { accountList } = AccountDataHook();
+  const { memberList } = MemberDataHook();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [keyword, setKeyword] = React.useState<string>();
@@ -83,7 +87,7 @@ const AccountListView = () => {
           <TableHead>
             <TableRow>
               {columns.map((column) => (
-                <TableCell key={column.name} align={column.align} style={{ minWidth: column.minWidth }}>
+                <TableCell align={column.align} style={{ minWidth: column.minWidth }}>
                   {column.name}
                 </TableCell>
               ))}
@@ -102,30 +106,24 @@ const AccountListView = () => {
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((value, index) => {
                   const time = getTimeText(value.time);
+                  const memberCount = memberList?.filter((data) => {
+                    return data.accountId === value.email;
+                  }).length;
                   return (
                     <TableRow hover role="checkbox" tabIndex={-1} key={value.id} onClick={() => onTableRowClick(value)}>
-                      <TableCell key={index} align={columns[0].align}>
-                        {index + 1}
-                      </TableCell>
-                      <TableCell key={value.name} align={columns[1].align}>
-                        {value.name}
-                      </TableCell>
-                      <TableCell key={value.image} align={columns[2].align}>
+                      <TableCell align={columns[0].align}>{index + 1}</TableCell>
+                      <TableCell align={columns[1].align}>{value.name}</TableCell>
+                      <TableCell align={columns[2].align}>
                         <img
                           src={value.image}
                           alt="account"
                           style={{ margin: MARGIN_DEFAULT, width: PROFILE_IMAGE_WIDTH, height: PROFILE_IMAGE_HEIGHT }}
                         />
                       </TableCell>
-                      <TableCell key={value.email} align={columns[3].align}>
-                        {value.email}
-                      </TableCell>
-                      <TableCell key={value.phone} align={columns[4].align}>
-                        {value.phone}
-                      </TableCell>
-                      <TableCell key={value.time} align={columns[5].align}>
-                        {time}
-                      </TableCell>
+                      <TableCell align={columns[3].align}>{value.email}</TableCell>
+                      <TableCell align={columns[4].align}>{value.phone}</TableCell>
+                      <TableCell align={columns[5].align}>{memberCount}명</TableCell>
+                      <TableCell align={columns[6].align}>{time}</TableCell>
                     </TableRow>
                   );
                 })}

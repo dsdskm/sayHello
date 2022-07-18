@@ -11,10 +11,17 @@ import { CalendarData } from "interface/CalendarData";
 import LoadingWrap from "component/LoadingWrap";
 import SearchWrapper from "component/SearchWrapper";
 import { Box } from "@mui/system";
+import { DashBoardProps } from "./Dashboard";
+
+const LABEL_OK = "내용 확인";
+const LABEL_DELETE = "삭제";
+const MSG_CHECKED = "일정을 확인하였습니까?";
+const MSG_DELETE = "삭제하시겠습니까?";
 const COLUMN_NO = "NO";
 const COLUMN_NAME = "이름";
 const COLUMN_TEXT = "내용";
 const COLUMN_TIME = "일정";
+const COLUMN_WRITER = "작성자";
 const COLUMN_DELETE = "삭제";
 const COLUMN_CHECKED = "확인";
 interface Column {
@@ -29,10 +36,11 @@ const columns: readonly Column[] = [
   { id: "name", name: COLUMN_NAME, align: "center" },
   { id: "text", name: COLUMN_TEXT, align: "center" },
   { id: "time", name: COLUMN_TIME, align: "center" },
+  { id: "writer", name: COLUMN_WRITER, align: "center" },
   { id: "checked", name: COLUMN_CHECKED, align: "center" },
   { id: "delete", name: COLUMN_DELETE, align: "center" },
 ];
-const CalendarArea = () => {
+const EventArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList }) => {
   moment.locale("ko-KR");
   const localizer = momentLocalizer(moment);
   const [updating, setUpdating] = useState(false);
@@ -44,8 +52,14 @@ const CalendarArea = () => {
   const { eventList } = EventDataHook("");
 
   useEffect(() => {
-    setCalendarEventList(getCalendarEventList(eventList));
-  }, [eventList]);
+    setCalendarEventList(
+      getCalendarEventList(
+        eventList?.filter((v) => {
+          return myMemberList && v.member_id in myMemberList;
+        })
+      )
+    );
+  }, [eventList, myMemberList]);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -57,20 +71,19 @@ const CalendarArea = () => {
   };
 
   const onDeleteClick = async (id: string) => {
-    if (window.confirm("삭제하시겠습니까?")) {
+    if (window.confirm(MSG_DELETE)) {
       setUpdating(true);
       await deleteEvent(id);
       setUpdating(false);
     }
   };
   const onCheckedClick = async (id: string) => {
-    if (window.confirm("일정을 확인 하였습니까?")) {
+    if (window.confirm(MSG_CHECKED)) {
       setUpdating(true);
       await updateEventChecked(id);
       setUpdating(false);
     }
   };
-  console.log(`calendarEventList`, calendarEventList);
   return (
     <>
       <Calendar
@@ -89,7 +102,7 @@ const CalendarArea = () => {
               <TableHead>
                 <TableRow>
                   {columns.map((column) => (
-                    <TableCell key={column.name} align={column.align} style={{ minWidth: column.minWidth }}>
+                    <TableCell align={column.align} style={{ minWidth: column.minWidth }}>
                       {column.name}
                     </TableCell>
                   ))}
@@ -99,10 +112,14 @@ const CalendarArea = () => {
                 {eventList &&
                   eventList
                     .filter((v) => {
-                      if (keyword) {
-                        return v.name.includes(keyword) || v.text.includes(keyword);
+                      if (myMemberList && v.member_id in myMemberList) {
+                        if (keyword) {
+                          return v.name.includes(keyword) || v.text.includes(keyword);
+                        } else {
+                          return true;
+                        }
                       } else {
-                        return true;
+                        return false;
                       }
                     })
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -111,26 +128,19 @@ const CalendarArea = () => {
                       const bgColor = value.checked ? "green" : "white";
                       return (
                         <TableRow role="checkbox" tabIndex={-1} key={value.id} sx={{ backgroundColor: bgColor }}>
-                          <TableCell key={index} align={columns[0].align}>
-                            {index + 1}
-                          </TableCell>
-                          <TableCell key={value.name} align={columns[1].align}>
-                            {value.name}
-                          </TableCell>
-                          <TableCell key={value.text} align={columns[2].align}>
-                            {value.text}
-                          </TableCell>
-                          <TableCell key={value.eventTime} align={columns[3].align}>
-                            {time}
-                          </TableCell>
-                          <TableCell key={(index + 1) * 100} align={columns[4].align}>
+                          <TableCell align={columns[0].align}>{index + 1}</TableCell>
+                          <TableCell align={columns[1].align}>{value.name}</TableCell>
+                          <TableCell align={columns[2].align}>{value.text}</TableCell>
+                          <TableCell align={columns[3].align}>{time}</TableCell>
+                          <TableCell align={columns[4].align}>{value.writer}</TableCell>
+                          <TableCell align={columns[5].align}>
                             <Button variant="contained" onClick={() => onCheckedClick(value.id)}>
-                              확인
+                              {LABEL_OK}
                             </Button>
                           </TableCell>
-                          <TableCell key={(index + 1) * 10} align={columns[4].align}>
+                          <TableCell align={columns[6].align}>
                             <Button variant="contained" onClick={() => onDeleteClick(value.id)}>
-                              삭제
+                              {LABEL_DELETE}
                             </Button>
                           </TableCell>
                         </TableRow>
@@ -157,4 +167,4 @@ const CalendarArea = () => {
   );
 };
 
-export default CalendarArea;
+export default EventArea;

@@ -11,6 +11,7 @@ export interface EventData {
   eventTime: number;
   checked: Boolean;
   image: string;
+  writer: string;
 }
 
 export const DEFAULT_EVENT_DATA = {
@@ -26,4 +27,5 @@ export const DEFAULT_EVENT_DATA = {
   eventTime: 0,
   checked: false,
   image: "",
+  writer: "",
 };

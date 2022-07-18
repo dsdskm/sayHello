@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable */
 import { db } from "config/FirebaseConfig";
 import { collection, getDocs, onSnapshot, orderBy, query } from "firebase/firestore";
 import { NoticeData } from "interface/NoticeData";

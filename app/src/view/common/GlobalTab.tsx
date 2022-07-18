@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable */
 import { useCallback, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import { Button, Typography } from "@mui/material";

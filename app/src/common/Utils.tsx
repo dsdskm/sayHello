@@ -66,3 +66,14 @@ export const getCalendarEventList = (eventList: Array<EventData> | undefined) =>
 
   return list;
 };
+
+export const getAge = (value: string) => {
+  const today = new Date();
+  const ages = value.split("/");
+  const age = today.getFullYear() - Number(ages[0]);
+  return age;
+};
+
+export const getPhoneFormat = (phone: string) => {
+  return phone.substring(0, 3) + "-" + phone.substring(3, 7) + "-" + phone.substring(7, 11);
+};

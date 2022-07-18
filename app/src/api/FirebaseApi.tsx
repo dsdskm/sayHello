@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { auth, db, functions, storage } from "config/FirebaseConfig";
 import { uploadBytes, ref, getDownloadURL } from "firebase/storage";
 import { collection, deleteDoc, doc, getDocs, query, setDoc, updateDoc, where, writeBatch } from "firebase/firestore";

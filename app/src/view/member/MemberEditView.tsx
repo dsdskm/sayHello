@@ -1,8 +1,7 @@
 /* eslint-disable */
 import CustomLabel, { LABEL_SIZE_SMALL } from "component/Labels";
 import GlobalTab from "view/common/GlobalTab";
-import { styled } from "@material-ui/styles";
-import { Box, Button, Paper, TextField, Typography } from "@mui/material";
+import { Box, Button, TextField, Typography } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import FieldContentWrapper from "component/FieldContentWrapper";
 import FieldContentBottomWrapper from "component/FieldContentBottomWrapper";
@@ -12,14 +11,17 @@ import { DEFAULT_MEMBER_DATA, Member } from "interface/Member";
 import MemberDataHook from "api/MemberDataHook";
 import { LocalFile } from "interface/LocalFile";
 import { ChangeEvent, useEffect, useState, useRef } from "react";
-
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { getStorage, KEY_ACCOUNT } from "common/Utils";
+import { getAge, getPhoneFormat } from "common/Utils";
 import { addMember, deleteEventByMember, deleteHello, deleteMember, searchAddress } from "api/FirebaseApi";
-import MemberEventView from "./MemberEventView";
-import MemberHelloView from "./MemberHelloView";
+import MemberEventView from "./event/MemberEventView";
+import MemberHelloView from "./hello/MemberHelloView";
 import { FieldWrapper } from "component/FieldWrapper";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "config/FirebaseConfig";
+import AccountDataHook from "api/AccountDataHook";
+import { Account, DEFAULT_ACCOUNT_DATA } from "interface/Account";
 
 const ID_NAME = "name";
 const ID_CONTACT = "contact";
@@ -29,6 +31,7 @@ const ID_ACCOUNT_ID = "account_id";
 
 const LABEL_NAME = "이름";
 const LABEL_AGE = "나이";
+const LABEL_BORN = "출생";
 const LABEL_CONTACT = "연락처";
 const LABEL_IMAGE = "사진";
 const LABEL_ADDRESS = "주소";
@@ -38,6 +41,7 @@ const LABEL_ADD = "추가";
 const LABEL_UPDATE = "수정";
 const LABEL_DELETE = "삭제";
 const LABEL_CANCEL = "취소";
+const LABEL_OK = "확인";
 const LABEL_SEARCH = "검색";
 const LABEL_RESET = "초기화";
 const LABEL_LATITUDE = "위도";
@@ -59,6 +63,7 @@ const MemberEditView = () => {
   const isAdd = id === "-1";
   const navigate = useNavigate();
   const [member, setMember] = useState<Member>(DEFAULT_MEMBER_DATA);
+  const [account, setAccount] = useState<Account>(DEFAULT_ACCOUNT_DATA);
   const [updating, setUpdating] = useState(false);
   const [searching, setSearching] = useState(false);
   const [localFile, setLocalFile] = useState<LocalFile>({
@@ -66,8 +71,25 @@ const MemberEditView = () => {
     path: null,
     file: null,
   });
+  const [user, setUser] = useState<string>();
+  const [memberAccountId, setMemberAccountId] = useState<string>();
+  const { accountList } = AccountDataHook();
   const fileRef = useRef<any>(null);
   let map: naver.maps.Map;
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user && user.email) {
+        setUser(user.email);
+        if (accountList) {
+          const account = accountList?.filter((data) => {
+            return data.email === user.email;
+          });
+          setAccount(account[0]);
+        }
+      }
+    });
+  }, [auth,accountList]);
   useEffect(() => {
     const initMap = () => {
       try {
@@ -95,16 +117,19 @@ const MemberEditView = () => {
     initMap();
   }, [member]);
   useEffect(() => {
-    if (isAdd) {
-      member.accountId = getStorage(KEY_ACCOUNT);
-      member.writer = getStorage(KEY_ACCOUNT);
-      setMember({ ...member });
-    } else {
-      const data = memberList?.filter((data) => {
-        return data.id === id;
-      });
-      if (data) {
-        setMember(data[0]);
+    if (user) {
+      if (isAdd) {
+        member.accountId = user;
+        member.writer = user;
+        setMember({ ...member });
+      } else {
+        const data = memberList?.filter((data) => {
+          return data.id === id;
+        });
+        if (data) {
+          setMember(data[0]);
+          setMemberAccountId(data[0].accountId);
+        }
       }
     }
   }, [memberList, isAdd, id]);
@@ -324,9 +349,10 @@ const MemberEditView = () => {
     return (
       <FieldWrapper>
         <CustomLabel label={LABEL_AGE} size={LABEL_SIZE_SMALL} />
+        <Typography>{getAge(member.age)}세</Typography>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DesktopDatePicker
-            label={LABEL_AGE}
+            label={LABEL_BORN}
             inputFormat="yyyy/MM/dd"
             value={member.age}
             onChange={onDateChange}
@@ -339,7 +365,12 @@ const MemberEditView = () => {
 
   const NAME_FIELD = getCommonField(LABEL_NAME, ID_NAME, DEFAULT_FIELD_WIDTH, member.name);
   const AGE_FIELD = getAgeField();
-  const PHONE_FIELD = getCommonField(LABEL_CONTACT, ID_CONTACT, DEFAULT_FIELD_WIDTH, member.phone.toString());
+  const PHONE_FIELD = getCommonField(
+    LABEL_CONTACT,
+    ID_CONTACT,
+    DEFAULT_FIELD_WIDTH,
+    getPhoneFormat(member.phone.toString())
+  );
   const IMAGE_FIELD = getImageField();
   const ADDRESS_FILED = getAddressField(LABEL_ADDRESS, ID_ADDRESS, DEFAULT_FIELD_WIDTH, member.address.toString());
   const MEMO_FIELD = getMemoField(LABEL_MEMO, ID_MEMO, DEFAULT_FIELD_WIDTH, member.memo);
@@ -362,25 +393,35 @@ const MemberEditView = () => {
           <></>
         ) : (
           <>
-            <MemberEventView />
-            <MemberHelloView />
+            <MemberEventView user={user} member={member} />
+            <MemberHelloView user={user} member={member} />
           </>
         )}
       </FieldContentWrapper>
       <FieldContentBottomWrapper>
-        <Button sx={{ m: 1 }} variant="contained" onClick={() => navigate(ROUTE_MEMBER)}>
-          {LABEL_CANCEL}
-        </Button>
-        {isAdd ? (
-          <></>
+        {(memberAccountId && user === memberAccountId) || account.type === "master" ? (
+          <>
+            <Button sx={{ m: 1 }} variant="contained" onClick={() => navigate(ROUTE_MEMBER)}>
+              {LABEL_CANCEL}
+            </Button>
+            {isAdd ? (
+              <></>
+            ) : (
+              <Button sx={{ m: 1 }} variant="contained" onClick={onDeleteClick}>
+                {LABEL_DELETE}
+              </Button>
+            )}
+            <Button sx={{ m: 1 }} variant="contained" onClick={onAddClick}>
+              {isAdd ? LABEL_ADD : LABEL_UPDATE}
+            </Button>
+          </>
         ) : (
-          <Button sx={{ m: 1 }} variant="contained" onClick={onDeleteClick}>
-            {LABEL_DELETE}
-          </Button>
+          <>
+            <Button sx={{ m: 1 }} variant="contained" onClick={() => navigate(ROUTE_MEMBER)}>
+              {LABEL_OK}
+            </Button>
+          </>
         )}
-        <Button sx={{ m: 1 }} variant="contained" onClick={onAddClick}>
-          {isAdd ? LABEL_ADD : LABEL_UPDATE}
-        </Button>
       </FieldContentBottomWrapper>
     </>
   );
