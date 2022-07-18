@@ -49,7 +49,7 @@ const EventArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList }) =>
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [calendarEventList, setCalendarEventList] = useState<Array<CalendarData>>();
 
-  const { eventList } = EventDataHook("", "desc");
+  const { eventList } = EventDataHook("", "asc");
 
   useEffect(() => {
     setCalendarEventList(
@@ -84,6 +84,7 @@ const EventArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList }) =>
       setUpdating(false);
     }
   };
+  const today = new Date().getTime();
   return (
     <>
       <Calendar
@@ -112,11 +113,15 @@ const EventArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList }) =>
                 {eventList &&
                   eventList
                     .filter((v) => {
-                      if (myMemberList && v.member_id in myMemberList) {
-                        if (keyword) {
-                          return v.name.includes(keyword) || v.text.includes(keyword);
+                      if (v.eventTime >= today) {
+                        if (myMemberList && v.member_id in myMemberList) {
+                          if (keyword) {
+                            return v.name.includes(keyword) || v.text.includes(keyword);
+                          } else {
+                            return true;
+                          }
                         } else {
-                          return true;
+                          return false;
                         }
                       } else {
                         return false;

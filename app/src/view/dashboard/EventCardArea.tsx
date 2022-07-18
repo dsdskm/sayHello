@@ -18,7 +18,7 @@ const EventCardArea: React.FunctionComponent<DashBoardProps> = ({ showingListVie
   const day = getDayText(time.getDay());
   const timeText = year + "년 " + month + "월 " + date + "일" + day;
 
-  const { eventList } = EventDataHook("","asc");
+  const { eventList } = EventDataHook("", "asc");
 
   const onCalendarClcik = () => {
     showListView(false);
