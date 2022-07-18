@@ -16,7 +16,7 @@ const HelloDataHook = (member_id: string) => {
           where("member_id", "==", member_id),
           orderBy("time", "desc")
         )
-      : query(collection(db, COLLECTION_HELLO, MODE, COLLECTION_DATA), orderBy("time", "desc"));
+      : query(collection(db, COLLECTION_HELLO, MODE, COLLECTION_DATA), orderBy("time", "asc"));
 
     const snapshot = onSnapshot(q, (querySnapshot) => {
       querySnapshot.forEach((doc) => {
