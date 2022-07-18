@@ -189,7 +189,6 @@ const MemberListView = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </ContentWrapper>
-      <MemberMapView />
       <SearchWrapper>
         <TextField
           sx={{ width: SEARCH_BAR_WIDTH }}
@@ -197,6 +196,7 @@ const MemberListView = () => {
           onChange={(e) => setKeyword(e.target.value)}
         />
       </SearchWrapper>
+      <MemberMapView />
     </>
   );
 };

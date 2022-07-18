@@ -218,7 +218,8 @@ const MemberEditView = () => {
       image: member.image,
       writer: user,
     } as EventData;
-    await addEvent(eventData);
+    // 매년 생일 카드를 어떻게 뜨게 할지?
+    // await addEvent(eventData);
 
     if (result) {
       alert(MSG_COMPLETED);

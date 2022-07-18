@@ -75,7 +75,7 @@ const ListArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList }) => 
                   const time = getTimeText(value.time);
                   return (
                     <TableRow hover role="checkbox" tabIndex={-1} key={value.id}>
-                      <TableCell align={columns[0].align}>{index + 1}</TableCell>
+                      <TableCell align={columns[0].align}>{page * rowsPerPage + index + 1}</TableCell>
                       <TableCell align={columns[1].align}>{value.name}</TableCell>
                       <TableCell align={columns[2].align}>{value.text}</TableCell>
                       <TableCell align={columns[3].align}>{time}</TableCell>
