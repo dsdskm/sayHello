@@ -353,7 +353,7 @@ const MemberEditView = () => {
               }}
             >
               <img src={imgSrc} width={IMAGE_SIZE_WIDTH} height={IMAGE_SIZE_HEIGHT} alt="logo" />
-              <Button variant="contained" onClick={onImageResetClick}>
+              <Button variant="contained" onClick={onImageResetClick} sx={{ m: 1 }}>
                 {LABEL_RESET}
               </Button>
             </div>
@@ -407,6 +407,7 @@ const MemberEditView = () => {
                   }}
                 />
                 <Button
+                  sx={{ color: "red" }}
                   onClick={(e) => {
                     onMemoDelete(index);
                   }}
@@ -486,7 +487,7 @@ const MemberEditView = () => {
             {isAdd ? (
               <></>
             ) : (
-              <Button sx={{ m: 1 }} variant="contained" onClick={onDeleteClick}>
+              <Button sx={{ m: 1, backgroundColor: "red" }} variant="contained" onClick={onDeleteClick}>
                 {LABEL_DELETE}
               </Button>
             )}

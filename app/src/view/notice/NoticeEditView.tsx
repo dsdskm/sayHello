@@ -156,7 +156,7 @@ const NoticeEditView = () => {
         {isAdd ? (
           <></>
         ) : (
-          <Button sx={{ m: 1 }} variant="contained" onClick={onDeleteClick}>
+          <Button sx={{ m: 1, backgroundColor: "red" }} variant="contained" onClick={onDeleteClick}>
             {LABEL_DELETE}
           </Button>
         )}

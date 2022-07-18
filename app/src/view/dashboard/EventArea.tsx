@@ -144,7 +144,11 @@ const EventArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList }) =>
                             </Button>
                           </TableCell>
                           <TableCell align={columns[6].align}>
-                            <Button variant="contained" onClick={() => onDeleteClick(value.id)}>
+                            <Button
+                              sx={{ backgroundColor: "red" }}
+                              variant="contained"
+                              onClick={() => onDeleteClick(value.id)}
+                            >
                               {LABEL_DELETE}
                             </Button>
                           </TableCell>

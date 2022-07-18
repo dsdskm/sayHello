@@ -276,7 +276,7 @@ const JoinView = () => {
           <>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
               <img src={imgSrc} width={IMAGE_SIZE_WIDTH} height={IMAGE_SIZE_HEIGHT} alt="logo" />
-              <Button variant="contained" onClick={onImageResetClick}>
+              <Button variant="contained" onClick={onImageResetClick} sx={{ m: 1 }}>
                 {LABEL_RESET}
               </Button>
             </div>
@@ -370,16 +370,16 @@ const JoinView = () => {
         {ADDRESS_FIELD}
       </FieldContentWrapper>
       <FieldContentBottomWrapper>
-        {isAdd ? (
-          <></>
-        ) : (
-          <Button sx={{ m: 1 }} variant="contained" onClick={onDeleteClick}>
-            {LABEL_DELETE}
-          </Button>
-        )}
         <Button sx={{ m: 1 }} variant="contained" onClick={() => navigate(ROUTE_LOGIN)}>
           {LABEL_CANCEL}
         </Button>
+        {isAdd ? (
+          <></>
+        ) : (
+          <Button sx={{ m: 1, backgroundColor: "red" }} variant="contained" onClick={onDeleteClick}>
+            {LABEL_DELETE}
+          </Button>
+        )}
         <Button sx={{ m: 1 }} variant="contained" onClick={onJoinClick}>
           {isAdd ? LABEL_JOIN : LABEL_UPDATE}
         </Button>

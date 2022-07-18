@@ -193,7 +193,7 @@ const MemberEventView: React.FC<MemberProps> = ({ member, user }) => {
                       </Button>
                     </TableCell>
                     <TableCell align={columns[5].align}>
-                      <Button variant="contained" onClick={() => onDeleteClick(value.id)}>
+                      <Button sx={{ color: "red" }} variant="contained" onClick={() => onDeleteClick(value.id)}>
                         {LABEL_DELETE}
                       </Button>
                     </TableCell>
