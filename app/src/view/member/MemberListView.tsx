@@ -107,7 +107,7 @@ const MemberListView = () => {
     };
 
     initNameList();
-  }, [accountList]);
+  }, [accountList,memberList]);
   const handleChange = (event: SelectChangeEvent) => {
     setSelecteManager(event.target.value as string);
   };
