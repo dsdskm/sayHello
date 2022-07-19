@@ -9,6 +9,7 @@ import { DEFAULT_FIELD_WIDTH, IMAGE_SIZE_HEIGHT, IMAGE_SIZE_WIDTH, ROUTE_ACCOUNT
 import FieldContentWrapper from "component/FieldContentWrapper";
 import FieldContentBottomWrapper from "component/FieldContentBottomWrapper";
 import { FieldWrapper } from "component/FieldWrapper";
+import { getPhoneFormat } from "common/Utils";
 
 const ID_NAME = "name";
 const ID_EMAIL = "email";
@@ -94,7 +95,7 @@ const AccountEditView = () => {
   const NAME_FIELD = getCommonField(LABEL_NAME, ID_NAME, DEFAULT_FIELD_WIDTH, account?.name);
   const IMAGE_FIELD = getImageField();
   const EMAIL_FIELD = getEmailField();
-  const PHONE_FIELD = getCommonField(LABEL_PHONE, ID_PHONE, DEFAULT_FIELD_WIDTH, account?.phone);
+  const PHONE_FIELD = getCommonField(LABEL_PHONE, ID_PHONE, DEFAULT_FIELD_WIDTH, getPhoneFormat(account?.phone));
   const AGE_FIELD = getAgeField();
   const ADDRESS_FIELD = getCommonField(LABEL_ADDRESS, ID_ADDRESS, DEFAULT_FIELD_WIDTH, account?.address);
   return (

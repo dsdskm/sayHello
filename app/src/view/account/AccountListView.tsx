@@ -6,7 +6,7 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import AccountDataHook from "api/AccountDataHook";
-import { getStorage, getTimeText, KEY_PER_PAGE_ACCOUNT_LIST, setStorage } from "common/Utils";
+import { getPhoneFormat, getStorage, getTimeText, KEY_PER_PAGE_ACCOUNT_LIST, setStorage } from "common/Utils";
 import { TextField } from "@mui/material";
 import { Account } from "interface/Account";
 import { useNavigate } from "react-router-dom";
@@ -122,7 +122,7 @@ const AccountListView = () => {
                         />
                       </TableCell>
                       <TableCell align={columns[3].align}>{value.email}</TableCell>
-                      <TableCell align={columns[4].align}>{value.phone}</TableCell>
+                      <TableCell align={columns[4].align}>{getPhoneFormat(value.phone)}</TableCell>
                       <TableCell align={columns[5].align}>{memberCount}명</TableCell>
                       <TableCell align={columns[6].align}>{time}</TableCell>
                     </TableRow>
