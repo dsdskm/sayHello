@@ -1,7 +1,13 @@
 import { CalendarData } from "interface/CalendarData";
 import { EventData } from "interface/EventData";
 
-export const KEY_ACCOUNT = "account";
+export const KEY_PER_PAGE_MEMBER_LIST = "per_page_member_list";
+export const KEY_PER_PAGE_MEMBER_HELLO = "per_page_member_hello";
+export const KEY_PER_PAGE_MEMBER_EVENT = "per_page_member_event";
+export const KEY_PER_PAGE_DASHBOARD_HELLO = "per_page_dashboard_hello";
+export const KEY_PER_PAGE_DASHBOARD_EVENT = "per_page_dashboard_event";
+export const KEY_PER_PAGE_NOTICE_LIST = "per_page_notice_list";
+export const KEY_PER_PAGE_ACCOUNT_LIST = "per_page_account_list";
 export const getTimeText = (mil: number) => {
   const date = new Date(mil);
   return date.toLocaleString();
@@ -11,12 +17,12 @@ export const setStorage = (key: string, value: string) => {
   localStorage.setItem(key, value);
 };
 
-export const getStorage = (key: string) => {
+export const getStorage = (key: string, def: string) => {
   const val = localStorage.getItem(key);
   if (val) {
     return val;
   } else {
-    return "";
+    return def;
   }
 };
 

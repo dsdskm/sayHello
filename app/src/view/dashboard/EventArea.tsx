@@ -5,7 +5,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import EventDataHook from "api/EventDataHook";
 import TableComponent from "component/TableComponent";
 import { Button, TableBody, TableCell, TableHead, TablePagination, TableRow, TextField } from "@mui/material";
-import { getCalendarEventList, getTimeText } from "common/Utils";
+import { getCalendarEventList, getStorage, getTimeText, KEY_PER_PAGE_DASHBOARD_EVENT, setStorage } from "common/Utils";
 import { deleteEvent, updateEventChecked } from "api/FirebaseApi";
 import { CalendarData } from "interface/CalendarData";
 import LoadingWrap from "component/LoadingWrap";
@@ -46,7 +46,7 @@ const EventArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList }) =>
   const [updating, setUpdating] = useState(false);
   const [keyword, setKeyword] = useState<string>();
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(+getStorage(KEY_PER_PAGE_DASHBOARD_EVENT, "10"));
   const [calendarEventList, setCalendarEventList] = useState<Array<CalendarData>>();
 
   const { eventList } = EventDataHook("", "asc");
@@ -67,6 +67,7 @@ const EventArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList }) =>
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(+event.target.value);
+    setStorage(KEY_PER_PAGE_DASHBOARD_EVENT, event.target.value);
     setPage(0);
   };
 

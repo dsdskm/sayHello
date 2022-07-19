@@ -7,7 +7,7 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import MemberDataHook from "api/MemberDataHook";
-import { getAge, getPhoneFormat, getTimeText } from "common/Utils";
+import { getAge, getPhoneFormat, getStorage, getTimeText, KEY_PER_PAGE_MEMBER_LIST, setStorage } from "common/Utils";
 import {
   Button,
   FormControl,
@@ -79,7 +79,7 @@ const MemberListView = () => {
   const { memberList } = MemberDataHook();
   const { accountList } = AccountDataHook();
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(+getStorage(KEY_PER_PAGE_MEMBER_LIST, "10"));
   const [keyword, setKeyword] = useState<string>();
   const [selectedManager, setSelecteManager] = useState<string>(LABEL_ALL);
   const [nameList, setNameList] = useState<AccountKey | undefined>();
@@ -107,7 +107,7 @@ const MemberListView = () => {
     };
 
     initNameList();
-  }, [accountList,memberList]);
+  }, [accountList, memberList]);
   const handleChange = (event: SelectChangeEvent) => {
     setSelecteManager(event.target.value as string);
   };
@@ -118,6 +118,7 @@ const MemberListView = () => {
 
   const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(+event.target.value);
+    setStorage(KEY_PER_PAGE_MEMBER_LIST, event.target.value);
     setPage(0);
   };
 

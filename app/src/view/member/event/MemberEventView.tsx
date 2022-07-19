@@ -22,7 +22,7 @@ import { addEvent, deleteEvent, updateEventChecked } from "api/FirebaseApi";
 import LoadingWrap from "component/LoadingWrap";
 import TableComponent from "component/TableComponent";
 import EventDataHook from "api/EventDataHook";
-import { getTimeText } from "common/Utils";
+import { getStorage, getTimeText, KEY_PER_PAGE_MEMBER_EVENT, setStorage } from "common/Utils";
 import { MemberProps } from "../MemberProps";
 
 const LABEL_EVENT = "일정";
@@ -70,7 +70,7 @@ const MemberEventView: React.FC<MemberProps> = ({ member, user }) => {
   const [timeEvent, setTimeEvent] = useState<Date | null>();
   const [updating, setUpdating] = useState(false);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(+getStorage(KEY_PER_PAGE_MEMBER_EVENT, "5"));
   const params = useParams();
   const { eventList } = EventDataHook(params.id, "desc");
 
@@ -80,6 +80,7 @@ const MemberEventView: React.FC<MemberProps> = ({ member, user }) => {
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(+event.target.value);
+    setStorage(KEY_PER_PAGE_MEMBER_EVENT, event.target.value);
     setPage(0);
   };
 

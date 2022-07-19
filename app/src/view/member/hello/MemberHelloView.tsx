@@ -12,7 +12,7 @@ import {
   TextField,
 } from "@mui/material";
 import { DEFAULT_HELLO_DATA, HelloData } from "interface/HelloData";
-import { getTimeText } from "common/Utils";
+import { getStorage, getTimeText, KEY_PER_PAGE_MEMBER_HELLO, setStorage } from "common/Utils";
 import { addHello, updateLastHelloTime } from "api/FirebaseApi";
 import LoadingWrap from "component/LoadingWrap";
 import HelloDataHook from "api/HelloDataHook";
@@ -55,7 +55,7 @@ const MemberHelloView: React.FC<MemberProps> = ({ member, user }) => {
   const [hello, setHello] = useState<HelloData>(DEFAULT_HELLO_DATA);
   const [updating, setUpdating] = useState(false);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(+getStorage(KEY_PER_PAGE_MEMBER_HELLO, "5"));
   const params = useParams();
   if (params.id) {
     hello.member_id = params.id?.toString();
@@ -68,6 +68,7 @@ const MemberHelloView: React.FC<MemberProps> = ({ member, user }) => {
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(+event.target.value);
+    setStorage(KEY_PER_PAGE_MEMBER_HELLO, event.target.value);
     setPage(0);
   };
 

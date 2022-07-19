@@ -8,7 +8,7 @@ import GlobalTab from "view/common/GlobalTab";
 import Loading from "component/Loading";
 import { ROUTE_NOTICE_EDIT, SEARCH_BAR_WIDTH } from "common/Constant";
 import { NoticeData } from "interface/NoticeData";
-import { getTimeText } from "common/Utils";
+import { getStorage, getTimeText, KEY_PER_PAGE_NOTICE_LIST, setStorage } from "common/Utils";
 import SearchWrapper from "component/SearchWrapper";
 import ContentTopWrapper from "component/ContentTopWrapper";
 
@@ -38,7 +38,7 @@ const NoticeListView = () => {
   const navigate = useNavigate();
   const { noticeList } = NoticeDataHook();
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(+getStorage(KEY_PER_PAGE_NOTICE_LIST, "10"));
   const [keyword, setKeyword] = React.useState<string>();
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -47,6 +47,7 @@ const NoticeListView = () => {
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(+event.target.value);
+    setStorage(KEY_PER_PAGE_NOTICE_LIST, event.target.value);
     setPage(0);
   };
 

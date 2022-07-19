@@ -6,7 +6,7 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import AccountDataHook from "api/AccountDataHook";
-import { getTimeText } from "common/Utils";
+import { getStorage, getTimeText, KEY_PER_PAGE_ACCOUNT_LIST, setStorage } from "common/Utils";
 import { TextField } from "@mui/material";
 import { Account } from "interface/Account";
 import { useNavigate } from "react-router-dom";
@@ -55,7 +55,7 @@ const AccountListView = () => {
   const { accountList } = AccountDataHook();
   const { memberList } = MemberDataHook();
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [rowsPerPage, setRowsPerPage] = React.useState(+getStorage(KEY_PER_PAGE_ACCOUNT_LIST, "10"));
   const [keyword, setKeyword] = React.useState<string>();
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -64,6 +64,7 @@ const AccountListView = () => {
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(+event.target.value);
+    setStorage(KEY_PER_PAGE_ACCOUNT_LIST, event.target.value);
     setPage(0);
   };
 

@@ -1,7 +1,7 @@
 import { TableBody, TableCell, TableHead, TablePagination, TableRow, TextField } from "@mui/material";
 import { Box } from "@mui/system";
 import HelloDataHook from "api/HelloDataHook";
-import { getTimeText } from "common/Utils";
+import { getStorage, getTimeText, KEY_PER_PAGE_DASHBOARD_HELLO, setStorage } from "common/Utils";
 import CustomLabel, { LABEL_SIZE_SMALL } from "component/Labels";
 import SearchWrapper from "component/SearchWrapper";
 import TableComponent from "component/TableComponent";
@@ -31,7 +31,7 @@ const columns: readonly Column[] = [
 const ListArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList }) => {
   const { helloList } = HelloDataHook("");
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(+getStorage(KEY_PER_PAGE_DASHBOARD_HELLO, "10"));
   const [keyword, setKeyword] = useState<string>();
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -40,6 +40,7 @@ const ListArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList }) => 
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(+event.target.value);
+    setStorage(KEY_PER_PAGE_DASHBOARD_HELLO, event.target.value);
     setPage(0);
   };
   return (
