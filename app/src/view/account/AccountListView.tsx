@@ -30,7 +30,7 @@ const COLUMN_EMAIL = "email";
 const COLUMN_PHONE = "전화번호";
 const COLUMN_MEMBER = "관리 회원";
 const COLUMN_TIME = "등록일";
-const KEYWORD_HINT = "이름이나 이메일을 입력하세요";
+const KEYWORD_HINT = "이름이나 이메일을 입력하세요.";
 
 interface Column {
   id: string;

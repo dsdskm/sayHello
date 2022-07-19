@@ -28,9 +28,10 @@ const LABEL_DELETE = "삭제";
 const LABEL_CANCEL = "취소";
 
 const MSG_ERR_TITLE = "제목을 입력하세요.";
-const MSG_ERR_CONTENTS = "내용을 입력하세요";
+const MSG_ERR_CONTENTS = "내용을 입력하세요.";
 const MSG_COMPLETED = "완료되었습니다.";
 const MSG_DELETED = "삭제되었습니다.";
+const MSG_DELETE = "삭제하시겠습니까?";
 const DEFAULT_FIELD_WIDTH = 400;
 
 const NoticeEditView = () => {
@@ -79,11 +80,18 @@ const NoticeEditView = () => {
   };
 
   const onDeleteClick = async () => {
-    setUpdating(true);
-    await deleteNotice(notice);
-    alert(MSG_DELETED);
-    setUpdating(false);
-    navigate(ROUTE_NOTICE);
+    if (window.confirm(MSG_DELETE)) {
+      try {
+        setUpdating(true);
+        await deleteNotice(notice);
+        setUpdating(false);
+        navigate(ROUTE_NOTICE);
+        alert(MSG_DELETED);
+      } catch (e) {
+        navigate(ROUTE_NOTICE);
+        alert(MSG_DELETED);
+      }
+    }
   };
 
   const onAddClick = async () => {
@@ -130,6 +138,10 @@ const NoticeEditView = () => {
       </FieldWrapper>
     );
   };
+
+  if (!notice) {
+    navigate(ROUTE_NOTICE);
+  }
 
   const ID_FIELD = getCommonField(LABEL_ID, ID_NUM, DEFAULT_FIELD_WIDTH, notice.id);
   const TITLE_FIELD = getCommonField(LABEL_TITLE, ID_TITLE, DEFAULT_FIELD_WIDTH, notice.title);

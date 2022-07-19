@@ -1,8 +1,8 @@
 import GlobalTab from "../common/GlobalTab";
 import { Grid } from "@mui/material";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import Paper from "@mui/material/Paper";
-import { SetStateAction, useState } from "react";
+import { useState } from "react";
 import EventCardArea from "./EventCardArea";
 import HelloArea from "./HelloArea";
 import EventArea from "./EventArea";

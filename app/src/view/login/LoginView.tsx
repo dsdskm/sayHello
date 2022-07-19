@@ -12,7 +12,7 @@ import Loading from "component/Loading";
 const LABEL_LOG_IN = "로그인";
 const LABEL_PASSWORD_RESET = "비밀번호 초기화";
 const LABEL_JOIN = "계정생성";
-const MSG_LOGIN_FAILED = "로그인 실패하였습니다";
+const MSG_LOGIN_FAILED = "로그인 실패하였습니다.";
 const MSG_INPUT_EMAIL = "비밀번호를 초기화할 이메일을 입력하세요.";
 const MSG_PASSWORD_RESET = "비밀번호가 초기화 되었습니다. 해당 메일에서 확인하세요.";
 const ID_EMAIL = "email";
