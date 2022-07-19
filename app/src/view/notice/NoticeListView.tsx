@@ -15,6 +15,7 @@ import ContentTopWrapper from "component/ContentTopWrapper";
 const LABEL_ADD = "등록";
 const COLUMN_NO = "NO";
 const COLUMN_NAME = "제목";
+const COLUMN_TEXT = "내용";
 const COLUMN_TIME = "시간";
 const COLUMN_WRITER = "작성자";
 const KEYWORD_HINT = "제목이나 내용을 입력하세요";
@@ -30,6 +31,7 @@ interface Column {
 const columns: readonly Column[] = [
   { id: "no", name: COLUMN_NO, align: "center" },
   { id: "name", name: COLUMN_NAME, align: "center" },
+  { id: "text", name: COLUMN_TEXT, align: "center" },
   { id: "time", name: COLUMN_TIME, align: "center" },
   { id: "writer", name: COLUMN_WRITER, align: "center" },
 ];
@@ -103,8 +105,9 @@ const NoticeListView = () => {
                     <TableRow hover role="checkbox" tabIndex={-1} key={value.id} onClick={() => onTableRowClick(value)}>
                       <TableCell align={columns[0].align}>{page * rowsPerPage + index + 1}</TableCell>
                       <TableCell align={columns[1].align}>{value.title}</TableCell>
-                      <TableCell align={columns[2].align}>{time}</TableCell>
-                      <TableCell align={columns[3].align}>{value.writer}</TableCell>
+                      <TableCell width="500" align={columns[2].align}>{value.contents}</TableCell>
+                      <TableCell align={columns[3].align}>{time}</TableCell>
+                      <TableCell align={columns[4].align}>{value.writer}</TableCell>
                     </TableRow>
                   );
                 })}
