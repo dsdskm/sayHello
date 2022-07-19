@@ -10,10 +10,10 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "config/FirebaseConfig";
 import MemberDataHook from "api/MemberDataHook";
 import AccountDataHook from "api/AccountDataHook";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import ListAltIcon from "@mui/icons-material/ListAlt";
 
 export interface DashBoardProps {
-  showListView: React.Dispatch<SetStateAction<Boolean | undefined>>;
-  showingListView: Boolean | undefined;
   myMemberList: MemberKey | undefined;
 }
 
@@ -46,22 +46,27 @@ const Dashboard = () => {
       }
     });
   }, [memberList, accountList]);
+
+  const onCalendarClcik = () => {
+    showListView(false);
+  };
+  const onListClick = () => {
+    showListView(true);
+  };
+
   return (
     <>
       <GlobalTab />
       <Grid container spacing={2}>
         <Grid item xs={5}>
           <Paper sx={{ minWidth: "500px", textAlign: "center" }}>
-            <EventCardArea showListView={showListView} showingListView={showingListView} myMemberList={myMemberList} />
+            <EventCardArea myMemberList={myMemberList} />
           </Paper>
         </Grid>
         <Grid item xs={7}>
+          {showingListView ? <CalendarMonthIcon onClick={onCalendarClcik} /> : <ListAltIcon onClick={onListClick} />}
           <Paper sx={{ minWidth: "500px", textAlign: "center" }}>
-            {showingListView ? (
-              <HelloArea showListView={showListView} showingListView={showingListView} myMemberList={myMemberList} />
-            ) : (
-              <EventArea showListView={showListView} showingListView={showingListView} myMemberList={myMemberList} />
-            )}
+            {showingListView ? <HelloArea myMemberList={myMemberList} /> : <EventArea myMemberList={myMemberList} />}
           </Paper>
         </Grid>
       </Grid>

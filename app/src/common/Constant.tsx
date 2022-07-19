@@ -22,6 +22,7 @@ export const ACCOUNT_TYPE_MASTER = "master";
 export const ACCOUNT_TYPE_NORMAL = "normal";
 
 export const ROUTE_DEBUG = "/debug";
+export const ROUTE_VERSION = "/version";
 
 export const LOGO_IMAGE = process.env.PUBLIC_URL + "/images/app_icon.png";
 export const DEFAULT_PROFILE_IMAGE =

@@ -10,6 +10,7 @@ import {
   ROUTE_MEMBER_EDIT,
   ROUTE_NOTICE,
   ROUTE_NOTICE_EDIT,
+  ROUTE_VERSION,
 } from "common/Constant";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AccountListView from "view/account/AccountListView";
@@ -24,6 +25,7 @@ import NoticeListView from "view/notice/NoticeListView";
 import NoticeEditView from "view/notice/NoticeEditView";
 import MemberListView from "./view/member/MemberListView";
 import MemberEditView from "view/member/MemberEditView";
+import Version from "view/Version";
 
 const App = () => {
   // emulator 실행시
@@ -50,7 +52,8 @@ const App = () => {
             path={ROUTE_ACCOUNT_EDIT + ROUTE_ID}
             element={<AccountEditView />}
           />
-          <Route path={ROUTE_DEBUG} element={<DebugView />} />
+          {/* <Route path={ROUTE_DEBUG} element={<DebugView />} /> */}
+          <Route path={ROUTE_VERSION} element={<Version />} />
         </Routes>
       </BrowserRouter>
     </>
