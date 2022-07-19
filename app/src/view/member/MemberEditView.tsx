@@ -1,7 +1,19 @@
 /* eslint-disable */
 import CustomLabel, { LABEL_SIZE_SMALL } from "component/Labels";
 import GlobalTab from "view/common/GlobalTab";
-import { Box, Button, FormControl, FormControlLabel, Radio, RadioGroup, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  FormControl,
+  FormControlLabel,
+  InputLabel,
+  MenuItem,
+  Radio,
+  RadioGroup,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import FieldContentWrapper from "component/FieldContentWrapper";
 import FieldContentBottomWrapper from "component/FieldContentBottomWrapper";
@@ -42,6 +54,7 @@ const ID_CHILD = "child";
 const ID_DISABLED = "disabled";
 const ID_LEVEL = "level";
 const ID_AGE = "age";
+const ID_MANAGER = "manager";
 
 const LABEL_NAME = "이름";
 const LABEL_AGE = "나이";
@@ -509,6 +522,36 @@ const MemberEditView = () => {
     );
   };
 
+  const getManagerField = () => {
+    return (
+      <FieldWrapperSmall key={ID_MANAGER}>
+        <CustomLabel label={LABEL_MANAGER} size={LABEL_SIZE_SMALL} />
+        <FormControl sx={{ m: 1, width: 400 }}>
+          <InputLabel id="demo-simple-select-label">{LABEL_MANAGER}</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={member.accountId}
+            label="Manager"
+            onChange={(e) => {
+              member.accountId = e.target.value;
+              setMember({ ...member });
+            }}
+          >
+            {accountList &&
+              accountList.map((account, index) => {
+                return (
+                  <MenuItem value={account.email} key={index}>
+                    {account.name}({account.email})
+                  </MenuItem>
+                );
+              })}
+          </Select>
+        </FormControl>
+      </FieldWrapperSmall>
+    );
+  };
+
   const onMemoAddClick = () => {
     setMemoArr([...memoArr, ""]);
   };
@@ -600,7 +643,7 @@ const MemberEditView = () => {
   const IMAGE_FIELD = getImageField();
   const ADDRESS_FILED = getAddressField(LABEL_ADDRESS, ID_ADDRESS, DEFAULT_FIELD_WIDTH, member.address.toString());
   const MEMO_FIELD = getMemoField(LABEL_MEMO, ID_MEMO, LARGE_FIELD_WIDTH, member.memo);
-  const MANAGER_FIELD = getCommonField(LABEL_MANAGER, ID_ACCOUNT_ID, DEFAULT_FIELD_WIDTH, member.accountId);
+  const MANAGER_FIELD = getManagerField();
   const SEX_FIELD = getSexField();
   const PARTNER_FIELD = getPartnerField();
   const CHILD_FIELD = getChildField();

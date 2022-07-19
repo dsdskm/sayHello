@@ -12,9 +12,11 @@ import LoadingWrap from "component/LoadingWrap";
 import SearchWrapper from "component/SearchWrapper";
 import { Box } from "@mui/system";
 import { DashBoardProps } from "./Dashboard";
+import CustomLabel, { LABEL_SIZE_SMALL } from "component/Labels";
 
 const LABEL_OK = "내용 확인";
 const LABEL_DELETE = "삭제";
+const LABEL_EVENT = "일정";
 const MSG_CHECKED = "일정을 확인하였습니까?";
 const MSG_DELETE = "삭제하시겠습니까?";
 const COLUMN_NO = "NO";
@@ -88,6 +90,7 @@ const EventArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList }) =>
   const today = new Date().getTime();
   return (
     <>
+      <CustomLabel label={LABEL_EVENT} size={LABEL_SIZE_SMALL} />
       <Calendar
         localizer={localizer}
         startAccessor="start"
