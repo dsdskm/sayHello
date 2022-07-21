@@ -212,7 +212,7 @@ export const addHello = async (hello: HelloData) => {
   await setDoc(ref, hello);
 };
 
-export const deleteHello = async (member: Member) => {
+export const deleteHelloAllByMember = async (member: Member) => {
   const q = query(collection(db, COLLECTION_HELLO, MODE, COLLECTION_DATA), where("member_id", "==", member.id));
   const snapshot = await getDocs(q);
   const batch = writeBatch(db);
@@ -221,6 +221,16 @@ export const deleteHello = async (member: Member) => {
     batch.delete(ref);
   });
   await batch.commit();
+};
+
+export const deleteHello = async (id: string) => {
+  try{
+    const ref = doc(db, COLLECTION_HELLO, MODE, COLLECTION_DATA, id);
+    await deleteDoc(ref);
+  }catch(e){
+    console.log(e)
+  }
+ 
 };
 
 export const searchAddress = async (query: string) => {
@@ -234,7 +244,7 @@ export const addEvent = async (event: EventData) => {
   await setDoc(ref, event);
 };
 
-export const deleteEventByMember = async (member: Member) => {
+export const deleteEventAllByMember = async (member: Member) => {
   const q = query(collection(db, COLLECTION_EVENT, MODE, COLLECTION_DATA), where("member_id", "==", member.id));
   const snapshot = await getDocs(q);
   const batch = writeBatch(db);

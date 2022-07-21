@@ -39,5 +39,5 @@ export const DEFAULT_MEMBER_DATA = {
   partner: "없음",
   child: "없음",
   disabled: "없음",
-  level: 2, // 1~5
+  level: 1, // 1~5
 };

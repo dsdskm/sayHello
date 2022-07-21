@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { DEFAULT_HELLO_DATA, HelloData } from "interface/HelloData";
 import { getStorage, getTimeText, KEY_PER_PAGE_MEMBER_HELLO, setStorage } from "common/Utils";
-import { addHello, updateLastHelloTime } from "api/FirebaseApi";
+import { addHello, deleteHello, updateLastHelloTime } from "api/FirebaseApi";
 import LoadingWrap from "component/LoadingWrap";
 import HelloDataHook from "api/HelloDataHook";
 import TableComponent from "component/TableComponent";
@@ -24,13 +24,16 @@ import { MemberProps } from "../MemberProps";
 
 const MSG_ERROR_TEXT_LEN = "안부를 5자이상 입력하세요.";
 const MSG_ERROR_TEXT = "안부를 입력하세요.";
+const MSG_DELETE = "삭제하시겠습니까?";
 const LABEL_ADD = "등록";
 const LABEL_LIST = "안부 내역";
-
+const LABEL_DELETE = "삭제";
 const COLUMN_NO = "NO";
 const COLUMN_TEXT = "내용";
 const COLUMN_TIME = "시간";
 const COLUMN_WRITER = "작성자";
+const COLUMN_DELETE = "삭제";
+
 interface Column {
   id: string;
   name: string;
@@ -43,6 +46,7 @@ const columns: readonly Column[] = [
   { id: "name", name: COLUMN_TEXT, align: "center" },
   { id: "time", name: COLUMN_TIME, align: "center" },
   { id: "writer", name: COLUMN_WRITER, align: "center" },
+  { id: "delete", name: COLUMN_DELETE, align: "center" },
 ];
 const FieldWrapper = styled(Paper)({
   margin: 10,
@@ -65,7 +69,6 @@ const MemberHelloView: React.FC<MemberProps> = ({ member, user }) => {
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
-
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(+event.target.value);
     setStorage(KEY_PER_PAGE_MEMBER_HELLO, event.target.value);
@@ -91,6 +94,14 @@ const MemberHelloView: React.FC<MemberProps> = ({ member, user }) => {
       await addHello(hello);
       await updateLastHelloTime(hello.member_id);
       reset();
+      setUpdating(false);
+    }
+  };
+
+  const onDeleteClick = async (id: string) => {
+    if (window.confirm(MSG_DELETE)) {
+      setUpdating(true);
+      await deleteHello(id);
       setUpdating(false);
     }
   };
@@ -126,6 +137,15 @@ const MemberHelloView: React.FC<MemberProps> = ({ member, user }) => {
                     <TableCell align={columns[1].align}>{value.text}</TableCell>
                     <TableCell align={columns[2].align}>{time}</TableCell>
                     <TableCell align={columns[3].align}>{value.writer}</TableCell>
+                    <TableCell align={columns[4].align}>
+                      <Button
+                        sx={{ backgroundColor: "red" }}
+                        variant="contained"
+                        onClick={() => onDeleteClick(value.id)}
+                      >
+                        {LABEL_DELETE}
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 );
               })}

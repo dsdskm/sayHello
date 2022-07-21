@@ -9,7 +9,7 @@ const HelloDataHook = (member_id: string) => {
   const [helloList, setHelloList] = useState<Array<HelloData>>();
 
   useEffect(() => {
-    const list: Array<HelloData> = [];
+   
     const q = member_id
       ? query(
           collection(db, COLLECTION_HELLO, MODE, COLLECTION_DATA),
@@ -19,6 +19,7 @@ const HelloDataHook = (member_id: string) => {
       : query(collection(db, COLLECTION_HELLO, MODE, COLLECTION_DATA), orderBy("time", "asc"));
 
     const snapshot = onSnapshot(q, (querySnapshot) => {
+      const list: Array<HelloData> = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         const helloData = data as HelloData;

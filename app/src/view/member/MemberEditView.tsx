@@ -33,7 +33,13 @@ import { ChangeEvent, useEffect, useState, useRef } from "react";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { getAge, getPhoneFormat } from "common/Utils";
-import { addMember, deleteEventByMember, deleteHello, deleteMember, searchAddress } from "api/FirebaseApi";
+import {
+  addMember,
+  deleteEventAllByMember,
+  deleteHelloAllByMember,
+  deleteMember,
+  searchAddress,
+} from "api/FirebaseApi";
 import MemberEventView from "./event/MemberEventView";
 import MemberHelloView from "./hello/MemberHelloView";
 import { FieldWrapper, FieldWrapperSmall } from "component/FieldWrapper";
@@ -169,12 +175,10 @@ const MemberEditView = () => {
         const data = memberList?.filter((data) => {
           return data.id === id;
         });
-        if (data) {
+        if (data && data[0]) {
           setMemoArr(data[0].memo);
           setMember(data[0]);
-          if (data[0]) {
-            setMemberAccountId(data[0].accountId);
-          }
+          setMemberAccountId(data[0].accountId);
         }
       }
     }
@@ -183,7 +187,6 @@ const MemberEditView = () => {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const id = e.target.id;
     const value = e.target.value;
-    console.log(`id ${id} value ${value}`);
     if (member) {
       switch (id) {
         case ID_NAME:
@@ -210,8 +213,8 @@ const MemberEditView = () => {
       try {
         setUpdating(true);
         await deleteMember(member);
-        await deleteHello(member);
-        await deleteEventByMember(member);
+        await deleteHelloAllByMember(member);
+        await deleteEventAllByMember(member);
         navigate(ROUTE_MEMBER);
         alert(MSG_DELETED);
       } catch (e) {

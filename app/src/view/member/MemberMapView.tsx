@@ -13,15 +13,24 @@ import {
   LABEL_LEVEL_VERY_HIGH,
   LABEL_LEVEL_VERY_LOW,
 } from "./MemberEditView";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "config/FirebaseConfig";
 
 const MemberMapView = () => {
   const { memberList } = MemberDataHook();
+  const [user, setUser] = useState<string>("");
 
   let map: naver.maps.Map;
   let marker_list: Array<naver.maps.Marker> = [];
   let infoWindow_list: Array<naver.maps.InfoWindow> = [];
 
   useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user && user.email) {
+        setUser(user.email);
+      }
+    });
+
     const onMarkerClick = (i: number) => {
       return function (e: any) {
         const marker = marker_list[i];
@@ -64,13 +73,19 @@ const MemberMapView = () => {
           default:
             break;
         }
+        let iconUrl = "https://maps.google.com/mapfiles/ms/micons/";
+        if (data.accountId === user) {
+          iconUrl += "blue.png";
+        } else {
+          iconUrl += "red.png";
+        }
         const marker = new naver.maps.Marker({
           position: new naver.maps.LatLng(data.latitude, data.longitude),
           map: map,
           title: data.name,
           icon: {
             content: `
-                <img alt="marker" width="${markerWidth}" height="${markerHeight}" src="http://maps.google.com/mapfiles/ms/micons/red.png" />
+                <img alt="marker" width="${markerWidth}" height="${markerHeight}" src="${iconUrl}" />
               `,
           },
         });
