@@ -43,7 +43,7 @@ const GlobalTab = () => {
     const id = e.target.id;
     switch (id) {
       case ID_JOIN:
-        goPage(ROUTE_JOIN);
+        goPage(ROUTE_JOIN+"/-1");
         break;
       case ID_DASHBOARD:
         goPage(ROUTE_DASHBOARD);
