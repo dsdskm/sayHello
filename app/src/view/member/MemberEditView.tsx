@@ -48,6 +48,7 @@ import { auth } from "config/FirebaseConfig";
 import AccountDataHook from "api/AccountDataHook";
 import { Account, DEFAULT_ACCOUNT_DATA } from "interface/Account";
 import { EventData } from "interface/EventData";
+import { AccountKey } from "./MemberListView";
 
 const ID_NAME = "name";
 const ID_CONTACT = "contact";
@@ -104,7 +105,6 @@ const MSG_ERROR_ADDRESS = "주소를 입력하세요.";
 const MSG_ERROR_EDIT = "담당자만 수정/삭제가 가능합니다.";
 
 const MemberEditView = () => {
-  console.log(`MemberEditView`);
   const { memberList } = MemberDataHook();
   const params = useParams();
   const id = params.id;
@@ -122,6 +122,7 @@ const MemberEditView = () => {
   const [user, setUser] = useState<string>();
   const [memberAccountId, setMemberAccountId] = useState<string>();
   const [memoArr, setMemoArr] = useState<Array<string>>([]);
+  const [nameList, setNameList] = useState<AccountKey | undefined>();
   const { accountList } = AccountDataHook();
   const fileRef = useRef<any>(null);
   let map: naver.maps.Map;
@@ -138,6 +139,17 @@ const MemberEditView = () => {
         }
       }
     });
+    const initNameList = () => {
+      if (accountList) {
+        let tmpHash: AccountKey = {};
+        accountList.forEach((account) => {
+          tmpHash[account.email] = [account.name, account.phone];
+        });
+        setNameList(tmpHash);
+      }
+    };
+
+    initNameList();
   }, [auth, accountList]);
   useEffect(() => {
     const initMap = () => {
@@ -678,8 +690,8 @@ const MemberEditView = () => {
           <></>
         ) : (
           <>
-            <MemberEventView user={user} member={member} />
-            <MemberHelloView user={user} member={member} />
+            <MemberEventView user={user} member={member} nameList={nameList} />
+            <MemberHelloView user={user} member={member} nameList={nameList} />
           </>
         )}
       </FieldContentWrapper>

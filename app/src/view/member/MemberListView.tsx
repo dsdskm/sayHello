@@ -70,7 +70,7 @@ export const columns: readonly Column[] = [
   { id: "accountId", name: COLUMN_ACCOUNTID, align: "center" },
 ];
 
-interface AccountKey {
+export interface AccountKey {
   [key: string]: Array<string>; // mail->name
 }
 

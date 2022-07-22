@@ -10,9 +10,10 @@ import {
   TablePagination,
   TableRow,
   TextField,
+  Typography,
 } from "@mui/material";
 import { DEFAULT_HELLO_DATA, HelloData } from "interface/HelloData";
-import { getStorage, getTimeText, KEY_PER_PAGE_MEMBER_HELLO, setStorage } from "common/Utils";
+import { getPhoneFormat, getStorage, getTimeText, KEY_PER_PAGE_MEMBER_HELLO, setStorage } from "common/Utils";
 import { addHello, deleteHello, updateLastHelloTime } from "api/FirebaseApi";
 import LoadingWrap from "component/LoadingWrap";
 import HelloDataHook from "api/HelloDataHook";
@@ -55,7 +56,7 @@ const FieldWrapper = styled(Paper)({
   textAlign: "center",
 });
 
-const MemberHelloView: React.FC<MemberProps> = ({ member, user }) => {
+const MemberHelloView: React.FC<MemberProps> = ({ member, user, nameList }) => {
   const [hello, setHello] = useState<HelloData>(DEFAULT_HELLO_DATA);
   const [updating, setUpdating] = useState(false);
   const [page, setPage] = useState(0);
@@ -129,6 +130,7 @@ const MemberHelloView: React.FC<MemberProps> = ({ member, user }) => {
           </TableHead>
           <TableBody key="">
             {helloList &&
+              nameList &&
               helloList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((value, index) => {
                 const time = getTimeText(value.time);
                 return (
@@ -136,7 +138,11 @@ const MemberHelloView: React.FC<MemberProps> = ({ member, user }) => {
                     <TableCell align={columns[0].align}>{page * rowsPerPage + index + 1}</TableCell>
                     <TableCell align={columns[1].align}>{value.text}</TableCell>
                     <TableCell align={columns[2].align}>{time}</TableCell>
-                    <TableCell align={columns[3].align}>{value.writer}</TableCell>
+                    <TableCell align={columns[3].align}>
+                      <Typography>{nameList[value.writer][0]}</Typography>
+                      <Typography>{getPhoneFormat(nameList[value.writer][1])}</Typography>
+                      <Typography>{value.writer}</Typography>
+                    </TableCell>
                     <TableCell align={columns[4].align}>
                       <Button
                         sx={{ backgroundColor: "red" }}

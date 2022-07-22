@@ -22,7 +22,7 @@ import { addEvent, deleteEvent, updateEventChecked } from "api/FirebaseApi";
 import LoadingWrap from "component/LoadingWrap";
 import TableComponent from "component/TableComponent";
 import EventDataHook from "api/EventDataHook";
-import { getStorage, getTimeText, KEY_PER_PAGE_MEMBER_EVENT, setStorage } from "common/Utils";
+import { getPhoneFormat, getStorage, getTimeText, KEY_PER_PAGE_MEMBER_EVENT, setStorage } from "common/Utils";
 import { MemberProps } from "../MemberProps";
 
 const LABEL_EVENT = "일정";
@@ -64,7 +64,7 @@ const columns: readonly Column[] = [
   { id: "delete", name: COLUMN_DELETE, align: "center" },
 ];
 
-const MemberEventView: React.FC<MemberProps> = ({ member, user }) => {
+const MemberEventView: React.FC<MemberProps> = ({ member, user, nameList }) => {
   const [eventData, setEventData] = useState<EventData>(DEFAULT_EVENT_DATA);
   const [dateEvent, setDateEvent] = useState<Date | null>();
   const [timeEvent, setTimeEvent] = useState<Date | null>();
@@ -179,6 +179,7 @@ const MemberEventView: React.FC<MemberProps> = ({ member, user }) => {
           </TableHead>
           <TableBody>
             {eventList &&
+              nameList &&
               eventList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((value, index) => {
                 const time = getTimeText(value.eventTime);
                 const bgColor = value.checked ? "green" : "white";
@@ -187,7 +188,11 @@ const MemberEventView: React.FC<MemberProps> = ({ member, user }) => {
                     <TableCell align={columns[0].align}>{page * rowsPerPage + index + 1}</TableCell>
                     <TableCell align={columns[1].align}>{value.text}</TableCell>
                     <TableCell align={columns[2].align}>{time}</TableCell>
-                    <TableCell align={columns[3].align}>{value.writer}</TableCell>
+                    <TableCell align={columns[3].align}>
+                      <Typography>{nameList[value.writer][0]}</Typography>
+                      <Typography>{getPhoneFormat(nameList[value.writer][1])}</Typography>
+                      <Typography>{value.writer}</Typography>
+                    </TableCell>
                     <TableCell align={columns[4].align}>
                       <Button variant="contained" onClick={() => onCheckedClick(value.id)}>
                         {LABEL_OK}
