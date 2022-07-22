@@ -53,7 +53,6 @@ const ID_NAME = "name";
 const ID_CONTACT = "contact";
 const ID_ADDRESS = "address";
 const ID_MEMO = "memo";
-const ID_ACCOUNT_ID = "account_id";
 const ID_SEX = "sex";
 const ID_PARTNER = "partner";
 const ID_CHILD = "child";
@@ -105,6 +104,7 @@ const MSG_ERROR_ADDRESS = "주소를 입력하세요.";
 const MSG_ERROR_EDIT = "담당자만 수정/삭제가 가능합니다.";
 
 const MemberEditView = () => {
+  console.log(`MemberEditView`)
   const { memberList } = MemberDataHook();
   const params = useParams();
   const id = params.id;
@@ -198,14 +198,12 @@ const MemberEditView = () => {
         case ID_ADDRESS:
           member.address = value;
           break;
-        case ID_ACCOUNT_ID:
-          member.accountId = value;
-          break;
         default:
           break;
       }
+      setMember({ ...member });
     }
-    setMember({ ...member });
+  
   };
 
   const onDeleteClick = async () => {
