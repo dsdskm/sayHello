@@ -1,3 +1,4 @@
+/* eslint-disable */
 import {
   ROUTE_ACCOUNT,
   ROUTE_ACCOUNT_EDIT,
