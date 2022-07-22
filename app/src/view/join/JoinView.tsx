@@ -139,8 +139,13 @@ const JoinView = () => {
         default:
           break;
       }
-      setValid({ ...valid });
-      setAccount({ ...account });
+      if (valid) {
+        setValid({ ...valid });
+      }
+
+      if (account) {
+        setAccount({ ...account });
+      }
     }
   };
 
