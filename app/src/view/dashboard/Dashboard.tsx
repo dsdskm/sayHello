@@ -59,13 +59,13 @@ const Dashboard = () => {
       <GlobalTab />
       <Grid container spacing={2}>
         <Grid item xs={5}>
-          <Paper sx={{ minWidth: "500px", textAlign: "center" }}>
+          <Paper sx={{ minWidth: "50%", textAlign: "center", overflow: "scroll" }}>
             <EventCardArea myMemberList={myMemberList} />
           </Paper>
         </Grid>
         <Grid item xs={7}>
           {showingListView ? <CalendarMonthIcon onClick={onCalendarClcik} /> : <ListAltIcon onClick={onListClick} />}
-          <Paper sx={{ minWidth: "500px", textAlign: "center" }}>
+          <Paper sx={{ minWidth: "50%", textAlign: "center", overflow: "scroll" }}>
             {showingListView ? <HelloArea myMemberList={myMemberList} /> : <EventArea myMemberList={myMemberList} />}
           </Paper>
         </Grid>

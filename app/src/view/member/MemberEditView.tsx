@@ -104,7 +104,7 @@ const MSG_ERROR_ADDRESS = "주소를 입력하세요.";
 const MSG_ERROR_EDIT = "담당자만 수정/삭제가 가능합니다.";
 
 const MemberEditView = () => {
-  console.log(`MemberEditView`)
+  console.log(`MemberEditView`);
   const { memberList } = MemberDataHook();
   const params = useParams();
   const id = params.id;
@@ -203,7 +203,6 @@ const MemberEditView = () => {
       }
       setMember({ ...member });
     }
-  
   };
 
   const onDeleteClick = async () => {
@@ -657,22 +656,22 @@ const MemberEditView = () => {
     <>
       <GlobalTab />
       <FieldContentWrapper>
-        <Box display="flex" justifyContent="center">
+        <div style={{ display: "flex", overflow: "scroll" }}>
           {NAME_FIELD}
           {AGE_FIELD}
           {PHONE_FIELD}
-        </Box>
-        <Box display="flex" justifyContent="center">
+        </div>
+        <div style={{ display: "flex", overflow: "scroll" }}>
           {SEX_FIELD}
           {PARTNER_FIELD}
           {CHILD_FIELD}
           {DISABLED_FIELD}
           {LEVEL_FIELD}
-        </Box>
-        <Box display="flex" justifyContent="center">
+        </div>
+        <div style={{ display: "flex", overflow: "scroll" }}>
           {IMAGE_FIELD}
           {ADDRESS_FILED}
-        </Box>
+        </div>
         {MEMO_FIELD}
         {MANAGER_FIELD}
         {isAdd ? (
