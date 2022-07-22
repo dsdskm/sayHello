@@ -4,15 +4,31 @@ import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import EventDataHook from "api/EventDataHook";
 import TableComponent from "component/TableComponent";
-import { Button, TableBody, TableCell, TableHead, TablePagination, TableRow, TextField } from "@mui/material";
-import { getCalendarEventList, getStorage, getTimeText, KEY_PER_PAGE_DASHBOARD_EVENT, setStorage } from "common/Utils";
+import {
+  Button,
+  TableBody,
+  TableCell,
+  TableHead,
+  TablePagination,
+  TableRow,
+  TextField,
+  Typography,
+} from "@mui/material";
+import {
+  getCalendarEventList,
+  getPhoneFormat,
+  getStorage,
+  getTimeText,
+  KEY_PER_PAGE_DASHBOARD_EVENT,
+  setStorage,
+} from "common/Utils";
 import { deleteEvent, updateEventChecked } from "api/FirebaseApi";
 import { CalendarData } from "interface/CalendarData";
 import LoadingWrap from "component/LoadingWrap";
 import SearchWrapper from "component/SearchWrapper";
 import { Box } from "@mui/system";
-import { DashBoardProps } from "./Dashboard";
 import CustomLabel, { LABEL_SIZE_SMALL } from "component/Labels";
+import { DashBoardProps } from "./DashBoardProps";
 
 const LABEL_OK = "내용 확인";
 const LABEL_DELETE = "삭제";
@@ -42,7 +58,7 @@ const columns: readonly Column[] = [
   { id: "checked", name: COLUMN_CHECKED, align: "center" },
   { id: "delete", name: COLUMN_DELETE, align: "center" },
 ];
-const EventArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList }) => {
+const EventArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList, nameList }) => {
   moment.locale("ko-KR");
   const localizer = momentLocalizer(moment);
   const [updating, setUpdating] = useState(false);
@@ -115,6 +131,7 @@ const EventArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList }) =>
               </TableHead>
               <TableBody>
                 {eventList &&
+                  nameList &&
                   eventList
                     .filter((v) => {
                       if (v.eventTime >= today) {
@@ -141,7 +158,11 @@ const EventArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList }) =>
                           <TableCell align={columns[1].align}>{value.name}</TableCell>
                           <TableCell align={columns[2].align}>{value.text}</TableCell>
                           <TableCell align={columns[3].align}>{time}</TableCell>
-                          <TableCell align={columns[4].align}>{value.writer}</TableCell>
+                          <TableCell align={columns[4].align}>
+                            <Typography>{nameList[value.writer][0]}</Typography>
+                            <Typography>{getPhoneFormat(nameList[value.writer][1])}</Typography>
+                            <Typography>{value.writer}</Typography>
+                          </TableCell>
                           <TableCell align={columns[5].align}>
                             <Button variant="contained" onClick={() => onCheckedClick(value.id)}>
                               {LABEL_OK}

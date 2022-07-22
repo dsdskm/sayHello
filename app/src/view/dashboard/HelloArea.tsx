@@ -1,12 +1,12 @@
-import { TableBody, TableCell, TableHead, TablePagination, TableRow, TextField } from "@mui/material";
+import { TableBody, TableCell, TableHead, TablePagination, TableRow, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import HelloDataHook from "api/HelloDataHook";
-import { getStorage, getTimeText, KEY_PER_PAGE_DASHBOARD_HELLO, setStorage } from "common/Utils";
+import { getPhoneFormat, getStorage, getTimeText, KEY_PER_PAGE_DASHBOARD_HELLO, setStorage } from "common/Utils";
 import CustomLabel, { LABEL_SIZE_SMALL } from "component/Labels";
 import SearchWrapper from "component/SearchWrapper";
 import TableComponent from "component/TableComponent";
 import { useState } from "react";
-import { DashBoardProps } from "./Dashboard";
+import { DashBoardProps } from "./DashBoardProps";
 
 const LABEL_HELLO = "안부 내역";
 const COLUMN_NO = "NO";
@@ -28,7 +28,7 @@ const columns: readonly Column[] = [
   { id: "time", name: COLUMN_TIME, align: "center" },
   { id: "writer", name: COLUMN_WRITER, align: "center" },
 ];
-const ListArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList }) => {
+const ListArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList, nameList }) => {
   const { helloList } = HelloDataHook("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(+getStorage(KEY_PER_PAGE_DASHBOARD_HELLO, "10"));
@@ -59,6 +59,7 @@ const ListArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList }) => 
           </TableHead>
           <TableBody>
             {helloList &&
+              nameList &&
               helloList
                 .filter((v) => {
                   if (myMemberList && v.member_id in myMemberList) {
@@ -80,7 +81,11 @@ const ListArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList }) => 
                       <TableCell align={columns[1].align}>{value.name}</TableCell>
                       <TableCell align={columns[2].align}>{value.text}</TableCell>
                       <TableCell align={columns[3].align}>{time}</TableCell>
-                      <TableCell align={columns[4].align}>{value.writer}</TableCell>
+                      <TableCell align={columns[4].align}>
+                        <Typography>{nameList[value.writer][0]}</Typography>
+                        <Typography>{getPhoneFormat(nameList[value.writer][1])}</Typography>
+                        <Typography>{value.writer}</Typography>
+                      </TableCell>
                     </TableRow>
                   );
                 })}

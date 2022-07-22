@@ -12,18 +12,14 @@ import MemberDataHook from "api/MemberDataHook";
 import AccountDataHook from "api/AccountDataHook";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import ListAltIcon from "@mui/icons-material/ListAlt";
+import { AccountKey } from "view/member/MemberListView";
+import { MemberKey } from "./DashBoardProps";
 
-export interface DashBoardProps {
-  myMemberList: MemberKey | undefined;
-}
-
-interface MemberKey {
-  [key: string]: string;
-}
 const Dashboard = () => {
   const [showingListView, showListView] = useState<Boolean>();
   const { memberList } = MemberDataHook();
   const { accountList } = AccountDataHook();
+  const [nameList, setNameList] = useState<AccountKey | undefined>();
   const [myMemberList, setMyMemberList] = useState<MemberKey | undefined>();
 
   useEffect(() => {
@@ -45,6 +41,17 @@ const Dashboard = () => {
         }
       }
     });
+    const initNameList = () => {
+      if (accountList) {
+        let tmpHash: AccountKey = {};
+        accountList.forEach((account) => {
+          tmpHash[account.email] = [account.name, account.phone];
+        });
+        setNameList(tmpHash);
+      }
+    };
+
+    initNameList();
   }, [memberList, accountList]);
 
   const onCalendarClcik = () => {
@@ -60,13 +67,17 @@ const Dashboard = () => {
       <Grid container spacing={2}>
         <Grid item xs={5}>
           <Paper sx={{ minWidth: "50%", textAlign: "center", overflow: "scroll" }}>
-            <EventCardArea myMemberList={myMemberList} />
+            <EventCardArea myMemberList={myMemberList} nameList={nameList} />
           </Paper>
         </Grid>
         <Grid item xs={7}>
           {showingListView ? <CalendarMonthIcon onClick={onCalendarClcik} /> : <ListAltIcon onClick={onListClick} />}
           <Paper sx={{ minWidth: "50%", textAlign: "center", overflow: "scroll" }}>
-            {showingListView ? <HelloArea myMemberList={myMemberList} /> : <EventArea myMemberList={myMemberList} />}
+            {showingListView ? (
+              <HelloArea myMemberList={myMemberList} nameList={nameList} />
+            ) : (
+              <EventArea myMemberList={myMemberList} nameList={nameList} />
+            )}
           </Paper>
         </Grid>
       </Grid>

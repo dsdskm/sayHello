@@ -3,13 +3,13 @@ import { Card, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { getDayText } from "common/Utils";
 import React from "react";
-import { DashBoardProps } from "./Dashboard";
 import EventDataHook from "api/EventDataHook";
 import CustomLabel, { LABEL_SIZE_SMALL } from "component/Labels";
 import CakeIcon from "@mui/icons-material/Cake";
 import CelebrationIcon from "@mui/icons-material/Celebration";
 import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
 import MemberDataHook from "api/MemberDataHook";
+import { DashBoardProps } from "./DashBoardProps";
 
 const LABEL_TODAY_NOTICE = "오늘의 알림";
 const EventCardArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList }) => {
