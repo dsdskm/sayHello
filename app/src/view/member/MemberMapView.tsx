@@ -15,7 +15,12 @@ import {
 } from "./MemberEditView";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "config/FirebaseConfig";
+import { Typography } from "@mui/material";
 
+const RED_MARKER = "https://maps.google.com/mapfiles/ms/micons/red.png";
+const BLUE_MARKER = "https://maps.google.com/mapfiles/ms/micons/blue.png";
+const BLUE_MARKER_TEXT = "담당 회원"
+const RED_MARKER_TEXT = "비담당 회원"
 const MemberMapView = () => {
   const { memberList } = MemberDataHook();
   const [user, setUser] = useState<string>("");
@@ -73,11 +78,11 @@ const MemberMapView = () => {
           default:
             break;
         }
-        let iconUrl = "https://maps.google.com/mapfiles/ms/micons/";
+        let iconUrl;
         if (data.accountId === user) {
-          iconUrl += "blue.png";
+          iconUrl = BLUE_MARKER;
         } else {
-          iconUrl += "red.png";
+          iconUrl = RED_MARKER;
         }
         const marker = new naver.maps.Marker({
           position: new naver.maps.LatLng(data.latitude, data.longitude),
@@ -134,6 +139,12 @@ const MemberMapView = () => {
 
   return (
     <>
+      <Box display="flex" justifyContent="center" sx={{ m: 5 }} alignItems="center">
+        <img src={BLUE_MARKER} />
+        <Typography sx={{mr:3}}>{BLUE_MARKER_TEXT}</Typography>
+        <img src={RED_MARKER} />
+        <Typography>{RED_MARKER_TEXT}</Typography>
+      </Box>
       <Box display="flex" justifyContent="center" sx={{ m: 5 }}>
         <div id="map" style={{ height: 1000, width: 1000 }}></div>
       </Box>
