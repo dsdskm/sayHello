@@ -1,5 +1,4 @@
 import GlobalTab from "view/common/GlobalTab";
-import * as React from "react";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
@@ -22,6 +21,7 @@ import TableComponent from "component/TableComponent";
 import SearchWrapper from "component/SearchWrapper";
 import Loading from "component/Loading";
 import MemberDataHook from "api/MemberDataHook";
+import { useEffect, useState } from "react";
 
 const COLUMN_NO = "NO";
 const COLUMN_NAME = "이름";
@@ -54,10 +54,24 @@ const AccountListView = () => {
   const navigate = useNavigate();
   const { accountList } = AccountDataHook();
   const { memberList } = MemberDataHook();
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(+getStorage(KEY_PER_PAGE_ACCOUNT_LIST, "10"));
-  const [keyword, setKeyword] = React.useState<string>();
-
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(+getStorage(KEY_PER_PAGE_ACCOUNT_LIST, "10"));
+  const [keyword, setKeyword] = useState<string>();
+  const [list, setList] = useState<Array<Account>>([]);
+  useEffect(() => {
+    if (accountList) {
+      const tmpList = accountList
+        .filter((v) => {
+          if (keyword) {
+            return v.name.includes(keyword) || v.email.includes(keyword);
+          } else {
+            return true;
+          }
+        })
+        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+      setList(tmpList);
+    }
+  }, [accountList, keyword, page, rowsPerPage]);
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
@@ -95,45 +109,36 @@ const AccountListView = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {accountList &&
-              accountList
-                .filter((v) => {
-                  if (keyword) {
-                    return v.name.includes(keyword) || v.email.includes(keyword);
-                  } else {
-                    return true;
-                  }
-                })
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((value, index) => {
-                  const time = getTimeText(value.time);
-                  const memberCount = memberList?.filter((data) => {
-                    return data.accountId === value.email;
-                  }).length;
-                  return (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={value.id} onClick={() => onTableRowClick(value)}>
-                      <TableCell align={columns[0].align}>{page * rowsPerPage + index + 1}</TableCell>
-                      <TableCell align={columns[1].align}>{value.name}</TableCell>
-                      <TableCell align={columns[2].align}>
-                        <img
-                          src={value.image}
-                          alt="account"
-                          style={{ margin: MARGIN_DEFAULT, width: PROFILE_IMAGE_WIDTH, height: PROFILE_IMAGE_HEIGHT }}
-                        />
-                      </TableCell>
-                      <TableCell align={columns[3].align}>{value.email}</TableCell>
-                      <TableCell align={columns[4].align}>{getPhoneFormat(value.phone)}</TableCell>
-                      <TableCell align={columns[5].align}>{memberCount}명</TableCell>
-                      <TableCell align={columns[6].align}>{time}</TableCell>
-                    </TableRow>
-                  );
-                })}
+            {list &&
+              list.map((value, index) => {
+                const time = getTimeText(value.time);
+                const memberCount = memberList?.filter((data) => {
+                  return data.accountId === value.email;
+                }).length;
+                return (
+                  <TableRow hover role="checkbox" tabIndex={-1} key={value.id} onClick={() => onTableRowClick(value)}>
+                    <TableCell align={columns[0].align}>{page * rowsPerPage + index + 1}</TableCell>
+                    <TableCell align={columns[1].align}>{value.name}</TableCell>
+                    <TableCell align={columns[2].align}>
+                      <img
+                        src={value.image}
+                        alt="account"
+                        style={{ margin: MARGIN_DEFAULT, width: PROFILE_IMAGE_WIDTH, height: PROFILE_IMAGE_HEIGHT }}
+                      />
+                    </TableCell>
+                    <TableCell align={columns[3].align}>{value.email}</TableCell>
+                    <TableCell align={columns[4].align}>{getPhoneFormat(value.phone)}</TableCell>
+                    <TableCell align={columns[5].align}>{memberCount}명</TableCell>
+                    <TableCell align={columns[6].align}>{time}</TableCell>
+                  </TableRow>
+                );
+              })}
           </TableBody>
         </TableComponent>
         <TablePagination
           rowsPerPageOptions={[5, 10, 25, 100]}
           component="div"
-          count={accountList.length}
+          count={list.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}

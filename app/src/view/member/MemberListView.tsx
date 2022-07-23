@@ -84,6 +84,24 @@ const MemberListView = () => {
   const [selectedManager, setSelecteManager] = useState<string>(LABEL_ALL);
   const [nameList, setNameList] = useState<AccountKey | undefined>();
   const [totalCount, setTotalCount] = useState(0);
+  const [list, setList] = useState<Array<Member>>([]);
+
+  useEffect(() => {
+    if (memberList) {
+      const tmpList = memberList
+        .filter((v) => {
+          if (keyword) {
+            return v.name.includes(keyword) || v.memo.includes(keyword);
+          } else if (selectedManager && (selectedManager === v.accountId || selectedManager === LABEL_ALL)) {
+            return true;
+          } else {
+            return false;
+          }
+        })
+        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+      setList(tmpList);
+    }
+  }, [memberList, keyword, page, rowsPerPage]);
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -185,70 +203,59 @@ const MemberListView = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {memberList &&
+            {list &&
               nameList &&
-              memberList
-                .filter((v) => {
-                  if (keyword) {
-                    return v.name.includes(keyword) || v.memo.includes(keyword);
-                  } else if (selectedManager && (selectedManager === v.accountId || selectedManager === LABEL_ALL)) {
-                    return true;
-                  } else {
-                    return false;
-                  }
-                })
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((value, index) => {
-                  const lastHellotime = value.lastHellotime === 0 ? "-" : getTimeText(value.lastHellotime);
-                  const age = getAge(value.age);
-                  return (
-                    <TableRow
-                      hover
-                      role="checkbox"
-                      tabIndex={index}
-                      key={value.id}
-                      onClick={() => onTableRowClick(value)}
-                    >
-                      <TableCell align={columns[0].align}>{page * rowsPerPage + index + 1}</TableCell>
-                      <TableCell align={columns[1].align}>
-                        <img
-                          src={value.image}
-                          alt="account"
-                          style={{
-                            margin: MARGIN_DEFAULT,
-                            width: PROFILE_IMAGE_WIDTH,
-                            height: PROFILE_IMAGE_HEIGHT,
-                          }}
-                        />
-                      </TableCell>
-                      <TableCell align={columns[2].align}>{value.name}</TableCell>
-                      <TableCell align={columns[3].align}>{value.age + ` (${age}세)`}</TableCell>
-                      <TableCell align={columns[4].align}>{value.address}</TableCell>
-                      <TableCell align={columns[5].align}>
-                        {value.memo.map((value, index) => {
-                          return (
-                            <Typography align="left" key={index}>
-                              {value}
-                            </Typography>
-                          );
-                        })}
-                      </TableCell>
-                      <TableCell align={columns[6].align}>{getPhoneFormat(value.phone)}</TableCell>
-                      <TableCell align={columns[7].align}>{lastHellotime}</TableCell>
-                      <TableCell align={columns[8].align}>
-                        <Typography>{nameList[value.accountId][0]}</Typography>
-                        <Typography>{getPhoneFormat(nameList[value.accountId][1])}</Typography>
-                        <Typography>{value.accountId}</Typography>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+              list.map((value, index) => {
+                const lastHellotime = value.lastHellotime === 0 ? "-" : getTimeText(value.lastHellotime);
+                const age = getAge(value.age);
+                return (
+                  <TableRow
+                    hover
+                    role="checkbox"
+                    tabIndex={index}
+                    key={value.id}
+                    onClick={() => onTableRowClick(value)}
+                  >
+                    <TableCell align={columns[0].align}>{page * rowsPerPage + index + 1}</TableCell>
+                    <TableCell align={columns[1].align}>
+                      <img
+                        src={value.image}
+                        alt="account"
+                        style={{
+                          margin: MARGIN_DEFAULT,
+                          width: PROFILE_IMAGE_WIDTH,
+                          height: PROFILE_IMAGE_HEIGHT,
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell align={columns[2].align}>{value.name}</TableCell>
+                    <TableCell align={columns[3].align}>{value.age + ` (${age}세)`}</TableCell>
+                    <TableCell align={columns[4].align}>{value.address}</TableCell>
+                    <TableCell align={columns[5].align}>
+                      {value.memo.map((value, index) => {
+                        return (
+                          <Typography align="left" key={index}>
+                            {value}
+                          </Typography>
+                        );
+                      })}
+                    </TableCell>
+                    <TableCell align={columns[6].align}>{getPhoneFormat(value.phone)}</TableCell>
+                    <TableCell align={columns[7].align}>{lastHellotime}</TableCell>
+                    <TableCell align={columns[8].align}>
+                      <Typography>{nameList[value.accountId][0]}</Typography>
+                      <Typography>{getPhoneFormat(nameList[value.accountId][1])}</Typography>
+                      <Typography>{value.accountId}</Typography>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
           </TableBody>
         </TableComponent>
         <TablePagination
           rowsPerPageOptions={[5, 10, 25, 100]}
           component="div"
-          count={memberList.length}
+          count={list.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
