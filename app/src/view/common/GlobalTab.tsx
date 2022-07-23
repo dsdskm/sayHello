@@ -83,9 +83,7 @@ const GlobalTab = () => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
-      } else {
-        goPage(ROUTE_LOGIN);
-      }
+      } 
     });
     checkTabFocus();
   }, [auth]);

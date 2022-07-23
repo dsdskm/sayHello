@@ -1,3 +1,4 @@
+/* eslint-disable */
 import GlobalTab from "../common/GlobalTab";
 import { Grid } from "@mui/material";
 import { useEffect } from "react";
@@ -14,6 +15,8 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import { AccountKey } from "view/member/MemberListView";
 import { MemberKey } from "./DashBoardProps";
+import { useNavigate } from "react-router-dom";
+import { ROUTE_LOGIN } from "common/Constant";
 
 const Dashboard = () => {
   const [showingListView, showListView] = useState<Boolean>();
@@ -21,6 +24,7 @@ const Dashboard = () => {
   const { accountList } = AccountDataHook();
   const [nameList, setNameList] = useState<AccountKey | undefined>();
   const [myMemberList, setMyMemberList] = useState<MemberKey | undefined>();
+  const navigate = useNavigate();
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -39,6 +43,8 @@ const Dashboard = () => {
             setMyMemberList(tmp);
           }
         }
+      } else {
+        navigate(ROUTE_LOGIN);
       }
     });
     const initNameList = () => {

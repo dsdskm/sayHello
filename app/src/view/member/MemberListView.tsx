@@ -24,6 +24,7 @@ import {
   MARGIN_DEFAULT,
   PROFILE_IMAGE_HEIGHT,
   PROFILE_IMAGE_WIDTH,
+  ROUTE_LOGIN,
   ROUTE_MEMBER_EDIT,
   SEARCH_BAR_WIDTH,
 } from "common/Constant";
@@ -101,7 +102,7 @@ const MemberListView = () => {
         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
       setList(tmpList);
     }
-  }, [memberList, keyword, page, rowsPerPage]);
+  }, [memberList, keyword, page, rowsPerPage, selectedManager]);
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -112,6 +113,8 @@ const MemberListView = () => {
           });
           setTotalCount(filtered.length);
         }
+      } else {
+        navigate(ROUTE_LOGIN);
       }
     });
     const initNameList = () => {

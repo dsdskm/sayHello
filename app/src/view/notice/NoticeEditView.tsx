@@ -1,3 +1,4 @@
+/* eslint-disable */
 import CustomLabel, { LABEL_SIZE_SMALL } from "component/Labels";
 import GlobalTab from "view/common/GlobalTab";
 import { Button, TextField } from "@mui/material";
@@ -7,7 +8,7 @@ import { useEffect, useState } from "react";
 import { DEFAULT_NOTICE_DATA, NoticeData } from "interface/NoticeData";
 import FieldContentWrapper from "component/FieldContentWrapper";
 import FieldContentBottomWrapper from "component/FieldContentBottomWrapper";
-import { ROUTE_NOTICE } from "common/Constant";
+import { ROUTE_LOGIN, ROUTE_NOTICE } from "common/Constant";
 import Loading from "component/Loading";
 import { addNotice, deleteNotice } from "api/FirebaseApi";
 import { FieldWrapper } from "component/FieldWrapper";
@@ -47,6 +48,8 @@ const NoticeEditView = () => {
     onAuthStateChanged(auth, (user) => {
       if (user && user.email) {
         setUser(user.email);
+      } else {
+        navigate(ROUTE_LOGIN);
       }
     });
   }, []);

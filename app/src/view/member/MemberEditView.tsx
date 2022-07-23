@@ -23,6 +23,7 @@ import {
   IMAGE_SIZE_WIDTH,
   LARGE_FIELD_WIDTH,
   MAP_CENTER,
+  ROUTE_LOGIN,
   ROUTE_MEMBER,
 } from "common/Constant";
 import Loading from "component/Loading";
@@ -137,6 +138,8 @@ const MemberEditView = () => {
           });
           setAccount(account[0]);
         }
+      } else {
+        navigate(ROUTE_LOGIN);
       }
     });
     const initNameList = () => {
