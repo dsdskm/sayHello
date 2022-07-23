@@ -29,6 +29,7 @@ import SearchWrapper from "component/SearchWrapper";
 import { Box } from "@mui/system";
 import CustomLabel, { LABEL_SIZE_SMALL } from "component/Labels";
 import { DashBoardProps } from "./DashBoardProps";
+import { EventData } from "interface/EventData";
 
 const LABEL_OK = "내용 확인";
 const LABEL_DELETE = "삭제";
@@ -59,15 +60,40 @@ const columns: readonly Column[] = [
   { id: "delete", name: COLUMN_DELETE, align: "center" },
 ];
 const EventArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList, nameList }) => {
+  console.log(`EventArea`)
   moment.locale("ko-KR");
   const localizer = momentLocalizer(moment);
   const [updating, setUpdating] = useState(false);
+  const [list, setList] = useState<Array<EventData>>([]);
   const [keyword, setKeyword] = useState<string>();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(+getStorage(KEY_PER_PAGE_DASHBOARD_EVENT, "10"));
   const [calendarEventList, setCalendarEventList] = useState<Array<CalendarData>>();
 
   const { eventList } = EventDataHook("", "asc");
+  const today = new Date().getTime();
+  useEffect(() => {
+    if (eventList) {
+      const tmpList = eventList
+        .filter((v) => {
+          if (v.eventTime >= today) {
+            if (myMemberList && v.member_id in myMemberList) {
+              if (keyword) {
+                return v.name.includes(keyword) || v.text.includes(keyword);
+              } else {
+                return true;
+              }
+            } else {
+              return false;
+            }
+          } else {
+            return false;
+          }
+        })
+        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+      setList(tmpList);
+    }
+  }, [eventList, keyword, myMemberList, page, rowsPerPage]);
 
   useEffect(() => {
     setCalendarEventList(
@@ -103,7 +129,7 @@ const EventArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList, name
       setUpdating(false);
     }
   };
-  const today = new Date().getTime();
+
   return (
     <>
       <CustomLabel label={LABEL_EVENT} size={LABEL_SIZE_SMALL} />
@@ -130,62 +156,45 @@ const EventArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList, name
                 </TableRow>
               </TableHead>
               <TableBody>
-                {eventList &&
-                  nameList &&
-                  eventList
-                    .filter((v) => {
-                      if (v.eventTime >= today) {
-                        if (myMemberList && v.member_id in myMemberList) {
-                          if (keyword) {
-                            return v.name.includes(keyword) || v.text.includes(keyword);
-                          } else {
-                            return true;
-                          }
-                        } else {
-                          return false;
-                        }
-                      } else {
-                        return false;
-                      }
-                    })
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((value, index) => {
-                      const time = getTimeText(value.eventTime);
-                      const bgColor = value.checked ? "green" : "white";
-                      return (
-                        <TableRow role="checkbox" tabIndex={-1} key={value.id} sx={{ backgroundColor: bgColor }}>
-                          <TableCell align={columns[0].align}>{page * rowsPerPage + index + 1}</TableCell>
-                          <TableCell align={columns[1].align}>{value.name}</TableCell>
-                          <TableCell align={columns[2].align}>{value.text}</TableCell>
-                          <TableCell align={columns[3].align}>{time}</TableCell>
-                          <TableCell align={columns[4].align}>
-                            <Typography>{nameList[value.writer][0]}</Typography>
-                            <Typography>{getPhoneFormat(nameList[value.writer][1])}</Typography>
-                            <Typography>{value.writer}</Typography>
-                          </TableCell>
-                          <TableCell align={columns[5].align}>
-                            <Button variant="contained" onClick={() => onCheckedClick(value.id)}>
-                              {LABEL_OK}
-                            </Button>
-                          </TableCell>
-                          <TableCell align={columns[6].align}>
-                            <Button
-                              sx={{ backgroundColor: "red" }}
-                              variant="contained"
-                              onClick={() => onDeleteClick(value.id)}
-                            >
-                              {LABEL_DELETE}
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
+                {nameList &&
+                  list &&
+                  list.map((value, index) => {
+                    const time = getTimeText(value.eventTime);
+                    const bgColor = value.checked ? "green" : "white";
+                    return (
+                      <TableRow role="checkbox" tabIndex={-1} key={value.id} sx={{ backgroundColor: bgColor }}>
+                        <TableCell align={columns[0].align}>{page * rowsPerPage + index + 1}</TableCell>
+                        <TableCell align={columns[1].align}>{value.name}</TableCell>
+                        <TableCell align={columns[2].align}>{value.text}</TableCell>
+                        <TableCell align={columns[3].align}>{time}</TableCell>
+                        <TableCell align={columns[4].align}>
+                          <Typography>{nameList[value.writer][0]}</Typography>
+                          <Typography>{getPhoneFormat(nameList[value.writer][1])}</Typography>
+                          <Typography>{value.writer}</Typography>
+                        </TableCell>
+                        <TableCell align={columns[5].align}>
+                          <Button variant="contained" onClick={() => onCheckedClick(value.id)}>
+                            {LABEL_OK}
+                          </Button>
+                        </TableCell>
+                        <TableCell align={columns[6].align}>
+                          <Button
+                            sx={{ backgroundColor: "red" }}
+                            variant="contained"
+                            onClick={() => onDeleteClick(value.id)}
+                          >
+                            {LABEL_DELETE}
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
               </TableBody>
             </TableComponent>
             <TablePagination
               rowsPerPageOptions={[5, 10, 25, 100]}
               component="div"
-              count={eventList ? eventList.length : 0}
+              count={list ? list.length : 0}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}
