@@ -1,4 +1,12 @@
-import { TableHead, TableRow, TableCell, TableBody, TablePagination, TextField, Button } from "@mui/material";
+import {
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  TablePagination,
+  TextField,
+  Button,
+} from "@mui/material";
 import NoticeDataHook from "api/NoticeDataHook";
 import ContentWrapper from "component/ContentWrapper";
 import TableComponent from "component/TableComponent";
@@ -112,7 +120,17 @@ const NoticeListView = () => {
                     <TableCell align={columns[0].align}>{page * rowsPerPage + index + 1}</TableCell>
                     <TableCell align={columns[1].align}>{value.title}</TableCell>
                     <TableCell width="500" align={columns[2].align}>
-                      {value.contents}
+                      <div
+                        style={{
+                          width: 500,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          maxLines: 3,
+                        }}
+                      >
+                        {value.contents}
+                      </div>
                     </TableCell>
                     <TableCell align={columns[3].align}>{time}</TableCell>
                     <TableCell align={columns[4].align}>{value.writer}</TableCell>

@@ -71,8 +71,9 @@ const EventArea: React.FunctionComponent<DashBoardProps> = ({ myMemberList, name
   const [calendarEventList, setCalendarEventList] = useState<Array<CalendarData>>();
 
   const { eventList } = EventDataHook("", "asc");
-  const today = new Date().getTime();
+  
   useEffect(() => {
+    const today = new Date().getTime();
     if (eventList) {
       const tmpList = eventList
         .filter((v) => {

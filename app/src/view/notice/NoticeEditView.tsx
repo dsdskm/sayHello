@@ -1,7 +1,7 @@
 /* eslint-disable */
 import CustomLabel, { LABEL_SIZE_SMALL } from "component/Labels";
 import GlobalTab from "view/common/GlobalTab";
-import { Button, TextField } from "@mui/material";
+import { Box, Button, TextField, Typography } from "@mui/material";
 import NoticeDataHook from "api/NoticeDataHook";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -23,17 +23,21 @@ const LABEL_ID = "ID";
 const LABEL_TITLE = "제목";
 const LABEL_CONTENTS = "내용";
 const LABEL_WRITER = "작성자";
-const LABEL_ADD = "추가";
+const LABEL_ADD = "등록";
 const LABEL_UPDATE = "수정";
 const LABEL_DELETE = "삭제";
 const LABEL_CANCEL = "취소";
+const LABEL_OK = "확인";
 
 const MSG_ERR_TITLE = "제목을 입력하세요.";
 const MSG_ERR_CONTENTS = "내용을 입력하세요.";
 const MSG_COMPLETED = "완료되었습니다.";
 const MSG_DELETED = "삭제되었습니다.";
 const MSG_DELETE = "삭제하시겠습니까?";
+const MSG_ERROR_EDIT = "담당자만 수정/삭제가 가능합니다.";
 const DEFAULT_FIELD_WIDTH = 400;
+const LARGE_FIELD_WIDTH = 1200;
+const LARGE_FIELD_HEIGHT = 500;
 
 const NoticeEditView = () => {
   const { noticeList } = NoticeDataHook();
@@ -124,18 +128,18 @@ const NoticeEditView = () => {
     );
   };
 
-  const getContentsField = (label: string, id: string, width: number, value: string) => {
+  const getContentsField = (label: string, id: string, value: string) => {
     return (
       <FieldWrapper>
         <CustomLabel label={label} size={LABEL_SIZE_SMALL} />
         <TextField
           autoComplete="off"
-          sx={{ width: width }}
+          sx={{ width: LARGE_FIELD_WIDTH, height: LARGE_FIELD_HEIGHT }}
           id={id}
           type="text"
           value={value}
           multiline
-          maxRows={10}
+          maxRows={20}
           onChange={onChange}
         />
       </FieldWrapper>
@@ -147,8 +151,8 @@ const NoticeEditView = () => {
   }
 
   const ID_FIELD = getCommonField(LABEL_ID, ID_NUM, DEFAULT_FIELD_WIDTH, notice.id);
-  const TITLE_FIELD = getCommonField(LABEL_TITLE, ID_TITLE, DEFAULT_FIELD_WIDTH, notice.title);
-  const CONTENTS_FIELD = getContentsField(LABEL_CONTENTS, ID_CONTENTS, DEFAULT_FIELD_WIDTH, notice.contents);
+  const TITLE_FIELD = getCommonField(LABEL_TITLE, ID_TITLE, LARGE_FIELD_WIDTH, notice.title);
+  const CONTENTS_FIELD = getContentsField(LABEL_CONTENTS, ID_CONTENTS, notice.contents);
   const WRITER_FIELD = getCommonField(LABEL_WRITER, ID_WRITER, DEFAULT_FIELD_WIDTH, notice.writer);
 
   if (updating) {
@@ -165,19 +169,30 @@ const NoticeEditView = () => {
         {isAdd ? <></> : WRITER_FIELD}
       </FieldContentWrapper>
       <FieldContentBottomWrapper>
-        <Button sx={{ m: 1 }} variant="contained" onClick={() => navigate(ROUTE_NOTICE)}>
-          {LABEL_CANCEL}
-        </Button>
-        {isAdd ? (
-          <></>
+        {isAdd || notice.writer === user ? (
+          <>
+            <Button sx={{ m: 1 }} variant="contained" onClick={() => navigate(ROUTE_NOTICE)}>
+              {LABEL_CANCEL}
+            </Button>
+            {isAdd ? (
+              <></>
+            ) : (
+              <Button sx={{ m: 1, backgroundColor: "red" }} variant="contained" onClick={onDeleteClick}>
+                {LABEL_DELETE}
+              </Button>
+            )}
+            <Button sx={{ m: 1 }} variant="contained" onClick={onAddClick}>
+              {isAdd ? LABEL_ADD : LABEL_UPDATE}
+            </Button>
+          </>
         ) : (
-          <Button sx={{ m: 1, backgroundColor: "red" }} variant="contained" onClick={onDeleteClick}>
-            {LABEL_DELETE}
-          </Button>
+          <Box display="flex" alignItems="center">
+            <Typography>{MSG_ERROR_EDIT}</Typography>
+            <Button sx={{ m: 1 }} variant="contained" onClick={() => navigate(ROUTE_NOTICE)}>
+              {LABEL_OK}
+            </Button>
+          </Box>
         )}
-        <Button sx={{ m: 1 }} variant="contained" onClick={onAddClick}>
-          {isAdd ? LABEL_ADD : LABEL_UPDATE}
-        </Button>
       </FieldContentBottomWrapper>
     </>
   );
